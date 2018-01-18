@@ -43,15 +43,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassesExample\Breakfast_menu.cs" />
+    <Compile Include="ClassesExample\OTA_ResRetrieveRS.cs" />
+    <Compile Include="ClassesExample\Spec.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Example.xml">
+    <Content Include="ResourcesExample\BookingExpertXML.xml" />
+    <Content Include="ResourcesExample\Example.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="ResourcesExample\REC-xml-20081126.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

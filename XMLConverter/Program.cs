@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace XMLConverter
@@ -83,7 +81,7 @@ namespace XMLConverter
                     if (!dizionarioElementiValidi.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoValidoPresente))
                     {
                         // Se non è presente lo aggiunge, se va aggiunto, ossia se ha più di un figlio oppure se ha degli attributi
-                        if (elemento.Elements().Count() > 1 || elemento.Attributes().Count() > 0)
+                        if (elemento.Elements().Count() > 0 || elemento.Attributes().Count() > 0)
                         {
                             dizionarioElementiValidi.Add(elemento.Name.LocalName, new ElementoValido(elemento));
                         }
@@ -142,53 +140,26 @@ namespace XMLConverter
                 sbDocumento.AppendLine("using System.Xml;");
                 sbDocumento.AppendLine("using System.Xml.Serialization;");
                 sbDocumento.AppendLine("");
-                sbDocumento.AppendLine("namespace BLHXML");
+                sbDocumento.AppendLine("namespace BELHXmlTool");
                 sbDocumento.AppendLine("{");
 
                 // Arrivati qui ogni elementovalido è valido e ha le proprietà che dovrebbe avere.
                 List<ElementoValido> listaProprietaConAttributi = new List<ElementoValido>();
                 foreach (var elementoValido in listaElementiValidi)
                 {
-                    string elementoSerializzato = Program.SerializzaParzialmenteElementoValido(elementoValido, ref listaProprietaConAttributi);
+                    string elementoSerializzato = Program.SerializzaElementoValido(documento, elementoValido, ref listaProprietaConAttributi);
                     sbDocumento.Append(elementoSerializzato);
-                }
-
-                // Creo ora gli elementi che so che contengono solamente gli attributi
-                foreach (var elementoProprieta in listaProprietaConAttributi)
-                {
-                    var primoElementoTipoAttuale = elementoProprieta.ListaElementiTipologiaAttuale[0];
-
-                    sbDocumento.AppendLine($"[XmlRoot(ElementName=\"{primoElementoTipoAttuale.Name.LocalName}\"{Program.CalcolaNameSpace(primoElementoTipoAttuale.Name.NamespaceName)})]");
-                    sbDocumento.AppendLine($"public class {Program.RendiPrimaLetteraMaiuscola(primoElementoTipoAttuale.Name.LocalName)}");
-                    sbDocumento.AppendLine("{");
-
-                    // Attributi elemento valido attuale
-                    // Prendo ora la lista degli attributi
-                    var listaMassimaNomiAttributi = elementoProprieta.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes().Select(a => a.Name)).Distinct().ToList();
-                    foreach (var nomeAttributo in listaMassimaNomiAttributi)
-                    {
-                        // Prendo tutti gli attributi di quel tipo
-                        var listaAttributoAttuale = elementoProprieta.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
-                        string tipoProprieta = TrovaTipoProprietaAttributo(listaAttributoAttuale);
-
-                        // Scrivo quindi il nome dell'attributo 
-                        sbDocumento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
-                        sbDocumento.AppendLine($"public {tipoProprieta} {Program.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName)} {{ get; set; }}");
-                    }
-
-                    sbDocumento.AppendLine("}");
                 }
 
                 sbDocumento.AppendLine("}");
 
-                // A questo punto intendo tutto splittando ad ogni \n e indentando a seconda di quanti {(+) e }(-) trovo
+                // A questo punto intendo tutto splittando ad ogni \n a seconda di quanti {(+) e }(-) trovo
                 var listaStringhe = sbDocumento.ToString().Split('\n');
 
                 sbDocumento = new StringBuilder();
                 int counter = 0;
                 foreach (var stringa in listaStringhe)
                 {
-
                     if (stringa.StartsWith("}"))
                     {
                         counter--;
@@ -205,16 +176,38 @@ namespace XMLConverter
 
                 // Gestione del salvataggio
                 // Salvo tutto in un nuovo file  $"{Root.Name}.cs" in una cartella chiamata Classes
-                string destPath = Path.Combine(Environment.CurrentDirectory, "Classes");
-                if (!Directory.Exists(destPath))
+                string percorsoCartellaDestinazione = Path.Combine(Environment.CurrentDirectory, "Classes");
+                if (!Directory.Exists(percorsoCartellaDestinazione))
                 {
-                    Directory.CreateDirectory(destPath);
+                    Directory.CreateDirectory(percorsoCartellaDestinazione);
                     Console.Out.WriteLine("\nClasses directory has been created.\n");
                 }
 
-                destPath = Path.Combine(destPath, nomeFile);
-                File.WriteAllText(destPath, sbDocumento.ToString());
-                Console.Out.WriteLine($"{destPath} has been correctly created.");
+                var percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFile);
+                File.WriteAllText(percorsoFileSerializzato, sbDocumento.ToString());
+                Console.Out.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
+
+                //Test
+                //XmlSerializer serializer =
+                //new XmlSerializer(typeof(Breakfast_menu));
+                //var nomeFileXML = nomeFile.Substring(0, nomeFile.Length - 3) + ".xml";
+                //var percorsoFileXMLSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileXML);
+                //TextWriter writer = new StreamWriter(percorsoFileXMLSerializzato);
+                //Breakfast_menu breakFast = new Breakfast_menu();
+
+                //breakFast.ListaElementoFood = new List<Food>
+                //{
+                //    new Food
+                //    {
+                //        Calories = 123,
+                //        Description = "descrizione",
+                //        Name = new Name{Id = true},
+                //        Price = "254"
+                //    }
+                //};
+
+                //serializer.Serialize(writer, breakFast);
+                //writer.Close();
             }
 
             Console.WriteLine($"\n{listaDocumentiValidi.Count} valid XML files were correctly loaded and converted. \nPress any button to exit.");
@@ -225,12 +218,14 @@ namespace XMLConverter
         /// <summary>
         /// Permette di serializzare l'elemento
         /// </summary>
-        private static string SerializzaParzialmenteElementoValido(ElementoValido elementoValido, ref List<ElementoValido> listaProprietaConAttributi)
+        private static string SerializzaElementoValido(XDocument documento, ElementoValido elementoValido,
+            ref List<ElementoValido> listaProprietaConAttributi)
         {
             var sbElemento = new StringBuilder();
             var primoElementoTipoAttuale = elementoValido.ListaElementiTipologiaAttuale[0];
+            var nomeClasse = Program.RendiPrimaLetteraMaiuscola(primoElementoTipoAttuale.Name.LocalName);
             sbElemento.AppendLine($"[XmlRoot(ElementName=\"{primoElementoTipoAttuale.Name.LocalName}\"{Program.CalcolaNameSpace(primoElementoTipoAttuale.Name.NamespaceName)})]");
-            sbElemento.AppendLine($"public class {Program.RendiPrimaLetteraMaiuscola(primoElementoTipoAttuale.Name.LocalName)}");
+            sbElemento.AppendLine($"public class {nomeClasse}");
             sbElemento.AppendLine("{");
 
             // Elementi figli seppur indiretti
@@ -238,13 +233,15 @@ namespace XMLConverter
             {
                 // Non può essere null, li ho già esclusi
                 var primoElementoProprietaAttuale = proprietaAttuale.ListaElementiTipologiaAttuale[0];
-                sbElemento.AppendLine($"[XmlElement(ElementName = \"{primoElementoProprietaAttuale.Name.LocalName}\"{Program.CalcolaNameSpace(primoElementoProprietaAttuale.Name.NamespaceName)})]");
 
                 // Provo a capire di che tipo di property si tratta
-                string tipoProprieta = TrovaTipoProprietaElementoProprieta(proprietaAttuale, out bool elementoProprieta);
+                string tipoProprieta = TrovaTipoProprietaElementoProprieta(documento, primoElementoProprietaAttuale.Name,
+                    proprietaAttuale.ElementoRipetutoAlmenoUnaVolta, out string nomeProprieta, out bool elementoProprieta, out bool tipoDateTime);
+
+                sbElemento.AppendLine($"[XmlElement(ElementName = \"{primoElementoProprietaAttuale.Name.LocalName}\"{Program.CalcolaNameSpace(primoElementoProprietaAttuale.Name.NamespaceName)}{AggiungiDataType(tipoDateTime)})]");
 
                 // Scrivo finalmente la proprietà
-                sbElemento.AppendLine($"public {tipoProprieta} {Program.RendiPrimaLetteraMaiuscola(primoElementoProprietaAttuale.Name.LocalName)} {{ get; set; }}");
+                sbElemento.AppendLine($"public {tipoProprieta} {nomeProprieta} {{ get; set; }}");
 
                 // Lo aggiungo alla lista di elementi da trattare alla fine se ha attributi
                 if (elementoProprieta)
@@ -255,16 +252,33 @@ namespace XMLConverter
 
             // Elementi elemento valido attuale
             // Prendo prima i nomi degli elementi diversi presenti
-            var listaMassimaNomiElementiFigli = elementoValido.ListaElementiTipologiaAttuale.Select(e => e.Name).Distinct().ToList();
+            // Rimuovo quelli che ho già trattato come proprieta
+            var listaMassimaNomiElementiFigli = elementoValido.ListaElementiTipologiaAttuale
+                .SelectMany(e => e.Elements()
+                                 .Where(ef => !elementoValido.ListaElementiProprieta
+                                              .Any(evp => evp.ListaElementiTipologiaAttuale[0].Name == ef.Name))
+                            .Select(ef => ef.Name))
+                .Distinct().ToList();
+
             foreach (var nomeElemento in listaMassimaNomiElementiFigli)
             {
                 // Controllo prima di tutto se ci sono più elementi di questo tipo all'interno dell'elemento attuale o negli altri
                 var elementoRipetutoAlmenoUnaVolta = elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Elements(nomeElemento).Count() > 1);
                 string tipoProprieta = CalcolaTipoProprietaElementoFiglio(elementoRipetutoAlmenoUnaVolta, nomeElemento.LocalName);
 
-                // Scrivo quindi il nome dell'elemento 
+                // Aggiungo Elemento per distinguerli dalle proprieta
+                // Scrivo quindi il nome dell'elemento
+                string nomeProprieta = null;
+                if (elementoRipetutoAlmenoUnaVolta)
+                {
+                    nomeProprieta = "Lista";
+                }
+
+                nomeProprieta += "Elemento" + Program.RendiPrimaLetteraMaiuscola(nomeElemento.LocalName);
+
+                // Scrivo la proprieta
                 sbElemento.AppendLine($"[XmlElement(ElementName=\"{nomeElemento.LocalName}\"{Program.CalcolaNameSpace(nomeElemento.NamespaceName)})]");
-                sbElemento.AppendLine($"public {tipoProprieta} {Program.RendiPrimaLetteraMaiuscola(nomeElemento.LocalName)} {{ get; set; }}");
+                sbElemento.AppendLine($"public {tipoProprieta} {nomeProprieta} {{ get; set; }} = new {tipoProprieta}();");
             }
 
             // Attributi elemento valido attuale
@@ -274,11 +288,20 @@ namespace XMLConverter
             {
                 // Prendo tutti gli attributi di quel tipo
                 var listaAttributoAttuale = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
-                string tipoProprieta = TrovaTipoProprietaAttributo(listaAttributoAttuale);
+                string tipoProprieta = TrovaTipoProprietaAttributo(listaAttributoAttuale, out bool tipoDateTime);
 
                 // Scrivo quindi il nome dell'attributo 
-                sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
+                sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\"{AggiungiDataType(tipoDateTime)})]");
                 sbElemento.AppendLine($"public {tipoProprieta} {Program.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName)} {{ get; set; }}");
+            }
+
+            // Scrivo prima di chiudere l'elemento il suo valore per l'innertext, se necessario
+            if (elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Nodes().Any(n => n.NodeType == System.Xml.XmlNodeType.Text && !String.IsNullOrEmpty(e.Value))))
+            {
+                //[XmlText]
+                //public string ValoreElemento { get; set; }
+                sbElemento.AppendLine("[XmlText]");
+                sbElemento.AppendLine($"public string Valore{nomeClasse} {{ get; set; }}");
             }
 
             sbElemento.AppendLine("}");
@@ -286,9 +309,28 @@ namespace XMLConverter
             return sbElemento.ToString();
         }
 
-        private static string TrovaTipoProprietaAttributo(List<XAttribute> listaAttributo)
+        /// <summary>
+        /// Aggiunge se necessario il datatype
+        /// </summary>
+        private static string AggiungiDataType(bool tipoDateTime)
         {
+            if (tipoDateTime)
+            {
+                return ", DataType = \"date\"";
+            }
+
+            return null;
+        }
+
+        private static string TrovaTipoProprietaAttributo(List<XAttribute> listaAttributo, out bool tipoDateTime)
+        {
+            tipoDateTime = false;
             string tipoProprieta = listaAttributo.All(e => bool.TryParse(e.Value, out bool valoreBool)) ? "bool" : null;
+            if (tipoProprieta == null && listaAttributo.All(e => DateTime.TryParse(e.Value, out DateTime valoredecimal)))
+            {
+                tipoProprieta = "DateTime";
+                tipoDateTime = true;
+            }
             if (tipoProprieta == null)
             {
                 tipoProprieta = listaAttributo.All(e => decimal.TryParse(e.Value, out decimal valoredecimal)) ? "decimal" : null;
@@ -313,18 +355,27 @@ namespace XMLConverter
             }
         }
 
-        private static string TrovaTipoProprietaElementoProprieta(ElementoValido proprietaAttuale, out bool elementoProprieta)
+        private static string TrovaTipoProprietaElementoProprieta(XDocument documento, XName nomeProprietaAttuale, bool elementoRipetutoAlmenoUnaVolta,
+            out string nomeProprieta, out bool elementoProprieta, out bool tipoDateTime)
         {
             string tipoProprieta = null;
             elementoProprieta = false;
+            string nomeProprietaNormalizzato = Program.RendiPrimaLetteraMaiuscola(nomeProprietaAttuale.LocalName);
+            tipoDateTime = false;
 
-            // Se non ha attributi
-            if (proprietaAttuale.ListaElementiTipologiaAttuale.All(e => e.Attributes().Count() == 0))
+            // Se non ha attributi in nessun caso
+            var listaMassimaElementoAttuale = documento.Descendants(nomeProprietaAttuale);
+            if (listaMassimaElementoAttuale.All(e => e.Attributes().Count() == 0))
             {
-                tipoProprieta = proprietaAttuale.ListaElementiTipologiaAttuale.All(e => bool.TryParse(e.Value, out bool valoreBool)) ? "bool" : null;
+                tipoProprieta = listaMassimaElementoAttuale.All(e => bool.TryParse(e.Value, out bool valoreBool)) ? "bool" : null;
+                if (tipoProprieta == null && listaMassimaElementoAttuale.All(e => DateTime.TryParse(e.Value, out DateTime valoredecimal)))
+                {
+                    tipoProprieta = "DateTime";
+                    tipoDateTime = true;
+                }
                 if (tipoProprieta == null)
                 {
-                    tipoProprieta = proprietaAttuale.ListaElementiTipologiaAttuale.All(e => decimal.TryParse(e.Value, out decimal valoredecimal)) ? "decimal" : null;
+                    tipoProprieta = listaMassimaElementoAttuale.All(e => decimal.TryParse(e.Value, out decimal valoredecimal)) ? "decimal" : null;
                 }
                 if (tipoProprieta == null)
                 {
@@ -334,13 +385,18 @@ namespace XMLConverter
             else
             {
                 // Se ne ha
-                tipoProprieta = Program.RendiPrimaLetteraMaiuscola(proprietaAttuale.ListaElementiTipologiaAttuale[0].Name.LocalName);
+                tipoProprieta = nomeProprietaNormalizzato;
                 elementoProprieta = true;
             }
 
-            if (proprietaAttuale.ElementoRipetutoAlmenoUnaVolta)
+            if (elementoRipetutoAlmenoUnaVolta)
             {
                 tipoProprieta = $"List<{tipoProprieta}>";
+                nomeProprieta = $"Lista{nomeProprietaNormalizzato}";
+            }
+            else
+            {
+                nomeProprieta = nomeProprietaNormalizzato;
             }
 
             return tipoProprieta;
@@ -382,7 +438,10 @@ namespace XMLConverter
             {
                 case null: throw new ArgumentNullException(nameof(input));
                 case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
-                default: return input.First().ToString().ToUpper() + input.Substring(1);
+                default:
+                    input = input.Replace("+", "")
+                                 .Replace("-", "");
+                    return (input.First().ToString().ToUpper() + input.Substring(1));
             }
         }
 
