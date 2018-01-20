@@ -178,13 +178,16 @@ namespace XMLConverter
                     }
                 }
 
+                // Ciclo di nuovo il documento per togliere i /n
+                sbDocumento = sbDocumento.Replace("\n", Environment.NewLine);
+
                 // Gestione del salvataggio
                 // Salvo tutto in un nuovo file  $"{Root.Name}.cs" in una cartella chiamata Classes
                 string percorsoCartellaDestinazione = Path.Combine(Environment.CurrentDirectory, "Classes");
                 if (!Directory.Exists(percorsoCartellaDestinazione))
                 {
                     Directory.CreateDirectory(percorsoCartellaDestinazione);
-                    Console.Out.WriteLine("\nClasses directory has been created.\n");
+                    Console.Out.WriteLine(Environment.NewLine + "Classes directory has been created." + Environment.NewLine);
                 }
 
                 var percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFile);
@@ -214,7 +217,8 @@ namespace XMLConverter
                 //writer.Close();
             }
 
-            Console.WriteLine($"\n{listaDocumentiValidi.Count} valid XML files were correctly loaded and converted. \nPress any button to exit.");
+            Console.WriteLine($"{Environment.NewLine}{listaDocumentiValidi.Count} valid XML files were correctly loaded and converted." +
+                $"{Environment.NewLine}Press any button to exit.");
             Console.ReadKey();
             return;
         }
@@ -388,7 +392,7 @@ namespace XMLConverter
         /// </summary>
         private static string Indenta(int counter)
         {
-            var sbOut = new StringBuilder();
+            var sbOut = new StringBuilder(counter);
             for (int i = 0; i < counter; i++)
             {
                 sbOut.Append("\t");
