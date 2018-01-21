@@ -7,6 +7,8 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using BELHXmlTool;
+using System.CodeDom.Compiler;
+using System.Reflection;
 
 namespace XMLConverter
 {
@@ -70,19 +72,20 @@ namespace XMLConverter
             // Se compare più di una volta nel primo elemento padre che si trova già presente nel dizionario, si deve fare una lista di questo in quel padre
             Dictionary<string, ElementoValido> dizionarioElementiValidi;
             Dictionary<string, ElementoValido> dizionarioElementiProprieta;
-            string nomeFile = null;
+            string nomeFileAttuale = null;
+            string nomeClasseAttuale = null;
 
             foreach (var documento in listaDocumentiValidi)
             {
                 dizionarioElementiValidi = new Dictionary<string, ElementoValido>();
                 dizionarioElementiProprieta = new Dictionary<string, ElementoValido>();
-
                 foreach (var elemento in documento.Descendants())
                 {
                     // Prende il primo elemento utile, quindi finchè il dizionario è vuoto
                     if (dizionarioElementiValidi.Count == 0)
                     {
-                        nomeFile = ConverterProgram.RendiPrimaLetteraMaiuscola(elemento.Name.LocalName) + ".cs";
+                        nomeClasseAttuale = ConverterProgram.RendiPrimaLetteraMaiuscola(elemento.Name.LocalName);
+                        nomeFileAttuale = nomeClasseAttuale + ".cs";
                     }
 
                     // Controlla che non sia nel dizionario
@@ -144,6 +147,7 @@ namespace XMLConverter
 
                 // Inizializzo le using solitamente necessarie
                 sbDocumento.AppendLine("using System;");
+                sbDocumento.AppendLine("using System.Reflection;");
                 sbDocumento.AppendLine("using System.Collections.Generic;");
                 sbDocumento.AppendLine("using System.Xml;");
                 sbDocumento.AppendLine("using System.Xml.Serialization;");
@@ -196,13 +200,15 @@ namespace XMLConverter
                     Console.Out.WriteLine(Environment.NewLine + "Classes directory has been created." + Environment.NewLine);
                 }
 
-                var percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFile);
-                File.WriteAllText(percorsoFileSerializzato, sbDocumento.ToString());
+                var percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileAttuale);
+                string sbDocumentoString = sbDocumento.ToString();
+                File.WriteAllText(percorsoFileSerializzato, sbDocumentoString);
                 Console.Out.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
 
                 // Test da scommentare o commentare a seconda che serva o meno
                 // Stringa contenente l'oggetto inizializzato
-                string test = ConverterProgram.CreaStringaOggettoInizializzato(documento);
+                // TODO -oFBE: Continua da qui
+                //string test = ConverterProgram.CreaStringaOggettoInizializzato(documento, sbDocumentoString, nomeClasseAttuale);
             }
 
             Console.WriteLine($"{Environment.NewLine}{listaDocumentiValidi.Count} valid XML files were correctly loaded and converted.");
@@ -214,17 +220,40 @@ namespace XMLConverter
         /// <summary>
         /// Permette di creare la stringa in cui si inizializza il test
         /// </summary>
-        private static string CreaStringaOggettoInizializzato(XDocument documento)
+        private static string CreaStringaOggettoInizializzato(XDocument documento, string classeSerializzataString, string nomeClasse)
         {
+            CodeDomProvider cdp = System.CodeDom.Compiler.CodeDomProvider.CreateProvider("C#");
+            CompilerParameters cp = new CompilerParameters();
+            cp.GenerateInMemory = true;
+
+            cp.ReferencedAssemblies.Add(@"System.dll");
+            cp.ReferencedAssemblies.Add(@"mscorlib.dll");
+            cp.ReferencedAssemblies.Add(@"System.Net.dll");
+            cp.ReferencedAssemblies.Add(@"System.Core.dll");
+            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.dll");
+            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
+            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
+            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
+
+            cp.IncludeDebugInformation = true;
+
+            CompilerResults compilerResults = cdp.CompileAssemblyFromSource(cp, new string[] { classeSerializzataString });
+
+            Assembly assembly = compilerResults.CompiledAssembly;
+
+            // Crea un istanza dell'oggetto
+            object oggettoAttuale = assembly.CreateInstance(nomeClasse);
+            var tipoOggettoAttuale = oggettoAttuale.GetType();
+
             // N.B. Sostituire il tipo di oggetto con 
-            XmlSerializer serializer = new XmlSerializer(typeof(OTA_ResRetrieveRS));
+            XmlSerializer serializer = new XmlSerializer(oggettoAttuale.GetType());
 
             // Carico il documento in un memoryStream che può essere deserializzato e ne resetto la posizione per poterlo leggere
             var ms = new MemoryStream();
             documento.Save(ms);
             ms.Position = 0;
-            OTA_ResRetrieveRS oggetto = (OTA_ResRetrieveRS)serializer.Deserialize(ms);
-            return ObjectInitializationSerializer.SerializeToInitializerClass(oggetto);
+            oggettoAttuale = serializer.Deserialize(ms);
+            return ObjectInitializationSerializer.SerializeToInitializerClass(oggettoAttuale);
         }
 
         /// <summary>
