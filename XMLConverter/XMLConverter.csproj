@@ -46,7 +46,8 @@
     <Compile Include="ClassesExample\Breakfast_menu.cs" />
     <Compile Include="ClassesExample\OTA_ResRetrieveRS.cs" />
     <Compile Include="ClassesExample\Spec.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="ConverterProgram.cs" />
+    <Compile Include="ObjectInitializationSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
