@@ -147,7 +147,7 @@ namespace XMLConverter
 
                 // Inizializzo le using solitamente necessarie
                 sbDocumento.AppendLine("using System;");
-                sbDocumento.AppendLine("using System.Reflection;");
+                //sbDocumento.AppendLine("using System.Reflection;");
                 sbDocumento.AppendLine("using System.Collections.Generic;");
                 sbDocumento.AppendLine("using System.Xml;");
                 sbDocumento.AppendLine("using System.Xml.Serialization;");
@@ -168,25 +168,7 @@ namespace XMLConverter
                 sbDocumento.AppendLine("}");
 
                 // A questo punto intendo tutto splittando ad ogni \n a seconda di quanti {(+) e }(-) trovo
-                var listaStringhe = sbDocumento.ToString().Split('\n');
-
-                sbDocumento = new StringBuilder();
-                int counter = 0;
-                foreach (var stringa in listaStringhe)
-                {
-                    if (stringa.StartsWith("}"))
-                    {
-                        counter--;
-                    }
-
-                    sbDocumento.Append(ConverterProgram.Indenta(counter))
-                        .Append(stringa);
-
-                    if (stringa.StartsWith("{"))
-                    {
-                        counter++;
-                    }
-                }
+                sbDocumento = ConverterProgram.IndentaListaStringhe(sbDocumento.ToString().Split('\n'));
 
                 // Ciclo di nuovo il documento per togliere i /n
                 sbDocumento = sbDocumento.Replace("\n", Environment.NewLine);
@@ -207,8 +189,11 @@ namespace XMLConverter
 
                 // Test da scommentare o commentare a seconda che serva o meno
                 // Stringa contenente l'oggetto inizializzato
-                // TODO -oFBE: Continua da qui
-                //string test = ConverterProgram.CreaStringaOggettoInizializzato(documento, sbDocumentoString, nomeClasseAttuale);
+                string test = ConverterProgram.CreaStringaOggettoInizializzato(documento, sbDocumentoString, nomeClasseAttuale);
+
+                test = ConverterProgram.IndentaListaStringhe(test.Split('\n')).Replace("\n", Environment.NewLine).ToString();
+
+                Console.Out.WriteLine(test);
             }
 
             Console.WriteLine($"{Environment.NewLine}{listaDocumentiValidi.Count} valid XML files were correctly loaded and converted.");
@@ -218,41 +203,69 @@ namespace XMLConverter
         }
 
         /// <summary>
+        /// Permette di indentare la lista di stringhe passata nel modo corretto
+        /// </summary>
+        private static StringBuilder IndentaListaStringhe(IEnumerable<string> listaStringheDaIndentare)
+        {
+            var asd = new StringBuilder();
+            int counter = 0;
+            foreach (var stringa in listaStringheDaIndentare)
+            {
+                if (stringa.StartsWith("}"))
+                {
+                    counter--;
+                }
+
+                asd.Append(ConverterProgram.Indenta(counter))
+                    .Append(stringa);
+
+                if (stringa.StartsWith("{"))
+                {
+                    counter++;
+                }
+            }
+
+            return asd;
+        }
+
+        /// <summary>
         /// Permette di creare la stringa in cui si inizializza il test
         /// </summary>
         private static string CreaStringaOggettoInizializzato(XDocument documento, string classeSerializzataString, string nomeClasse)
         {
-            CodeDomProvider cdp = System.CodeDom.Compiler.CodeDomProvider.CreateProvider("C#");
-            CompilerParameters cp = new CompilerParameters();
-            cp.GenerateInMemory = true;
+            //CodeDomProvider cdp = System.CodeDom.Compiler.CodeDomProvider.CreateProvider("C#");
+            //CompilerParameters cp = new CompilerParameters();
+            //cp.GenerateInMemory = true;
 
-            cp.ReferencedAssemblies.Add(@"System.dll");
-            cp.ReferencedAssemblies.Add(@"mscorlib.dll");
-            cp.ReferencedAssemblies.Add(@"System.Net.dll");
-            cp.ReferencedAssemblies.Add(@"System.Core.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
+            //cp.ReferencedAssemblies.Add(@"System.dll");
+            //cp.ReferencedAssemblies.Add(@"mscorlib.dll");
+            //cp.ReferencedAssemblies.Add(@"System.Net.dll");
+            //cp.ReferencedAssemblies.Add(@"System.Core.dll");
+            //cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.dll");
+            //cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
+            //cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
+            //cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
 
-            cp.IncludeDebugInformation = true;
+            //cp.IncludeDebugInformation = true;
 
-            CompilerResults compilerResults = cdp.CompileAssemblyFromSource(cp, new string[] { classeSerializzataString });
+            //CompilerResults compilerResults = cdp.CompileAssemblyFromSource(cp, new string[] { classeSerializzataString });
 
-            Assembly assembly = compilerResults.CompiledAssembly;
+            //Assembly assembly = compilerResults.CompiledAssembly;
 
             // Crea un istanza dell'oggetto
-            object oggettoAttuale = assembly.CreateInstance(nomeClasse);
-            var tipoOggettoAttuale = oggettoAttuale.GetType();
+            //object oggettoAttuale = assembly.CreateInstance(nomeClasse);
+            //var tipoOggettoAttuale = oggettoAttuale.GetType();
+            var oggettoAttuale = new OTA_ResRetrieveRS();
 
             // N.B. Sostituire il tipo di oggetto con 
-            XmlSerializer serializer = new XmlSerializer(oggettoAttuale.GetType());
+            XmlSerializer serializer = new XmlSerializer(typeof(OTA_ResRetrieveRS));
 
             // Carico il documento in un memoryStream che può essere deserializzato e ne resetto la posizione per poterlo leggere
             var ms = new MemoryStream();
             documento.Save(ms);
             ms.Position = 0;
-            oggettoAttuale = serializer.Deserialize(ms);
+            oggettoAttuale = (OTA_ResRetrieveRS)serializer.Deserialize(ms);
+
             return ObjectInitializationSerializer.SerializeToInitializerClass(oggettoAttuale);
         }
 

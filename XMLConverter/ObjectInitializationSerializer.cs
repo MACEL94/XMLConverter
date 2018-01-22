@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace XMLConverter
             }
             if (o is decimal)
             {
-                return $"{o}m";
+                return $"{((decimal)o).ToString("00.00", CultureInfo.InvariantCulture)}m";
             }
             if (o is DateTime)
             {
