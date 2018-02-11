@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.CodeDom.Compiler;
 using System.Reflection;
+using Microsoft.CodeDom.Providers.DotNetCompilerPlatform;
 
 namespace XMLConverter
 {
@@ -245,11 +246,12 @@ namespace XMLConverter
             cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
             cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
             cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
-
             cp.IncludeDebugInformation = true;
 
+            // Prova a compilare il file creato
             CompilerResults compilerResults = cdp.CompileAssemblyFromSource(cp, classeSerializzataString);
 
+            // Prende l'assembly
             Assembly assembly = compilerResults.CompiledAssembly;
 
             // Crea un istanza dell'oggetto, chiaramente aggiungo il NameSpace che so già essere sempre lo stesso
@@ -257,7 +259,7 @@ namespace XMLConverter
             var tipoOggettoAttuale = oggettoAttuale.GetType();
 
             // Inizializza il serializer con il tipo dell'oggetto caricato
-            XmlSerializer serializer = new XmlSerializer(oggettoAttuale.GetType());
+            XmlSerializer serializer = new XmlSerializer(tipoOggettoAttuale);
 
             // Carico il documento in un memoryStream che può essere deserializzato e ne resetto la posizione per poterlo leggere
             var ms = new MemoryStream();
@@ -309,7 +311,7 @@ namespace XMLConverter
                     sbElemento.AppendLine("{");
 
                     // Esempio:
-                    //[XmlIgnore]
+                    // [XmlIgnore]
                     // public DateTime SomeDate { get; set; }
 
                     // [XmlElement("SomeDate")]
@@ -322,13 +324,13 @@ namespace XMLConverter
                     if (proprietaAttuale.ElementoRipetutoAlmenoUnaVolta)
                     {
                         // La stringa relativa renderizzata nel formato corretto
-                        sbElemento.AppendLine($"\tget {{ return this.{nomeProprieta}.Select(v => v.ToString(\"{formatoDateTime}\")).ToList(); }}");
+                        sbElemento.AppendLine($"\tget {{ return this.{nomeProprieta}.Where(v => v.HasValue).Select(v => v.Value.ToString(\"{formatoDateTime}\")).ToList(); }}");
                         sbElemento.AppendLine($"\tset {{ this.{nomeProprieta} = value.Select(v => DateTime.Parse(v)).ToList();}}");
                     }
                     else
                     {
                         // La stringa relativa renderizzata nel formato corretto
-                        sbElemento.AppendLine($"\tget {{ return this.{nomeProprieta}.ToString(\"{formatoDateTime}\"); }}");
+                        sbElemento.AppendLine($"\tget {{ return this.{nomeProprieta}.Value.ToString(\"{formatoDateTime}\"); }}");
                         sbElemento.AppendLine($"\tset {{ this.{nomeProprieta} = DateTime.Parse(value); }}");
                     }
 
@@ -343,9 +345,15 @@ namespace XMLConverter
                     sbElemento.AppendLine($"public {tipoProprieta} {nomeProprieta} {{ get; set; }}");
                 }
 
+                string condizioneAggiuntivaSerializzazione = null;
+                if (proprietaAttuale.ElementoRipetutoAlmenoUnaVolta)
+                {
+                    condizioneAggiuntivaSerializzazione = $" && this.{ nomeProprieta }.Count > 0";
+                }
+
                 // ATTENZIONE!!! Commentare o commentare questa riga a piacimento!
                 // Fa in modo che solo ciò che è valorizzato venga serializzato
-                sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ return {nomeProprieta} != null; }}");
+                sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ return this.{nomeProprieta} != null{condizioneAggiuntivaSerializzazione}; }}");
             }
 
             // Elementi elemento valido attuale
@@ -367,31 +375,29 @@ namespace XMLConverter
                 // Aggiungo Elemento per distinguerli dalle proprieta
                 // Scrivo quindi il nome dell'elemento
                 string nomeProprieta = null;
+                string inizializzazioneProprieta = null;
                 if (elementoRipetutoAlmenoUnaVolta)
                 {
                     nomeProprieta = "Lista";
+                    inizializzazioneProprieta = $"= new {tipoProprieta}();";
                 }
 
                 nomeProprieta += "Elemento" + ConverterProgram.RendiPrimaLetteraMaiuscola(nomeElemento.LocalName);
 
                 // Scrivo la proprieta
                 sbElemento.AppendLine($"[XmlElement(ElementName=\"{nomeElemento.LocalName}\"{ConverterProgram.CalcolaNameSpace(nomeElemento.NamespaceName)})]");
-                sbElemento.AppendLine($"public {tipoProprieta} {nomeProprieta} {{ get; set; }} = new {tipoProprieta}();");
+                sbElemento.AppendLine($"public {tipoProprieta} {nomeProprieta} {{ get; set; }} {inizializzazioneProprieta}");
 
                 // Decide come scrivere cosa renderizzare e cosa no. non è mai null perchè inizializzo sempre le liste, ma può avere count = 0
-                string stringaReturn;
+                string condizioneAggiuntivaSerializzazione = null;
                 if (elementoRipetutoAlmenoUnaVolta)
                 {
-                    stringaReturn = $"return { nomeProprieta }.Count != 0 ;";
-                }
-                else
-                {
-                    stringaReturn = $"return { nomeProprieta } != null;";
+                    condizioneAggiuntivaSerializzazione = $" && { nomeProprieta }.Count > 0";
                 }
 
                 // ATTENZIONE!!! Commentare o commentare questa riga a piacimento!
                 // Fa in modo che solo ciò che è valorizzato venga serializzato
-                sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ {stringaReturn} }}");
+                sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ return { nomeProprieta } != null{condizioneAggiuntivaSerializzazione}; }}");
             }
 
             // Attributi elemento valido attuale
@@ -408,7 +414,11 @@ namespace XMLConverter
                 if (tipoDateTime)
                 {
                     // Gestione particolare causata dal fatto che serializzando si perde il formato del datetime originale che invece deve essere preservato
-                    string formato = ConverterProgram.TrovaFormatoDateTime(listaAttributoAttuale.Select(a => a.Value).ToList());
+                    string formato = ConverterProgram.TrovaFormatoDateTime(listaAttributoAttuale
+                        .Where(a => !String.IsNullOrEmpty(a.Value))
+                            .Select(a => a.Value)
+                            .ToList()
+                    );
 
                     if (formato == null)
                     {
@@ -417,13 +427,13 @@ namespace XMLConverter
 
                     // La proprieta datetime che andrò a modificare nei test
                     sbElemento.AppendLine("[XmlIgnore]");
-                    sbElemento.AppendLine($"public DateTime {nomeProprietaAttributo} {{ get; set; }}");
+                    sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
 
                     // La stringa relativa renderizzata nel formato corretto
                     sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
                     sbElemento.AppendLine($"public string {nomeProprietaAttributo}String");
                     sbElemento.AppendLine("{");
-                    sbElemento.AppendLine($"\tget {{ return this.{nomeProprietaAttributo}.ToString(\"{formato}\"); }}");
+                    sbElemento.AppendLine($"\tget {{ return this.{nomeProprietaAttributo}.Value.ToString(\"{formato}\"); }}");
                     sbElemento.AppendLine($"\tset {{ this.{nomeProprietaAttributo} = DateTime.Parse(value); }}");
                     sbElemento.AppendLine("}");
 
@@ -442,6 +452,17 @@ namespace XMLConverter
                 {
                     sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
                     sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
+                    string condizionePerSerializzare;
+                    if (tipoProprieta == "string")
+                    {
+                        condizionePerSerializzare = " != null";
+                    }
+                    else
+                    {
+                        condizionePerSerializzare = ".HasValue";
+                    }
+
+                    sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprietaAttributo}() {{ return this.{nomeProprietaAttributo}{condizionePerSerializzare}; }}");
                 }
             }
 
@@ -516,17 +537,37 @@ namespace XMLConverter
         /// </summary>
         private static string TrovaTipoProprietaAttributo(List<XAttribute> listaAttributo, out bool tipoDateTime)
         {
+            string tipoProprieta = null;
             tipoDateTime = false;
-            string tipoProprieta = listaAttributo.All(a => bool.TryParse(a.Value, out bool valoreBool)) ? "bool" : null;
-            if (tipoProprieta == null && listaAttributo.All(a => DateTime.TryParse(a.Value, out DateTime valoredecimal)))
+
+            // Se almeno uno ha un valore
+            if (listaAttributo.Any(e => !String.IsNullOrEmpty(e.Value)))
             {
-                tipoProprieta = "DateTime";
-                tipoDateTime = true;
+                // Se è arrivato qui allora riprova gli elementi precedenti, in fila, ma con dei nullable
+                if (tipoProprieta == null)
+                {
+                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || bool.TryParse(e.Value, out bool valoreBool)) ? "bool?" : null;
+                }
+                if (tipoProprieta == null)
+                {
+                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || short.TryParse(e.Value, out short valore)) ? "short?" : null;
+                }
+                if (tipoProprieta == null)
+                {
+                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || int.TryParse(e.Value, out int valore)) ? "int?" : null;
+                }
+                if (tipoProprieta == null)
+                {
+                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || decimal.TryParse(e.Value, out decimal valore)) ? "decimal?" : null;
+                }
+                if (tipoProprieta == null && (listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || DateTime.TryParse(e.Value, out DateTime valore))))
+                {
+                    tipoProprieta = "DateTime?";
+                    tipoDateTime = true;
+                }
             }
-            if (tipoProprieta == null)
-            {
-                tipoProprieta = listaAttributo.All(a => decimal.TryParse(a.Value, out decimal valoredecimal)) ? "decimal" : null;
-            }
+
+            // Se è arrivato qui a null 
             if (tipoProprieta == null)
             {
                 tipoProprieta = "string";
@@ -562,23 +603,46 @@ namespace XMLConverter
             var listaMassimaElementoAttuale = documento.Descendants(nomeProprietaAttuale);
             if (listaMassimaElementoAttuale.All(e => e.Attributes().Count() == 0))
             {
-                tipoProprieta = listaMassimaElementoAttuale.All(e => bool.TryParse(e.Value, out bool valoreBool)) ? "bool" : null;
-                if (tipoProprieta == null && listaMassimaElementoAttuale.All(e => DateTime.TryParse(e.Value, out DateTime valore)))
+                // Se almeno uno ha un valore
+                if (listaMassimaElementoAttuale.Any(e => !String.IsNullOrEmpty(e.Value)))
                 {
-                    tipoProprieta = "DateTime";
-                    tipoDateTime = true;
-                    formatoDateTime = ConverterProgram.TrovaFormatoDateTime(listaMassimaElementoAttuale.Select(v => v.Value).ToList());
-
-                    //Se non ci sono riuscito lancio eccezione
-                    if (formatoDateTime == null)
+                    // Se è arrivato qui allora riprova gli elementi precedenti, in fila, ma con dei nullable
+                    if (tipoProprieta == null)
                     {
-                        throw new Exception($"Error: it wasn't possible to find a reliable datetime format pattern for the attribute {nomeProprietaAttuale.LocalName}");
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || bool.TryParse(e.Value, out bool valoreBool)) ? "bool?" : null;
+                    }
+                    if (tipoProprieta == null)
+                    {
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || short.TryParse(e.Value, out short valore)) ? "short?" : null;
+                    }
+                    if (tipoProprieta == null)
+                    {
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || int.TryParse(e.Value, out int valore)) ? "int?" : null;
+                    }
+                    if (tipoProprieta == null)
+                    {
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || decimal.TryParse(e.Value, out decimal valore)) ? "decimal?" : null;
+                    }
+                    if (tipoProprieta == null && (listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || DateTime.TryParse(e.Value, out DateTime valore))))
+                    {
+                        tipoProprieta = "DateTime?";
+                        tipoDateTime = true;
+                        formatoDateTime = ConverterProgram.TrovaFormatoDateTime(
+                            listaMassimaElementoAttuale
+                                .Where(v => !String.IsNullOrEmpty(v.Value))
+                                    .Select(v => v.Value)
+                                    .ToList()
+                        );
+
+                        //Se non ci sono riuscito lancio eccezione
+                        if (formatoDateTime == null)
+                        {
+                            throw new Exception($"Error: it wasn't possible to find a reliable datetime format pattern for the attribute {nomeProprietaAttuale.LocalName}");
+                        }
                     }
                 }
-                if (tipoProprieta == null)
-                {
-                    tipoProprieta = listaMassimaElementoAttuale.All(e => decimal.TryParse(e.Value, out decimal valore)) ? "decimal" : null;
-                }
+
+                // Se è ancora null è una stringa
                 if (tipoProprieta == null)
                 {
                     tipoProprieta = "string";
@@ -586,7 +650,7 @@ namespace XMLConverter
             }
             else
             {
-                // Se ne ha
+                // Se invece ha figli
                 tipoProprieta = nomeProprietaNormalizzato;
             }
 

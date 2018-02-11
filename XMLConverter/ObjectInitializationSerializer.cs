@@ -80,6 +80,9 @@ namespace XMLConverter
             return type.Name;
         }
 
+        /// <summary>
+        ///  Inizializza la classe dell'oggetto passato con i suoi valori
+        /// </summary>
         public static string SerializeToInitializerClass(object o)
         {
             return $"var newObject = {CreateObject(o)};";
