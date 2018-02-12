@@ -31,7 +31,7 @@ namespace XMLConverter
                     listaFilePaths = Directory.GetFiles(path).ToList();
                     if (listaFilePaths.Count == 0)
                     {
-                        Console.Out.WriteLine("Resources directory has been found but no valid xml was loaded. \nPlease insert an XML file in it. \nPress any button to continue or q to quit.");
+                        Console.WriteLine("Resources directory has been found but no valid xml was loaded. \nPlease insert an XML file in it. \nPress any button to continue or q to quit.");
                         if (Console.ReadKey().KeyChar.Equals('q'))
                         {
                             return;
@@ -41,7 +41,7 @@ namespace XMLConverter
                 else
                 {
                     Directory.CreateDirectory(path);
-                    Console.Out.WriteLine("Resources directory has been created. \nPlease insert an XML file in it. \nPress any button to continue or q to quit.");
+                    Console.WriteLine("Resources directory has been created. \nPlease insert an XML file in it. \nPress any button to continue or q to quit.");
                     if (Console.ReadKey().KeyChar.Equals('q'))
                     {
                         return;
@@ -62,7 +62,7 @@ namespace XMLConverter
                 }
                 catch
                 {
-                    Console.Out.WriteLine($"File: {filePath}\nis not a valid XML and could not be parsed.");
+                    Console.WriteLine($"File: {filePath}\nis not a valid XML and could not be parsed.");
                 }
             }
 
@@ -178,13 +178,13 @@ namespace XMLConverter
                 if (!Directory.Exists(percorsoCartellaDestinazione))
                 {
                     Directory.CreateDirectory(percorsoCartellaDestinazione);
-                    Console.Out.WriteLine(Environment.NewLine + "Classes directory has been created." + Environment.NewLine);
+                    Console.WriteLine(Environment.NewLine + "Classes directory has been created." + Environment.NewLine);
                 }
 
                 var percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileAttuale);
                 string sbDocumentoString = sbDocumento.ToString();
                 File.WriteAllText(percorsoFileSerializzato, sbDocumentoString);
-                Console.Out.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
+                Console.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
 
                 // Test da scommentare o commentare a seconda che serva o meno
                 // Stringa contenente l'oggetto inizializzato
@@ -194,7 +194,7 @@ namespace XMLConverter
                 nomeFileAttuale = nomeFileAttuale.Substring(0, nomeFileAttuale.Length - 3) + ".txt";
                 percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileAttuale);
                 File.WriteAllText(percorsoFileSerializzato, inizializzazioneOggetto);
-                Console.Out.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
+                Console.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
             }
 
             Console.WriteLine($"{Environment.NewLine}{listaDocumentiValidi.Count} valid XML files were correctly loaded and converted.");
@@ -307,7 +307,7 @@ namespace XMLConverter
 
                     // Proprietà 
                     var tipoProprietaString = proprietaAttuale.ElementoRipetutoAlmenoUnaVolta ? "List<string>" : "string";
-                    sbElemento.AppendLine($"public {tipoProprietaString} {nomeProprieta}String");
+                    sbElemento.AppendLine($"public {tipoProprietaString} {nomeProprieta}Serializzabile");
                     sbElemento.AppendLine("{");
 
                     // Esempio:
@@ -351,9 +351,17 @@ namespace XMLConverter
                     condizioneAggiuntivaSerializzazione = $" && this.{ nomeProprieta }.Count > 0";
                 }
 
-                // ATTENZIONE!!! Commentare o commentare questa riga a piacimento!
                 // Fa in modo che solo ciò che è valorizzato venga serializzato
-                sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ return this.{nomeProprieta} != null{condizioneAggiuntivaSerializzazione}; }}");
+                // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
+                if (tipoDateTime)
+                {
+                    sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}Serializzabile() {{ return this.{nomeProprieta} != null{condizioneAggiuntivaSerializzazione}; }}");
+                }
+                else
+                {
+                    sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ return this.{nomeProprieta} != null{condizioneAggiuntivaSerializzazione}; }}");
+                }
             }
 
             // Elementi elemento valido attuale
@@ -395,7 +403,8 @@ namespace XMLConverter
                     condizioneAggiuntivaSerializzazione = $" && { nomeProprieta }.Count > 0";
                 }
 
-                // ATTENZIONE!!! Commentare o commentare questa riga a piacimento!
+                // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
                 // Fa in modo che solo ciò che è valorizzato venga serializzato
                 sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ return { nomeProprieta } != null{condizioneAggiuntivaSerializzazione}; }}");
             }
@@ -431,11 +440,17 @@ namespace XMLConverter
 
                     // La stringa relativa renderizzata nel formato corretto
                     sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
-                    sbElemento.AppendLine($"public string {nomeProprietaAttributo}String");
+                    sbElemento.AppendLine($"public string {nomeProprietaAttributo}Serializzabile");
                     sbElemento.AppendLine("{");
                     sbElemento.AppendLine($"\tget {{ return this.{nomeProprietaAttributo}.Value.ToString(\"{formato}\"); }}");
                     sbElemento.AppendLine($"\tset {{ this.{nomeProprietaAttributo} = DateTime.Parse(value); }}");
                     sbElemento.AppendLine("}");
+
+                    // Specified che stabilisce quando serializzare e quando no
+                    // [XmlIgnore]
+                    // public bool AgeSpecified { get { return Age >= 0; } }
+                    sbElemento.AppendLine("[XmlIgnore]");
+                    sbElemento.AppendLine($"public bool {nomeProprietaAttributo}SerializzabileSpecified {{ get {{ return this.{nomeProprietaAttributo}.HasValue; }} }}");
 
                     // Esempio:
                     //[XmlIgnore]
@@ -450,19 +465,30 @@ namespace XMLConverter
                 }
                 else
                 {
-                    sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
-                    sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
+
+                    // Proprietà fantoccio da serializzare, che è sempre valorizzata quando serializzata
                     string condizionePerSerializzare;
                     if (tipoProprieta == "string")
                     {
+                        sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
+                        sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
                         condizionePerSerializzare = " != null";
                     }
                     else
                     {
+                        // Proprieta effettiva non sempre serializzabile
+                        sbElemento.AppendLine("[XmlIgnore]");
+                        sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
+                        sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
+                        sbElemento.AppendLine($"public {tipoProprieta.Substring(0, tipoProprieta.Length - 1)} {nomeProprietaAttributo}Serializzabile {{ get => this.{nomeProprietaAttributo}.Value; set => this.{nomeProprietaAttributo} = value; }}");
                         condizionePerSerializzare = ".HasValue";
                     }
 
-                    sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprietaAttributo}() {{ return this.{nomeProprietaAttributo}{condizionePerSerializzare}; }}");
+                    // Specified che stabilisce quando serializzare e quando no
+                    // [XmlIgnore]
+                    // public bool AgeSpecified { get { return Age >= 0; } }
+                    sbElemento.AppendLine("[XmlIgnore]");
+                    sbElemento.AppendLine($"public bool {nomeProprietaAttributo}SerializzabileSpecified {{ get {{ return this.{nomeProprietaAttributo}{condizionePerSerializzare}; }} }}");
                 }
             }
 

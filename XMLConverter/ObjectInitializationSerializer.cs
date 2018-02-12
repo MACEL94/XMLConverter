@@ -16,9 +16,9 @@ namespace XMLConverter
             {
                 return $"{o.ToString().ToLower()}";
             }
-            if (o is string)
+            if (o is short)
             {
-                return $"\"{o}\"";
+                return $"{o.ToString()}";
             }
             if (o is int)
             {
@@ -32,13 +32,19 @@ namespace XMLConverter
             {
                 return $"DateTime.Parse(\"{o}\")";
             }
-            if (o is Enum)
-            {
-                return $"{o.GetType().FullName}.{o}";
-            }
             if (o is IEnumerable)
             {
-                return $"new {GetClassName(o)} \r\n{{\r\n{GetItems((IEnumerable)o)}}}";
+                string stringaDaRitornare = null;
+                var inizializzazioneElementi = GetItems((IEnumerable)o);
+                if (inizializzazioneElementi.Replace(",", "").Replace("\n", "").Replace("\r", "").Length > 0)
+                {
+                    stringaDaRitornare = $"new {GetClassName(o)} \r\n{{\r\n{inizializzazioneElementi}}}";
+                }
+                return stringaDaRitornare;
+            }
+            if (o is string)
+            {
+                return $"\"{o}\"";
             }
 
             return CreateObject(o).ToString();
@@ -51,20 +57,44 @@ namespace XMLConverter
 
         private static StringBuilder CreateObject(object o)
         {
-            var builder = new StringBuilder();
-            builder.Append($"new {GetClassName(o)} \r\n{{\r\n");
-
-            foreach (var property in o.GetType().GetProperties())
+            var objectBuilder = new StringBuilder();
+            var propertiesBuilder = new StringBuilder();
+            var dizionarioProprieta = o.GetType().GetProperties().ToDictionary(p => p.Name);
+            foreach (var property in dizionarioProprieta.Values)
             {
+                // Se finisce con specified va saltato, basta valorizzare il resto
+                if (property.Name.EndsWith("Specified") || property.Name.EndsWith("Serializzabile"))
+                {
+                    continue;
+                }
+
+                //// Si tratta di un fantoccio, va serializzato solo se il padre è presente ed ha un valore, altrimenti lancia eccezione
+                //if (property.Name.EndsWith("Serializzabile"))
+                //{
+                //    if (!dizionarioProprieta.TryGetValue(property.Name.Replace("Serializzabile", ""), out var propertyEffettiva) || propertyEffettiva.GetValue(o) == null)
+                //    {
+                //        continue;
+                //    }
+                //}
                 var value = property.GetValue(o);
                 if (value != null)
                 {
-                    builder.Append($"{property.Name} = {GetCSharpString(value)},\r\n");
+                    var inizializzazioneProprieta = GetCSharpString(value);
+                    if (inizializzazioneProprieta != null && inizializzazioneProprieta.Length > 0)
+                    {
+                        propertiesBuilder.Append($"{property.Name} = {inizializzazioneProprieta},\r\n");
+                    }
                 }
             }
 
-            builder.Append("}");
-            return builder;
+            if (propertiesBuilder.Length > 0)
+            {
+                objectBuilder.Append($"new {GetClassName(o)} \r\n{{\r\n")
+                    .Append(propertiesBuilder.ToString())
+                    .Append("}");
+            }
+
+            return objectBuilder;
         }
 
         private static string GetClassName(object o)
