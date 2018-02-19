@@ -284,7 +284,7 @@ namespace XMLConverter
             sbElemento.AppendLine($"public class {nomeClasse}");
             sbElemento.AppendLine("{");
 
-            // Elementi figli seppur indiretti
+            // Elementi figli
             foreach (var proprietaAttuale in elementoValido.ListaElementiProprieta)
             {
                 // Non può essere null, li ho già esclusi
@@ -418,6 +418,7 @@ namespace XMLConverter
                 var listaAttributoAttuale = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
                 string tipoProprieta = TrovaTipoProprietaAttributo(listaAttributoAttuale, out bool tipoDateTime);
                 string nomeProprietaAttributo = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName);
+                bool serializzabileNecessario = false;
 
                 // Scrivo quindi il nome dell'attributo
                 if (tipoDateTime)
@@ -465,7 +466,6 @@ namespace XMLConverter
                 }
                 else
                 {
-
                     // Proprietà fantoccio da serializzare, che è sempre valorizzata quando serializzata
                     string condizionePerSerializzare;
                     if (tipoProprieta == "string")
@@ -476,6 +476,7 @@ namespace XMLConverter
                     }
                     else
                     {
+                        serializzabileNecessario = true;
                         // Proprieta effettiva non sempre serializzabile
                         sbElemento.AppendLine("[XmlIgnore]");
                         sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
@@ -488,7 +489,8 @@ namespace XMLConverter
                     // [XmlIgnore]
                     // public bool AgeSpecified { get { return Age >= 0; } }
                     sbElemento.AppendLine("[XmlIgnore]");
-                    sbElemento.AppendLine($"public bool {nomeProprietaAttributo}SerializzabileSpecified {{ get {{ return this.{nomeProprietaAttributo}{condizionePerSerializzare}; }} }}");
+                    string serializzabile = serializzabileNecessario ? "Serializzabile" : null;
+                    sbElemento.AppendLine($"public bool {nomeProprietaAttributo}{serializzabile}Specified {{ get {{ return this.{nomeProprietaAttributo}{condizionePerSerializzare}; }} }}");
                 }
             }
 

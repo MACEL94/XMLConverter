@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using BELHXmlTool;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Utilities;
 
 namespace TesterProject
 {
@@ -14,8 +16,20 @@ namespace TesterProject
         [TestMethod]
         public void ProvaCreaOggetto()
         {
-            // Inizializza il serializer con il tipo dell'oggetto caricato
-            var newObject = new OTA_ResRetrieveRS
+            OTA_ResRetrieveRS newObject = this.CreaNuovoOggetto();
+            var documento = this.ToXml(newObject);
+            var documentoPartenza = XDocument.Load("C:\\Users\\user\\Source\\Repos\\XMLConverter\\TesterProject\\ClassiSerializzabili\\xmlGenerato.xml");
+            var documentoSerializzato = XDocument.Parse(documento);
+            Tuple<XObject, XObject> result = documentoPartenza.DeepEquals(documentoSerializzato, XObjectComparisonOptions.Semantic);
+            Assert.IsNull(result, $"{result}");
+        }
+
+        /// <summary>
+        /// Permette di creare un nuovo oggetto con il file txt appena creato
+        /// </summary>
+        private OTA_ResRetrieveRS CreaNuovoOggetto()
+        {
+            return new OTA_ResRetrieveRS
             {
                 ElementoReservationsList = new ReservationsList
                 {
@@ -561,8 +575,6 @@ namespace TesterProject
                 TimeStamp = DateTime.Parse("04/12/2013 15:18:36"),
                 Version = 07.00m,
             };
-            var documento = this.ToXml(newObject);
-            var i = 0;
         }
 
         /// <summary>
@@ -579,7 +591,7 @@ namespace TesterProject
                 MemoryStream memStream = new MemoryStream();
                 stWriter = new StreamWriter(memStream);
                 xmlSerializer.Serialize(stWriter, objToXml);
-                buffer = Encoding.ASCII.GetString(memStream.GetBuffer());
+                buffer = Encoding.UTF8.GetString(memStream.GetBuffer()).Replace("\x00", "");
             }
             catch (Exception Ex)
             {

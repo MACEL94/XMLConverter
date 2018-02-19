@@ -1,13 +1,4 @@
-using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Linq;
-using System.Xml.Linq;
-
-namespace BELHXmlTool
-{
+using System;using System.Collections.Generic;using System.Xml;using System.Xml.Serialization;namespace BELHXmlTool{
     [XmlRoot(ElementName = "OTA_ResRetrieveRS", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class OTA_ResRetrieveRS
     {
@@ -22,15 +13,15 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "xmlns")]
         public string Xmlns { get; set; }
         [XmlIgnore]
-        public bool XmlnsSerializzabileSpecified { get { return this.Xmlns != null; } }
+        public bool XmlnsSpecified { get { return this.Xmlns != null; } }
         [XmlAttribute(AttributeName = "PrimaryLangID")]
         public string PrimaryLangID { get; set; }
         [XmlIgnore]
-        public bool PrimaryLangIDSerializzabileSpecified { get { return this.PrimaryLangID != null; } }
+        public bool PrimaryLangIDSpecified { get { return this.PrimaryLangID != null; } }
         [XmlAttribute(AttributeName = "Target")]
         public string Target { get; set; }
         [XmlIgnore]
-        public bool TargetSerializzabileSpecified { get { return this.Target != null; } }
+        public bool TargetSpecified { get { return this.Target != null; } }
         [XmlIgnore]
         public DateTime? TimeStamp { get; set; }
         [XmlAttribute(AttributeName = "TimeStamp")]
@@ -82,7 +73,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "ResStatus")]
         public string ResStatus { get; set; }
         [XmlIgnore]
-        public bool ResStatusSerializzabileSpecified { get { return this.ResStatus != null; } }
+        public bool ResStatusSpecified { get { return this.ResStatus != null; } }
     }
     [XmlRoot(ElementName = "RoomStays", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class RoomStays
@@ -222,7 +213,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "CurrencyCode")]
         public string CurrencyCode { get; set; }
         [XmlIgnore]
-        public bool CurrencyCodeSerializzabileSpecified { get { return this.CurrencyCode != null; } }
+        public bool CurrencyCodeSpecified { get { return this.CurrencyCode != null; } }
     }
     [XmlRoot(ElementName = "CancelPolicies", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class CancelPolicies
@@ -238,7 +229,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "PolicyCode")]
         public string PolicyCode { get; set; }
         [XmlIgnore]
-        public bool PolicyCodeSerializzabileSpecified { get { return this.PolicyCode != null; } }
+        public bool PolicyCodeSpecified { get { return this.PolicyCode != null; } }
     }
     [XmlRoot(ElementName = "Discount", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Discount
@@ -262,7 +253,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "CurrencyCode")]
         public string CurrencyCode { get; set; }
         [XmlIgnore]
-        public bool CurrencyCodeSerializzabileSpecified { get { return this.CurrencyCode != null; } }
+        public bool CurrencyCodeSpecified { get { return this.CurrencyCode != null; } }
     }
     [XmlRoot(ElementName = "DiscountReason", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class DiscountReason
@@ -290,7 +281,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "CurrencyCode")]
         public string CurrencyCode { get; set; }
         [XmlIgnore]
-        public bool CurrencyCodeSerializzabileSpecified { get { return this.CurrencyCode != null; } }
+        public bool CurrencyCodeSpecified { get { return this.CurrencyCode != null; } }
     }
     [XmlRoot(ElementName = "GuestCounts", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class GuestCounts
@@ -684,7 +675,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "ID")]
         public string ID { get; set; }
         [XmlIgnore]
-        public bool IDSerializzabileSpecified { get { return this.ID != null; } }
+        public bool IDSpecified { get { return this.ID != null; } }
     }
     [XmlRoot(ElementName = "CompanyInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class CompanyInfo
@@ -768,7 +759,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "name")]
         public string Name { get; set; }
         [XmlIgnore]
-        public bool NameSerializzabileSpecified { get { return this.Name != null; } }
+        public bool NameSpecified { get { return this.Name != null; } }
         [XmlText]
         public string ValoreForm { get; set; }
     }
@@ -794,11 +785,11 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "Code")]
         public string Code { get; set; }
         [XmlIgnore]
-        public bool CodeSerializzabileSpecified { get { return this.Code != null; } }
+        public bool CodeSpecified { get { return this.Code != null; } }
         [XmlAttribute(AttributeName = "Type")]
         public string Type { get; set; }
         [XmlIgnore]
-        public bool TypeSerializzabileSpecified { get { return this.Type != null; } }
+        public bool TypeSpecified { get { return this.Type != null; } }
     }
     [XmlRoot(ElementName = "ACR", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ACR
@@ -826,7 +817,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "Type")]
         public string Type { get; set; }
         [XmlIgnore]
-        public bool TypeSerializzabileSpecified { get { return this.Type != null; } }
+        public bool TypeSpecified { get { return this.Type != null; } }
         [XmlText]
         public string ValoreTag { get; set; }
     }
@@ -848,7 +839,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "Code")]
         public string Code { get; set; }
         [XmlIgnore]
-        public bool CodeSerializzabileSpecified { get { return this.Code != null; } }
+        public bool CodeSpecified { get { return this.Code != null; } }
         [XmlIgnore]
         public short? ID { get; set; }
         [XmlAttribute(AttributeName = "ID")]
@@ -886,7 +877,7 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "CardCode")]
         public string CardCode { get; set; }
         [XmlIgnore]
-        public bool CardCodeSerializzabileSpecified { get { return this.CardCode != null; } }
+        public bool CardCodeSpecified { get { return this.CardCode != null; } }
         [XmlIgnore]
         public short? ExpireDate { get; set; }
         [XmlAttribute(AttributeName = "ExpireDate")]
@@ -908,6 +899,5 @@ namespace BELHXmlTool
         [XmlAttribute(AttributeName = "Code")]
         public string Code { get; set; }
         [XmlIgnore]
-        public bool CodeSerializzabileSpecified { get { return this.Code != null; } }
-    }
-}
+        public bool CodeSpecified { get { return this.Code != null; } }
+    }}
