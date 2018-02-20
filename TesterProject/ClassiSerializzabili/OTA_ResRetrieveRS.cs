@@ -1,12 +1,12 @@
-using System;using System.Collections.Generic;using System.Xml;using System.Xml.Serialization;namespace BELHXmlTool{
+using System;using System.Reflection;using System.Globalization;using System.Collections.Generic;using System.Xml;using System.Xml.Serialization;using System.Linq;using System.Xml.Linq;namespace BELHXmlTool{
     [XmlRoot(ElementName = "OTA_ResRetrieveRS", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class OTA_ResRetrieveRS
     {
-        [XmlElement(ElementName = "Success", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Success", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 1)]
         public string Success { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeSuccess() { return this.Success != null; }
-        [XmlElement(ElementName = "ReservationsList", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ReservationsList", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 2)]
         public ReservationsList ElementoReservationsList { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoReservationsList() { return ElementoReservationsList != null; }
@@ -28,7 +28,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
         public string TimeStampSerializzabile
         {
             get { return this.TimeStamp.Value.ToString("s"); }
-            set { this.TimeStamp = DateTime.Parse(value); }
+            set { this.TimeStamp = DateTime.ParseExact(value, "s", CultureInfo.InvariantCulture); }
         }
         [XmlIgnore]
         public bool TimeStampSerializzabileSpecified { get { return this.TimeStamp.HasValue; } }
@@ -42,7 +42,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ReservationsList", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ReservationsList
     {
-        [XmlElement(ElementName = "HotelReservation", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "HotelReservation", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 3)]
         public List<HotelReservation> ListaElementoHotelReservation { get; set; } = new List<HotelReservation>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoHotelReservation() { return ListaElementoHotelReservation != null && ListaElementoHotelReservation.Count > 0; }
@@ -50,23 +50,23 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "HotelReservation", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class HotelReservation
     {
-        [XmlElement(ElementName = "RoomStays", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "RoomStays", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 4)]
         public RoomStays ElementoRoomStays { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoRoomStays() { return ElementoRoomStays != null; }
-        [XmlElement(ElementName = "Services", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Services", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 5)]
         public Services ElementoServices { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoServices() { return ElementoServices != null; }
-        [XmlElement(ElementName = "ResGuests", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ResGuests", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 6)]
         public ResGuests ElementoResGuests { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoResGuests() { return ElementoResGuests != null; }
-        [XmlElement(ElementName = "ResGlobalInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ResGlobalInfo", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 7)]
         public ResGlobalInfo ElementoResGlobalInfo { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoResGlobalInfo() { return ElementoResGlobalInfo != null; }
-        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 8)]
         public TPA_Extensions ElementoTPA_Extensions { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTPA_Extensions() { return ElementoTPA_Extensions != null; }
@@ -78,7 +78,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "RoomStays", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class RoomStays
     {
-        [XmlElement(ElementName = "RoomStay", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "RoomStay", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 9)]
         public List<RoomStay> ListaElementoRoomStay { get; set; } = new List<RoomStay>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoRoomStay() { return ListaElementoRoomStay != null && ListaElementoRoomStay.Count > 0; }
@@ -86,27 +86,27 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "RoomStay", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class RoomStay
     {
-        [XmlElement(ElementName = "ResGuestRPHs", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ResGuestRPHs", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 10)]
         public short? ResGuestRPHs { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeResGuestRPHs() { return this.ResGuestRPHs != null; }
-        [XmlElement(ElementName = "RoomTypes", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "RoomTypes", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 11)]
         public RoomTypes ElementoRoomTypes { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoRoomTypes() { return ElementoRoomTypes != null; }
-        [XmlElement(ElementName = "RoomRates", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "RoomRates", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 12)]
         public RoomRates ElementoRoomRates { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoRoomRates() { return ElementoRoomRates != null; }
-        [XmlElement(ElementName = "GuestCounts", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "GuestCounts", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 13)]
         public GuestCounts ElementoGuestCounts { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoGuestCounts() { return ElementoGuestCounts != null; }
-        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 14)]
         public Total ElementoTotal { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTotal() { return ElementoTotal != null; }
-        [XmlElement(ElementName = "ServiceRPHs", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ServiceRPHs", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 15)]
         public ServiceRPHs ElementoServiceRPHs { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoServiceRPHs() { return ElementoServiceRPHs != null; }
@@ -114,7 +114,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "RoomTypes", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class RoomTypes
     {
-        [XmlElement(ElementName = "RoomType", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "RoomType", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 16)]
         public RoomType ElementoRoomType { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoRoomType() { return ElementoRoomType != null; }
@@ -122,17 +122,15 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "RoomType", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class RoomType
     {
-        [XmlIgnore]
-        public short? RoomTypeCode { get; set; }
         [XmlAttribute(AttributeName = "RoomTypeCode")]
-        public short RoomTypeCodeSerializzabile { get => this.RoomTypeCode.Value; set => this.RoomTypeCode = value; }
+        public string RoomTypeCode { get; set; }
         [XmlIgnore]
-        public bool RoomTypeCodeSerializzabileSpecified { get { return this.RoomTypeCode.HasValue; } }
+        public bool RoomTypeCodeSpecified { get { return this.RoomTypeCode != null; } }
     }
     [XmlRoot(ElementName = "RoomRates", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class RoomRates
     {
-        [XmlElement(ElementName = "RoomRate", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "RoomRate", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 17)]
         public List<RoomRate> ListaElementoRoomRate { get; set; } = new List<RoomRate>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoRoomRate() { return ListaElementoRoomRate != null && ListaElementoRoomRate.Count > 0; }
@@ -140,23 +138,21 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "RoomRate", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class RoomRate
     {
-        [XmlElement(ElementName = "Rates", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Rates", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 18)]
         public Rates ElementoRates { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoRates() { return ElementoRates != null; }
-        [XmlIgnore]
-        public short? RatePlanCode { get; set; }
         [XmlAttribute(AttributeName = "RatePlanCode")]
-        public short RatePlanCodeSerializzabile { get => this.RatePlanCode.Value; set => this.RatePlanCode = value; }
+        public string RatePlanCode { get; set; }
         [XmlIgnore]
-        public bool RatePlanCodeSerializzabileSpecified { get { return this.RatePlanCode.HasValue; } }
+        public bool RatePlanCodeSpecified { get { return this.RatePlanCode != null; } }
         [XmlIgnore]
         public DateTime? EffectiveDate { get; set; }
         [XmlAttribute(AttributeName = "EffectiveDate")]
         public string EffectiveDateSerializzabile
         {
             get { return this.EffectiveDate.Value.ToString("yyyy-MM-dd"); }
-            set { this.EffectiveDate = DateTime.Parse(value); }
+            set { this.EffectiveDate = DateTime.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture); }
         }
         [XmlIgnore]
         public bool EffectiveDateSerializzabileSpecified { get { return this.EffectiveDate.HasValue; } }
@@ -170,7 +166,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Rates", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Rates
     {
-        [XmlElement(ElementName = "Rate", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Rate", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 19)]
         public Rate ElementoRate { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoRate() { return ElementoRate != null; }
@@ -178,19 +174,19 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Rate", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Rate
     {
-        [XmlElement(ElementName = "Base", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Base", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 20)]
         public Base ElementoBase { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoBase() { return ElementoBase != null; }
-        [XmlElement(ElementName = "CancelPolicies", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CancelPolicies", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 21)]
         public CancelPolicies ElementoCancelPolicies { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoCancelPolicies() { return ElementoCancelPolicies != null; }
-        [XmlElement(ElementName = "Discount", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Discount", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 22)]
         public Discount ElementoDiscount { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoDiscount() { return ElementoDiscount != null; }
-        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 23)]
         public Total ElementoTotal { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTotal() { return ElementoTotal != null; }
@@ -218,7 +214,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "CancelPolicies", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class CancelPolicies
     {
-        [XmlElement(ElementName = "CancelPenalty", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CancelPenalty", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 24)]
         public CancelPenalty ElementoCancelPenalty { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoCancelPenalty() { return ElementoCancelPenalty != null; }
@@ -234,7 +230,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Discount", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Discount
     {
-        [XmlElement(ElementName = "DiscountReason", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "DiscountReason", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 25)]
         public DiscountReason ElementoDiscountReason { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoDiscountReason() { return ElementoDiscountReason != null; }
@@ -258,7 +254,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "DiscountReason", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class DiscountReason
     {
-        [XmlElement(ElementName = "Text", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Text", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 26)]
         public string Text { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeText() { return this.Text != null; }
@@ -286,7 +282,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "GuestCounts", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class GuestCounts
     {
-        [XmlElement(ElementName = "GuestCount", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "GuestCount", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 27)]
         public List<GuestCount> ListaElementoGuestCount { get; set; } = new List<GuestCount>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoGuestCount() { return ListaElementoGuestCount != null && ListaElementoGuestCount.Count > 0; }
@@ -310,7 +306,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ServiceRPHs", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ServiceRPHs
     {
-        [XmlElement(ElementName = "ServiceRPH", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ServiceRPH", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 28)]
         public ServiceRPH ElementoServiceRPH { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoServiceRPH() { return ElementoServiceRPH != null; }
@@ -334,7 +330,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Services", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Services
     {
-        [XmlElement(ElementName = "Service", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Service", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 29)]
         public List<Service> ListaElementoService { get; set; } = new List<Service>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoService() { return ListaElementoService != null && ListaElementoService.Count > 0; }
@@ -342,11 +338,11 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Service", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Service
     {
-        [XmlElement(ElementName = "Price", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Price", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 30)]
         public List<Price> ListaElementoPrice { get; set; } = new List<Price>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoPrice() { return ListaElementoPrice != null && ListaElementoPrice.Count > 0; }
-        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 31)]
         public TPA_Extensions ElementoTPA_Extensions { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTPA_Extensions() { return ElementoTPA_Extensions != null; }
@@ -372,19 +368,19 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Price", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Price
     {
-        [XmlElement(ElementName = "Base", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Base", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 32)]
         public Base ElementoBase { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoBase() { return ElementoBase != null; }
-        [XmlElement(ElementName = "CancelPolicies", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CancelPolicies", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 33)]
         public CancelPolicies ElementoCancelPolicies { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoCancelPolicies() { return ElementoCancelPolicies != null; }
-        [XmlElement(ElementName = "Discount", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Discount", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 34)]
         public Discount ElementoDiscount { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoDiscount() { return ElementoDiscount != null; }
-        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 35)]
         public Total ElementoTotal { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTotal() { return ElementoTotal != null; }
@@ -394,7 +390,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
         public string EffectiveDateSerializzabile
         {
             get { return this.EffectiveDate.Value.ToString("yyyy-MM-dd"); }
-            set { this.EffectiveDate = DateTime.Parse(value); }
+            set { this.EffectiveDate = DateTime.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture); }
         }
         [XmlIgnore]
         public bool EffectiveDateSerializzabileSpecified { get { return this.EffectiveDate.HasValue; } }
@@ -408,61 +404,61 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class TPA_Extensions
     {
-        [XmlElement(ElementName = "ServiceDescription", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ServiceDescription", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 36)]
         public string ServiceDescription { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeServiceDescription() { return this.ServiceDescription != null; }
-        [XmlElement(ElementName = "IATACode", Namespace = "http://www.opentravel.org/OTA/2003/05")]
-        public int? IATACode { get; set; }
+        [XmlElement(ElementName = "IATACode", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 37)]
+        public string IATACode { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeIATACode() { return this.IATACode != null; }
-        [XmlElement(ElementName = "TaxCode", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "TaxCode", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 38)]
         public string TaxCode { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeTaxCode() { return this.TaxCode != null; }
-        [XmlElement(ElementName = "VATCode", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "VATCode", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 39)]
         public int? VATCode { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeVATCode() { return this.VATCode != null; }
-        [XmlElement(ElementName = "Newsletter", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Newsletter", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 40)]
         public bool? Newsletter { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeNewsletter() { return this.Newsletter != null; }
-        [XmlElement(ElementName = "ReservationNotes", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ReservationNotes", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 41)]
         public string ReservationNotes { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeReservationNotes() { return this.ReservationNotes != null; }
         [XmlIgnore]
         public DateTime? OptionExpiringDate { get; set; }
-        [XmlElement(ElementName = "OptionExpiringDate", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "OptionExpiringDate", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 42)]
         public string OptionExpiringDateSerializzabile
         {
             get { return this.OptionExpiringDate.Value.ToString("yyyy-MM-dd HH:mm:ss"); }
-            set { this.OptionExpiringDate = DateTime.Parse(value); }
+            set { this.OptionExpiringDate = DateTime.ParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture); }
         }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeOptionExpiringDateSerializzabile() { return this.OptionExpiringDate != null; }
-        [XmlElement(ElementName = "Form", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Form", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 43)]
         public List<Form> ListaElementoForm { get; set; } = new List<Form>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoForm() { return ListaElementoForm != null && ListaElementoForm.Count > 0; }
-        [XmlElement(ElementName = "SearchParams", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "SearchParams", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 44)]
         public SearchParams ElementoSearchParams { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoSearchParams() { return ElementoSearchParams != null; }
-        [XmlElement(ElementName = "Layout", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Layout", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 45)]
         public Layout ElementoLayout { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoLayout() { return ElementoLayout != null; }
-        [XmlElement(ElementName = "ACR", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ACR", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 46)]
         public ACR ElementoACR { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoACR() { return ElementoACR != null; }
-        [XmlElement(ElementName = "Category", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Category", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 47)]
         public Category ElementoCategory { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoCategory() { return ElementoCategory != null; }
-        [XmlElement(ElementName = "Ecommerce", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Ecommerce", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 48)]
         public Ecommerce ElementoEcommerce { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoEcommerce() { return ElementoEcommerce != null; }
@@ -470,7 +466,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ResGuests", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ResGuests
     {
-        [XmlElement(ElementName = "ResGuest", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ResGuest", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 49)]
         public ResGuest ElementoResGuest { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoResGuest() { return ElementoResGuest != null; }
@@ -478,7 +474,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ResGuest", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ResGuest
     {
-        [XmlElement(ElementName = "Profiles", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Profiles", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 50)]
         public Profiles ElementoProfiles { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoProfiles() { return ElementoProfiles != null; }
@@ -492,7 +488,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Profiles", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Profiles
     {
-        [XmlElement(ElementName = "ProfileInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ProfileInfo", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 51)]
         public List<ProfileInfo> ListaElementoProfileInfo { get; set; } = new List<ProfileInfo>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoProfileInfo() { return ListaElementoProfileInfo != null && ListaElementoProfileInfo.Count > 0; }
@@ -500,7 +496,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ProfileInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ProfileInfo
     {
-        [XmlElement(ElementName = "Profile", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Profile", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 52)]
         public Profile ElementoProfile { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoProfile() { return ElementoProfile != null; }
@@ -508,19 +504,19 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Profile", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Profile
     {
-        [XmlElement(ElementName = "Customer", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Customer", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 53)]
         public Customer ElementoCustomer { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoCustomer() { return ElementoCustomer != null; }
-        [XmlElement(ElementName = "UserID", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "UserID", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 54)]
         public UserID ElementoUserID { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoUserID() { return ElementoUserID != null; }
-        [XmlElement(ElementName = "CompanyInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CompanyInfo", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 55)]
         public CompanyInfo ElementoCompanyInfo { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoCompanyInfo() { return ElementoCompanyInfo != null; }
-        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 56)]
         public TPA_Extensions ElementoTPA_Extensions { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTPA_Extensions() { return ElementoTPA_Extensions != null; }
@@ -534,23 +530,23 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Customer", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Customer
     {
-        [XmlElement(ElementName = "Email", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Email", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 57)]
         public string Email { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeEmail() { return this.Email != null; }
-        [XmlElement(ElementName = "PersonName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "PersonName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 58)]
         public PersonName ElementoPersonName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoPersonName() { return ElementoPersonName != null; }
-        [XmlElement(ElementName = "Address", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Address", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 59)]
         public Address ElementoAddress { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoAddress() { return ElementoAddress != null; }
-        [XmlElement(ElementName = "Telephone", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Telephone", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 60)]
         public Telephone ElementoTelephone { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTelephone() { return ElementoTelephone != null; }
-        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "TPA_Extensions", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 61)]
         public TPA_Extensions ElementoTPA_Extensions { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTPA_Extensions() { return ElementoTPA_Extensions != null; }
@@ -558,11 +554,11 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "PersonName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class PersonName
     {
-        [XmlElement(ElementName = "GivenName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "GivenName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 62)]
         public string GivenName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeGivenName() { return this.GivenName != null; }
-        [XmlElement(ElementName = "Surname", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Surname", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 63)]
         public string Surname { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeSurname() { return this.Surname != null; }
@@ -570,23 +566,23 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ResGlobalInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ResGlobalInfo
     {
-        [XmlElement(ElementName = "TimeSpan", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "TimeSpan", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 64)]
         public TimeSpan ElementoTimeSpan { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTimeSpan() { return ElementoTimeSpan != null; }
-        [XmlElement(ElementName = "Guarantee", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Guarantee", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 65)]
         public Guarantee ElementoGuarantee { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoGuarantee() { return ElementoGuarantee != null; }
-        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Total", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 66)]
         public Total ElementoTotal { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTotal() { return ElementoTotal != null; }
-        [XmlElement(ElementName = "HotelReservationIDs", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "HotelReservationIDs", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 67)]
         public HotelReservationIDs ElementoHotelReservationIDs { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoHotelReservationIDs() { return ElementoHotelReservationIDs != null; }
-        [XmlElement(ElementName = "Profiles", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Profiles", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 68)]
         public Profiles ElementoProfiles { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoProfiles() { return ElementoProfiles != null; }
@@ -600,7 +596,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
         public string StartSerializzabile
         {
             get { return this.Start.Value.ToString("yyyy-MM-dd"); }
-            set { this.Start = DateTime.Parse(value); }
+            set { this.Start = DateTime.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture); }
         }
         [XmlIgnore]
         public bool StartSerializzabileSpecified { get { return this.Start.HasValue; } }
@@ -610,7 +606,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
         public string EndSerializzabile
         {
             get { return this.End.Value.ToString("yyyy-MM-dd"); }
-            set { this.End = DateTime.Parse(value); }
+            set { this.End = DateTime.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture); }
         }
         [XmlIgnore]
         public bool EndSerializzabileSpecified { get { return this.End.HasValue; } }
@@ -618,11 +614,11 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Guarantee", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Guarantee
     {
-        [XmlElement(ElementName = "GuaranteeDescription", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "GuaranteeDescription", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 69)]
         public GuaranteeDescription ElementoGuaranteeDescription { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoGuaranteeDescription() { return ElementoGuaranteeDescription != null; }
-        [XmlElement(ElementName = "GuaranteesAccepted", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "GuaranteesAccepted", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 70)]
         public GuaranteesAccepted ElementoGuaranteesAccepted { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoGuaranteesAccepted() { return ElementoGuaranteesAccepted != null; }
@@ -630,7 +626,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "GuaranteeDescription", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class GuaranteeDescription
     {
-        [XmlElement(ElementName = "Text", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Text", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 71)]
         public string Text { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeText() { return this.Text != null; }
@@ -638,7 +634,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "HotelReservationIDs", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class HotelReservationIDs
     {
-        [XmlElement(ElementName = "HotelReservationID", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "HotelReservationID", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 72)]
         public HotelReservationID ElementoHotelReservationID { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoHotelReservationID() { return ElementoHotelReservationID != null; }
@@ -652,7 +648,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
         public string ResID_DateSerializzabile
         {
             get { return this.ResID_Date.Value.ToString("s"); }
-            set { this.ResID_Date = DateTime.Parse(value); }
+            set { this.ResID_Date = DateTime.ParseExact(value, "s", CultureInfo.InvariantCulture); }
         }
         [XmlIgnore]
         public bool ResID_DateSerializzabileSpecified { get { return this.ResID_Date.HasValue; } }
@@ -680,27 +676,27 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "CompanyInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class CompanyInfo
     {
-        [XmlElement(ElementName = "Email", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Email", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 73)]
         public string Email { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeEmail() { return this.Email != null; }
-        [XmlElement(ElementName = "CompanyName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CompanyName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 74)]
         public string CompanyName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeCompanyName() { return this.CompanyName != null; }
-        [XmlElement(ElementName = "URL", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "URL", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 75)]
         public string URL { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeURL() { return this.URL != null; }
-        [XmlElement(ElementName = "ContactPerson", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "ContactPerson", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 76)]
         public ContactPerson ElementoContactPerson { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoContactPerson() { return ElementoContactPerson != null; }
-        [XmlElement(ElementName = "Telephone", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Telephone", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 77)]
         public List<Telephone> ListaElementoTelephone { get; set; } = new List<Telephone>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoTelephone() { return ListaElementoTelephone != null && ListaElementoTelephone.Count > 0; }
-        [XmlElement(ElementName = "AddressInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "AddressInfo", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 78)]
         public AddressInfo ElementoAddressInfo { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoAddressInfo() { return ElementoAddressInfo != null; }
@@ -708,7 +704,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ContactPerson", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ContactPerson
     {
-        [XmlElement(ElementName = "PersonName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "PersonName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 79)]
         public PersonName ElementoPersonName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoPersonName() { return ElementoPersonName != null; }
@@ -722,33 +718,31 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
         public short PhoneTechTypeSerializzabile { get => this.PhoneTechType.Value; set => this.PhoneTechType = value; }
         [XmlIgnore]
         public bool PhoneTechTypeSerializzabileSpecified { get { return this.PhoneTechType.HasValue; } }
-        [XmlIgnore]
-        public int? PhoneNumber { get; set; }
         [XmlAttribute(AttributeName = "PhoneNumber")]
-        public int PhoneNumberSerializzabile { get => this.PhoneNumber.Value; set => this.PhoneNumber = value; }
+        public string PhoneNumber { get; set; }
         [XmlIgnore]
-        public bool PhoneNumberSerializzabileSpecified { get { return this.PhoneNumber.HasValue; } }
+        public bool PhoneNumberSpecified { get { return this.PhoneNumber != null; } }
     }
     [XmlRoot(ElementName = "AddressInfo", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class AddressInfo
     {
-        [XmlElement(ElementName = "AddressLine", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "AddressLine", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 80)]
         public string AddressLine { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeAddressLine() { return this.AddressLine != null; }
-        [XmlElement(ElementName = "CityName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CityName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 81)]
         public string CityName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeCityName() { return this.CityName != null; }
-        [XmlElement(ElementName = "PostalCode", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "PostalCode", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 82)]
         public int? PostalCode { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializePostalCode() { return this.PostalCode != null; }
-        [XmlElement(ElementName = "StateProv", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "StateProv", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 83)]
         public string StateProv { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeStateProv() { return this.StateProv != null; }
-        [XmlElement(ElementName = "CountryName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CountryName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 84)]
         public string CountryName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeCountryName() { return this.CountryName != null; }
@@ -766,7 +760,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Address", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Address
     {
-        [XmlElement(ElementName = "CountryName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CountryName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 85)]
         public string CountryName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeCountryName() { return this.CountryName != null; }
@@ -774,7 +768,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "SearchParams", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class SearchParams
     {
-        [XmlElement(ElementName = "param1", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "param1", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 86)]
         public string Param1 { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeParam1() { return this.Param1 != null; }
@@ -794,11 +788,11 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "ACR", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class ACR
     {
-        [XmlElement(ElementName = "Tags", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Tags", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 87)]
         public Tags ElementoTags { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoTags() { return ElementoTags != null; }
-        [XmlElement(ElementName = "Operator", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Operator", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 88)]
         public Operator ElementoOperator { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoOperator() { return ElementoOperator != null; }
@@ -806,7 +800,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Tags", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Tags
     {
-        [XmlElement(ElementName = "Tag", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Tag", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 89)]
         public List<Tag> ListaElementoTag { get; set; } = new List<Tag>();
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeListaElementoTag() { return ListaElementoTag != null && ListaElementoTag.Count > 0; }
@@ -824,11 +818,11 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "Operator", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class Operator
     {
-        [XmlElement(ElementName = "Surname", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "Surname", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 90)]
         public string Surname { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeSurname() { return this.Surname != null; }
-        [XmlElement(ElementName = "FirstName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "FirstName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 91)]
         public string FirstName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeFirstName() { return this.FirstName != null; }
@@ -850,7 +844,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "GuaranteesAccepted", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class GuaranteesAccepted
     {
-        [XmlElement(ElementName = "GuaranteeAccepted", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "GuaranteeAccepted", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 92)]
         public GuaranteeAccepted ElementoGuaranteeAccepted { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoGuaranteeAccepted() { return ElementoGuaranteeAccepted != null; }
@@ -858,7 +852,7 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "GuaranteeAccepted", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class GuaranteeAccepted
     {
-        [XmlElement(ElementName = "PaymentCard", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "PaymentCard", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 93)]
         public PaymentCard ElementoPaymentCard { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoPaymentCard() { return ElementoPaymentCard != null; }
@@ -866,11 +860,11 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
     [XmlRoot(ElementName = "PaymentCard", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class PaymentCard
     {
-        [XmlElement(ElementName = "CardHolderName", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CardHolderName", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 94)]
         public string CardHolderName { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeCardHolderName() { return this.CardHolderName != null; }
-        [XmlElement(ElementName = "CardNumber", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "CardNumber", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 95)]
         public CardNumber ElementoCardNumber { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializeElementoCardNumber() { return ElementoCardNumber != null; }
@@ -879,16 +873,20 @@ using System;using System.Collections.Generic;using System.Xml;using System.X
         [XmlIgnore]
         public bool CardCodeSpecified { get { return this.CardCode != null; } }
         [XmlIgnore]
-        public short? ExpireDate { get; set; }
+        public DateTime? ExpireDate { get; set; }
         [XmlAttribute(AttributeName = "ExpireDate")]
-        public short ExpireDateSerializzabile { get => this.ExpireDate.Value; set => this.ExpireDate = value; }
+        public string ExpireDateSerializzabile
+        {
+            get { return this.ExpireDate.Value.ToString("MMyy"); }
+            set { this.ExpireDate = DateTime.ParseExact(value, "MMyy", CultureInfo.InvariantCulture); }
+        }
         [XmlIgnore]
         public bool ExpireDateSerializzabileSpecified { get { return this.ExpireDate.HasValue; } }
     }
     [XmlRoot(ElementName = "CardNumber", Namespace = "http://www.opentravel.org/OTA/2003/05")]
     public class CardNumber
     {
-        [XmlElement(ElementName = "PlainText", Namespace = "http://www.opentravel.org/OTA/2003/05")]
+        [XmlElement(ElementName = "PlainText", Namespace = "http://www.opentravel.org/OTA/2003/05", Order = 96)]
         public decimal? PlainText { get; set; }
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool ShouldSerializePlainText() { return this.PlainText != null; }

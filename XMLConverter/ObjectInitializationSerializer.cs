@@ -32,6 +32,10 @@ namespace XMLConverter
             {
                 return $"DateTime.Parse(\"{o}\")";
             }
+            if (o is string)
+            {
+                return $"\"{o}\"";
+            }
             if (o is IEnumerable)
             {
                 string stringaDaRitornare = null;
@@ -42,10 +46,7 @@ namespace XMLConverter
                 }
                 return stringaDaRitornare;
             }
-            if (o is string)
-            {
-                return $"\"{o}\"";
-            }
+
 
             return CreateObject(o).ToString();
         }
