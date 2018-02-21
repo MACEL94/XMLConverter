@@ -360,9 +360,9 @@ namespace XMLConverter
                     condizioneAggiuntivaSerializzazione = $" && this.{ nomeProprieta }.Count > 0";
                 }
 
-                // Fa in modo che solo ciò che è valorizzato venga serializzato
                 // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
                 sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
+                // Fa in modo che solo ciò che è valorizzato venga serializzato
                 if (tipoDateTime)
                 {
                     sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}Serializzabile() {{ return this.{nomeProprieta} != null{condizioneAggiuntivaSerializzazione}; }}");
@@ -463,6 +463,8 @@ namespace XMLConverter
                     sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
 
                     // La stringa relativa renderizzata nel formato corretto
+                    // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                    sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
                     sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
                     sbElemento.AppendLine($"public string {nomeProprietaAttributo}Serializzabile");
                     sbElemento.AppendLine("{");
@@ -470,6 +472,8 @@ namespace XMLConverter
                     sbElemento.AppendLine($"\tset {{ this.{nomeProprietaAttributo} = DateTime.ParseExact(value,\"{formato}\",CultureInfo.InvariantCulture); }}");
                     sbElemento.AppendLine("}");
 
+                    // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                    sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
                     // Specified che stabilisce quando serializzare e quando no
                     // [XmlIgnore]
                     // public bool AgeSpecified { get { return Age >= 0; } }
@@ -503,11 +507,15 @@ namespace XMLConverter
                         // Proprieta effettiva non sempre serializzabile
                         sbElemento.AppendLine("[XmlIgnore]");
                         sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
+                        // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                        sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
                         sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
                         sbElemento.AppendLine($"public {tipoProprieta.Substring(0, tipoProprieta.Length - 1)} {nomeProprietaAttributo}Serializzabile {{ get => this.{nomeProprietaAttributo}.Value; set => this.{nomeProprietaAttributo} = value; }}");
                         condizionePerSerializzare = ".HasValue";
                     }
 
+                    // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                    sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
                     // Specified che stabilisce quando serializzare e quando no
                     // [XmlIgnore]
                     // public bool AgeSpecified { get { return Age >= 0; } }
