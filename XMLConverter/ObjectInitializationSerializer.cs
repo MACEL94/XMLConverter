@@ -95,7 +95,7 @@ namespace XMLConverter
             {
                 objectBuilder.Append($"return new {this.RicavaNomeClasse(o)} \n{{\n")
                              .Append(propertiesBuilder.ToString())
-                             .AppendLine("}");
+                             .AppendLine("};");
             }
 
             return objectBuilder;

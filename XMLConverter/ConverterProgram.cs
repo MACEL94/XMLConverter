@@ -33,7 +33,7 @@ namespace XMLConverter
                 Console.WriteLine("Specify the complete path of the xml that you want to convert and initialize:");
                 pathXmlFile = Console.ReadLine();
                 // Mi accerto che esista il path specificato e che sia un xml valido
-                if (String.IsNullOrWhiteSpace(pathXmlFile) || !pathXmlFile.EndsWith(".xml") || !File.Exists(pathXmlFile))
+                if (!String.IsNullOrWhiteSpace(pathXmlFile) || pathXmlFile.EndsWith(".xml") || File.Exists(pathXmlFile))
                 {
                     try
                     {
@@ -43,11 +43,13 @@ namespace XMLConverter
                     {
                     }
                 }
-                if (documentoCaricato != null)
+
+                // Se è null per una qualche ragione il percorso o il file contenuto nel percorso non erano validi
+                if (documentoCaricato == null)
                 {
                     Console.WriteLine(pathXmlFile + " Is not a valid xml file path.");
                 }
-            } while (documentoCaricato != null);
+            } while (documentoCaricato == null);
 
             // N.B.
             // Per ciascun elemento controlla:
@@ -141,7 +143,7 @@ namespace XMLConverter
             // Chiedo all'utilizzatore se vuole che venga creata la dll.
             // Se è così gli chiedo di specificare il path dove vuole che venga creata
             dllPath = null;
-            Console.WriteLine("Specify the complete path where you need to create the dll or just press Enter to skip: ");
+            Console.WriteLine("Specify the complete path of the new dll if you want to create it or just press Enter to skip: ");
             dllPath = Console.ReadLine();
 
             // Se serve salvo la DLL
@@ -193,7 +195,7 @@ namespace XMLConverter
             string nomeNuovoTest = null;
             do
             {
-                Console.WriteLine("Specify the name of the new test Method");
+                Console.WriteLine("Specify the name of the new test Method: ");
                 nomeNuovoTest = Console.ReadLine();
             } while (!String.IsNullOrWhiteSpace(nomeNuovoTest));
 
@@ -201,18 +203,89 @@ namespace XMLConverter
             nomeNuovoTest = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeNuovoTest);
 
             // Stringa contenente il nuovo metodo
-            string inizializzazioneOggetto =
-                ConverterProgram.CreaStringaOggettoInizializzato(oggettoSerializzato, classeSerializzataString,
+            string nuovoTest =
+                ConverterProgram.CreaMetodoTestInizializzazione(oggettoSerializzato, classeSerializzataString,
                     nomeClasseAttuale, nomeNuovoTest);
 
-            // Salvo l'oggetto in un nuovo file di testo, sempre nella stessa cartella, cambiando il nome del file
-            percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileAttuale);
-            File.WriteAllText(percorsoFileSerializzato, inizializzazioneOggetto);
-            Console.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
+            //Chiedo all'utente dove devo salvare il nuovo test
+            string percorsoFileNuovoTest = null;
+            do
+            {
+                Console.WriteLine("Specify the full path of the file where you want to insert the new test: ");
+                percorsoFileNuovoTest = Console.ReadLine();
+                if (!File.Exists(percorsoFileNuovoTest))
+                {
+                    percorsoFileNuovoTest = null;
+                }
+            } while (!String.IsNullOrWhiteSpace(percorsoFileNuovoTest));
+
+            // Carico il file in cui salvare il nuovo metodo
+            var fileString = File.ReadAllText(percorsoFileNuovoTest);
+
+            // Cerco se esiste il metodo, se c'è lo sostituisco altrimenti lo inserisco
+            if (fileString.Contains($"public void {nomeNuovoTest}()"))
+            {
+                // So che è presente, quindi per prima cosa mi salvo la posizione in cui va inserito
+                int indiceInizioMetodo = fileString.IndexOf($"public void {nomeNuovoTest}()");
+
+                // Trovo la fine del metodo
+                int indiceFineMetodo = 0;
+                int indiceContatoreParentesi = 0;
+                fileString.Substring(indiceInizioMetodo)
+                          .ToList()
+                          .SkipWhile((c, contatore) => ConverterProgram.VerificaContinuaRicerca(c, contatore, indiceContatoreParentesi, indiceFineMetodo));
+
+                // Sommo l'indice dell'inzio dato che la fine del metodo non tiene ancora conto dell'offset dal quale è partito
+                indiceFineMetodo += indiceInizioMetodo;
+
+                // Cancello poi test precedente e contenuto
+                fileString = fileString.Remove(indiceInizioMetodo, indiceFineMetodo);
+
+                // Infine inserisco il nuovo test
+                fileString = fileString.Insert(indiceInizioMetodo, nuovoTest);
+            }
+            else
+            {
+                // Inserisco direttamente il nuovo test subito prima della fine del file
+                fileString = fileString.Insert(fileString.LastIndexOf('}'), nuovoTest);
+            }
+
+            // Scrivo infine il nuovo file
+            File.WriteAllText(percorsoFileNuovoTest, fileString);
+            Console.WriteLine($"{nomeNuovoTest} Method has been correctly created.");
 
             Console.WriteLine("Press any button to exit.");
             Console.ReadKey();
-            return;
+        }
+
+        /// <summary>
+        /// Permette di trovare la posizione della fine del metodo
+        /// </summary>
+        private static bool VerificaContinuaRicerca(char c, int contatore, int indiceContatoreParentesi, int indiceFineMetodo)
+        {
+            switch (c)
+            {
+                case '{':
+                    indiceContatoreParentesi++;
+                    break;
+                case '}':
+                    indiceContatoreParentesi--;
+                    break;
+                default:
+                    // Di default continua e basta
+                    return true;
+                    break;
+            }
+
+            if(indiceContatoreParentesi == 0)
+            {
+                indiceFineMetodo = contatore;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -285,7 +358,7 @@ namespace XMLConverter
         /// <summary>
         /// Permette di creare la stringa in cui si inizializza il test
         /// </summary>
-        private static string CreaStringaOggettoInizializzato(object oggetto, string classeSerializzataString, string nomeClasse, string nomeNuovoTest)
+        private static string CreaMetodoTestInizializzazione(object oggetto, string classeSerializzataString, string nomeClasse, string nomeNuovoTest)
         {
             //Finalmente deserializzo la classe e la restituisco
             var gestoreInizializzazione = new ObjectInitializationSerializer();
@@ -828,7 +901,7 @@ namespace XMLConverter
                 if (stWriter != null) stWriter.Close();
             }
 
-            return XDocument.Load(buffer);
+            return XDocument.Parse(buffer);
         }
     }
 }
