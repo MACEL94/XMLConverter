@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using System.CodeDom.Compiler;
 using System.Reflection;
 using Microsoft.CodeDom.Providers.DotNetCompilerPlatform;
+using WebApplications.Utilities;
 
 namespace XMLConverter
 {
@@ -24,188 +25,235 @@ namespace XMLConverter
 
         private static void Main()
         {
-            // Mi accerto che esista la cartella, se non è così la creo e aspetto che l'utente ci metta qualcosa
-            var path = Environment.CurrentDirectory + "/Resources";
-            var listaFilePaths = new List<string>();
+            // Chiedo il path completo dell'xml all'utilizzatore
+            string pathXmlFile = null;
+            XDocument documentoCaricato = null;
             do
             {
-                if (Directory.Exists(path))
+                Console.WriteLine("Specify the complete path of the xml that you want to convert and initialize:");
+                pathXmlFile = Console.ReadLine();
+                // Mi accerto che esista il path specificato e che sia un xml valido
+                if (String.IsNullOrWhiteSpace(pathXmlFile) || !pathXmlFile.EndsWith(".xml") || !File.Exists(pathXmlFile))
                 {
-                    listaFilePaths = Directory.GetFiles(path).ToList();
-                    if (listaFilePaths.Count == 0)
+                    try
                     {
-                        Console.WriteLine("Resources directory has been found but no valid xml was loaded. \nPlease insert an XML file in it. \nPress any button to continue or q to quit.");
-                        if (Console.ReadKey().KeyChar.Equals('q'))
+                        documentoCaricato = XDocument.Load(pathXmlFile);
+                    }
+                    catch
+                    {
+                    }
+                }
+                if (documentoCaricato != null)
+                {
+                    Console.WriteLine(pathXmlFile + " Is not a valid xml file path.");
+                }
+            } while (documentoCaricato != null);
+
+            // N.B.
+            // Per ciascun elemento controlla:
+            // Se ha attributi converte l'elemento in classe
+            // Se ha solo un valore diventa una proprietà della classe formata dal primo oggetto padre che lo contiene
+            // Se compare più di una volta nel primo elemento padre che si trova già presente nel dizionario, 
+            // si deve fare una lista di questo in quel padre
+            Dictionary<string, ElementoValido> dizionarioElementiValidi = new Dictionary<string, ElementoValido>();
+            Dictionary<string, ElementoValido> dizionarioElementiProprieta = new Dictionary<string, ElementoValido>();
+            var listaElementi = documentoCaricato.Descendants();
+
+            string nomeClasseAttuale = ConverterProgram.RendiPrimaLetteraMaiuscola(listaElementi.First().Name.LocalName);
+            string nomeFileAttuale = nomeClasseAttuale + ".cs";
+
+            foreach (var elemento in listaElementi)
+            {
+                // Controlla che non sia nel dizionario
+                if (!dizionarioElementiValidi.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoValidoPresente))
+                {
+                    // Se non è presente lo aggiunge, se va aggiunto, ossia se ha più di un figlio oppure se ha degli attributi
+                    if (elemento.Elements().Count() > 0 || elemento.Attributes().Count() > 0)
+                    {
+                        dizionarioElementiValidi.Add(elemento.Name.LocalName, new ElementoValido(elemento));
+                    }
+                    else
+                    {
+                        // Se siamo qui non è presente e non va aggiunto, che significa che deve essere una proprietà 
+                        // del primo elemento padre che si incontra nel dizionario.
+                        // Questo tipo di verifica va però fatto alla fine del parsing di tutti gli elementi validi per il dizionario,
+                        // quindi lo mettiamo in un altro dizionario per ora.
+                        // Se è già presente lo aggiungiamo a se stesso, altrimenti al dizionario, ci servirà a capire se è una lista o meno
+                        if (dizionarioElementiProprieta.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoProprietaPresente))
                         {
-                            return;
+                            elementoProprietaPresente.ListaElementiTipologiaAttuale.Add(elemento);
+                        }
+                        else
+                        {
+                            dizionarioElementiProprieta.Add(elemento.Name.LocalName, new ElementoValido(elemento));
                         }
                     }
                 }
                 else
                 {
-                    Directory.CreateDirectory(path);
-                    Console.WriteLine("Resources directory has been created. \nPlease insert an XML file in it. \nPress any button to continue or q to quit.");
-                    if (Console.ReadKey().KeyChar.Equals('q'))
-                    {
-                        return;
-                    }
-                }
-            } while ((!Directory.Exists(path) || listaFilePaths.Count == 0));
-
-            var listaDocumentiValidi = new List<XDocument>();
-            foreach (var filePath in listaFilePaths)
-            {
-                // Per ciascun XML scorre gli elementi, e prende per forza la radice, che sarà il nome della classe principale,
-                // Più una lista di elementi validi all'interno
-                // Prova a convertirlo, se non ci riesce lo scrive
-                try
-                {
-                    var documento = XDocument.Load(filePath);
-                    listaDocumentiValidi.Add(documento);
-                }
-                catch
-                {
-                    Console.WriteLine($"File: {filePath}\nis not a valid XML and could not be parsed.");
+                    //Se invece è presente, lo aggiunge alla lista di elementi di questo tipo,
+                    // poi verrà utilizzato per confrontare quali proprietà sono di quale tipo
+                    elementoValidoPresente.ListaElementiTipologiaAttuale.Add(elemento);
                 }
             }
 
-            // Per ciascun elemento controlla:
-            // Se ha attributi converte l'elemento in classe
-            // Se ha solo un valore diventa una proprietà della classe formata dal primo oggetto padre che lo contiene
-            // Se compare più di una volta nel primo elemento padre che si trova già presente nel dizionario, si deve fare una lista di questo in quel padre
-            Dictionary<string, ElementoValido> dizionarioElementiValidi;
-            Dictionary<string, ElementoValido> dizionarioElementiProprieta;
-            string nomeFileAttuale = null;
-            string nomeClasseAttuale = null;
+            // Per comodità e chiarezza
+            var listaElementiProprieta = dizionarioElementiProprieta.Values;
+            var listaElementiValidi = dizionarioElementiValidi.Values;
 
-            foreach (var documento in listaDocumentiValidi)
+            foreach (var elementoProprieta in listaElementiProprieta)
             {
-                dizionarioElementiValidi = new Dictionary<string, ElementoValido>();
-                dizionarioElementiProprieta = new Dictionary<string, ElementoValido>();
-                foreach (var elemento in documento.Descendants())
-                {
-                    // Prende il primo elemento utile, quindi finchè il dizionario è vuoto
-                    if (dizionarioElementiValidi.Count == 0)
-                    {
-                        nomeClasseAttuale = ConverterProgram.RendiPrimaLetteraMaiuscola(elemento.Name.LocalName);
-                        nomeFileAttuale = nomeClasseAttuale + ".cs";
-                    }
-
-                    // Controlla che non sia nel dizionario
-                    if (!dizionarioElementiValidi.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoValidoPresente))
-                    {
-                        // Se non è presente lo aggiunge, se va aggiunto, ossia se ha più di un figlio oppure se ha degli attributi
-                        if (elemento.Elements().Count() > 0 || elemento.Attributes().Count() > 0)
-                        {
-                            dizionarioElementiValidi.Add(elemento.Name.LocalName, new ElementoValido(elemento));
-                        }
-                        else
-                        {
-                            // Se siamo qui non è presente e non va aggiunto, che significa che deve essere una proprietà 
-                            // del primo elemento padre che si incontra nel dizionario.
-                            // Questo tipo di verifica va però fatto alla fine del parsing di tutti gli elementi validi per il dizionario,
-                            // quindi lo mettiamo in un altro dizionario per ora.
-                            // Se è già presente lo aggiungiamo a se stesso, altrimenti al dizionario, ci servirà a capire se è una lista o meno
-                            if (dizionarioElementiProprieta.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoProprietaPresente))
-                            {
-                                elementoProprietaPresente.ListaElementiTipologiaAttuale.Add(elemento);
-                            }
-                            else
-                            {
-                                dizionarioElementiProprieta.Add(elemento.Name.LocalName, new ElementoValido(elemento));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //Se invece è presente, lo aggiunge alla lista di elementi di questo tipo,
-                        // poi verrà utilizzato per confrontare quali proprietà sono di quale tipo
-                        elementoValidoPresente.ListaElementiTipologiaAttuale.Add(elemento);
-                    }
-                }
-
-                // Per comodità e chiarezza
-                var listaElementiProprieta = dizionarioElementiProprieta.Values;
-                var listaElementiValidi = dizionarioElementiValidi.Values;
-
-                foreach (var elementoProprieta in listaElementiProprieta)
-                {
-                    foreach (var elementoValido in listaElementiValidi)
-                    {
-                        // Se almeno uno di loro è contenuto in almeno uno degli altri lo aggiunge alle proprietà del rispettivo
-                        foreach (var elementoTipoAttuale in elementoProprieta.ListaElementiTipologiaAttuale)
-                        {
-                            if (elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Element(elementoTipoAttuale.Name) != null))
-                            {
-                                elementoProprieta.ElementoRipetutoAlmenoUnaVolta = elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Elements(elementoTipoAttuale.Name).Count() > 1);
-                                elementoValido.ListaElementiProprieta.Add(elementoProprieta);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // Sbuilder che contiene la classe principale
-                var sbDocumento = new StringBuilder();
-
-                // Inizializzo le using solitamente necessarie
-                sbDocumento.AppendLine("using System;");
-                sbDocumento.AppendLine("using System.Reflection;");
-                sbDocumento.AppendLine("using System.Globalization;");
-                sbDocumento.AppendLine("using System.Collections.Generic;");
-                sbDocumento.AppendLine("using System.Xml;");
-                sbDocumento.AppendLine("using System.Xml.Serialization;");
-                sbDocumento.AppendLine("using System.Linq;");
-                sbDocumento.AppendLine("using System.Xml.Linq;");
-                sbDocumento.AppendLine("");
-                sbDocumento.AppendLine("namespace BELHXmlTool");
-                sbDocumento.AppendLine("{");
-
-                // Arrivati qui ogni elementovalido è valido e ha le proprietà che dovrebbe avere.
-                var converter = new ConverterProgram();
                 foreach (var elementoValido in listaElementiValidi)
                 {
-                    string elementoSerializzato = converter.SerializzaElementoValido(documento, elementoValido);
-                    sbDocumento.Append(elementoSerializzato);
+                    // Se almeno uno di loro è contenuto in almeno uno degli altri lo aggiunge alle proprietà del rispettivo
+                    foreach (var elementoTipoAttuale in elementoProprieta.ListaElementiTipologiaAttuale)
+                    {
+                        if (elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Element(elementoTipoAttuale.Name) != null))
+                        {
+                            elementoProprieta.ElementoRipetutoAlmenoUnaVolta = elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Elements(elementoTipoAttuale.Name).Count() > 1);
+                            elementoValido.ListaElementiProprieta.Add(elementoProprieta);
+                            break;
+                        }
+                    }
                 }
-
-                sbDocumento.AppendLine("}");
-
-                // A questo punto intendo tutto splittando ad ogni \n a seconda di quanti {(+) e }(-) trovo
-                sbDocumento = ConverterProgram.IndentaListaStringhe(sbDocumento.ToString().Split('\n'));
-
-                // Ciclo di nuovo il documento per togliere i /n
-                sbDocumento = sbDocumento.Replace("\n", Environment.NewLine);
-
-                // Gestione del salvataggio
-                // Salvo tutto in un nuovo file  $"{Root.Name}.cs" in una cartella chiamata Classes
-                string percorsoCartellaDestinazione = Path.Combine(Environment.CurrentDirectory, "Classes");
-                if (!Directory.Exists(percorsoCartellaDestinazione))
-                {
-                    Directory.CreateDirectory(percorsoCartellaDestinazione);
-                    Console.WriteLine(Environment.NewLine + "Classes directory has been created." + Environment.NewLine);
-                }
-
-                var percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileAttuale);
-                string sbDocumentoString = sbDocumento.ToString();
-                File.WriteAllText(percorsoFileSerializzato, sbDocumentoString);
-                Console.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
-
-                // Test da scommentare o commentare a seconda che serva o meno
-                // Stringa contenente l'oggetto inizializzato
-                string inizializzazioneOggetto = ConverterProgram.CreaStringaOggettoInizializzato(documento, sbDocumentoString, nomeClasseAttuale);
-
-                // Salvo l'oggetto in un nuovo file di testo, sempre nella stessa cartella, cambiando il nome del file
-                nomeFileAttuale = nomeFileAttuale.Substring(0, nomeFileAttuale.Length - 3) + ".txt";
-                percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileAttuale);
-                File.WriteAllText(percorsoFileSerializzato, inizializzazioneOggetto);
-                Console.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
             }
 
-            Console.WriteLine($"{Environment.NewLine}{listaDocumentiValidi.Count} valid XML files were correctly loaded and converted.");
+
+            var classeSerializzataString = ConverterProgram.CreaStringaClasseSerializzata(documentoCaricato, listaElementiValidi);
+
+            string dllPath;
+
+            CodeDomProvider cdp = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
+            CompilerParameters compilersParams = new CompilerParameters();
+            compilersParams.GenerateInMemory = true;
+
+            compilersParams.ReferencedAssemblies.Add(@"System.dll");
+            compilersParams.ReferencedAssemblies.Add(@"mscorlib.dll");
+            compilersParams.ReferencedAssemblies.Add(@"sysglobl.dll");
+            compilersParams.ReferencedAssemblies.Add(@"System.Net.dll");
+            compilersParams.ReferencedAssemblies.Add(@"System.Core.dll");
+            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.dll");
+            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
+            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
+            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
+            compilersParams.IncludeDebugInformation = true;
+
+            // Chiedo all'utilizzatore se vuole che venga creata la dll.
+            // Se è così gli chiedo di specificare il path dove vuole che venga creata
+            dllPath = null;
+            Console.WriteLine("Specify the complete path where you need to create the dll or just press Enter to skip: ");
+            dllPath = Console.ReadLine();
+
+            // Se serve salvo la DLL
+            if (!String.IsNullOrWhiteSpace(dllPath) && Directory.Exists(dllPath))
+            {
+                compilersParams.OutputAssembly = dllPath;
+            }
+
+            // Prova a compilare il file creato
+            CompilerResults compilerResults = cdp.CompileAssemblyFromSource(compilersParams, classeSerializzataString);
+
+            // Prende finalmente l'assembly
+            Assembly assembly = compilerResults.CompiledAssembly;
+
+            // Crea un istanza dell'oggetto, chiaramente aggiungo il NameSpace che so già essere sempre lo stesso
+            object oggettoSerializzato = assembly.CreateInstance("BELHXmlTool." + nomeClasseAttuale);
+            var tipoOggettoAttuale = oggettoSerializzato.GetType();
+
+            // Inizializza il serializer con il tipo dell'oggetto caricato
+            XmlSerializer serializer = new XmlSerializer(tipoOggettoAttuale);
+
+            // Carico il loadedDocument in un memoryStream che può essere deserializzato e ne resetto la posizione per poterlo leggere
+            var ms = new MemoryStream();
+            documentoCaricato.Save(ms);
+            ms.Position = 0;
+            oggettoSerializzato = serializer.Deserialize(ms);
+
+            // Deserializzo l'oggetto appena serializzato per verificare che sia tutto uguale
+            var documentoSerializzato = ConverterProgram.ToXml(oggettoSerializzato);
+
+            // Eseguo il test prima di procedere nel salvataggio per verificare che documento di partenza
+            // e quello risultante dalla serializzazione dell'oggetto inizializzato siano uguali
+            Tuple<XObject, XObject> result = documentoCaricato.DeepEquals(documentoSerializzato, XObjectComparisonOptions.Semantic);
+            if (result != null)
+            {
+                Console.WriteLine("Conversion error. Exception: " + result);
+            }
+
+            // Chiedo all'utente dove vuole inserire il test
+            string pathFileTest = null;
+            do
+            {
+                Console.WriteLine("Specify the full path of the file where you need the new test: ");
+                pathFileTest = Console.ReadLine();
+                // Ottengo il file di test dentro al quale si vuole salvare il nuovo metodo
+            } while (String.IsNullOrWhiteSpace(pathFileTest) || !pathFileTest.EndsWith(".cs") || !File.Exists(pathFileTest));
+
+            // Chiedo all'utente come vuole chiamare il test
+            string nomeNuovoTest = null;
+            do
+            {
+                Console.WriteLine("Specify the name of the new test Method");
+                nomeNuovoTest = Console.ReadLine();
+            } while (!String.IsNullOrWhiteSpace(nomeNuovoTest));
+
+            // Rendo il nome corretto
+            nomeNuovoTest = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeNuovoTest);
+
+            // Stringa contenente il nuovo metodo
+            string inizializzazioneOggetto =
+                ConverterProgram.CreaStringaOggettoInizializzato(oggettoSerializzato, classeSerializzataString,
+                    nomeClasseAttuale, nomeNuovoTest);
+
+            // Salvo l'oggetto in un nuovo file di testo, sempre nella stessa cartella, cambiando il nome del file
+            percorsoFileSerializzato = Path.Combine(percorsoCartellaDestinazione, nomeFileAttuale);
+            File.WriteAllText(percorsoFileSerializzato, inizializzazioneOggetto);
+            Console.WriteLine($"{percorsoFileSerializzato} has been correctly created.");
+
             Console.WriteLine("Press any button to exit.");
             Console.ReadKey();
             return;
+        }
+
+        /// <summary>
+        /// Crea la stringa contenente la classe serializzata
+        /// </summary>
+        private static string CreaStringaClasseSerializzata(XDocument documentoCaricato, Dictionary<string, ElementoValido>.ValueCollection listaElementiValidi)
+        {
+            // Sbuilder che contiene la classe principale
+            var stringBuilderClasse = new StringBuilder();
+
+            // Inizializzo le using solitamente necessarie
+            stringBuilderClasse.AppendLine("using System;");
+            stringBuilderClasse.AppendLine("using System.Reflection;");
+            stringBuilderClasse.AppendLine("using System.Globalization;");
+            stringBuilderClasse.AppendLine("using System.Collections.Generic;");
+            stringBuilderClasse.AppendLine("using System.Xml;");
+            stringBuilderClasse.AppendLine("using System.Xml.Serialization;");
+            stringBuilderClasse.AppendLine("using System.Linq;");
+            stringBuilderClasse.AppendLine("using System.Xml.Linq;");
+            stringBuilderClasse.AppendLine("");
+            stringBuilderClasse.AppendLine("namespace BELHXmlTool");
+            stringBuilderClasse.AppendLine("{");
+
+            // Arrivati qui ogni elementovalido è valido e ha le proprietà che dovrebbe avere.
+            var converter = new ConverterProgram();
+            foreach (var elementoValido in listaElementiValidi)
+            {
+                string elementoSerializzato = converter.SerializzaElementoValido(documentoCaricato, elementoValido);
+                stringBuilderClasse.Append(elementoSerializzato);
+            }
+
+            stringBuilderClasse.AppendLine("}");
+
+            // A questo punto intendo tutto splittando ad ogni \n a seconda di quanti {(+) e }(-) trovo
+            stringBuilderClasse = ConverterProgram.IndentaListaStringhe(stringBuilderClasse.ToString().Split('\n'));
+
+            // Ciclo di nuovo il loadedDocument per togliere i /n
+            stringBuilderClasse = stringBuilderClasse.Replace("\n", Environment.NewLine);
+
+            // Gestione del salvataggio
+            return stringBuilderClasse.ToString();
         }
 
         /// <summary>
@@ -237,51 +285,21 @@ namespace XMLConverter
         /// <summary>
         /// Permette di creare la stringa in cui si inizializza il test
         /// </summary>
-        private static string CreaStringaOggettoInizializzato(XDocument documento, string classeSerializzataString, string nomeClasse)
+        private static string CreaStringaOggettoInizializzato(object oggetto, string classeSerializzataString, string nomeClasse, string nomeNuovoTest)
         {
-            CodeDomProvider cdp = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
-            CompilerParameters cp = new CompilerParameters();
-            cp.GenerateInMemory = true;
-
-            cp.ReferencedAssemblies.Add(@"System.dll");
-            cp.ReferencedAssemblies.Add(@"mscorlib.dll");
-            cp.ReferencedAssemblies.Add(@"sysglobl.dll");
-            cp.ReferencedAssemblies.Add(@"System.Net.dll");
-            cp.ReferencedAssemblies.Add(@"System.Core.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
-            cp.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
-            cp.IncludeDebugInformation = true;
-
-            // Prova a compilare il file creato
-            CompilerResults compilerResults = cdp.CompileAssemblyFromSource(cp, classeSerializzataString);
-
-            // Prende l'assembly
-            Assembly assembly = compilerResults.CompiledAssembly;
-
-            // Crea un istanza dell'oggetto, chiaramente aggiungo il NameSpace che so già essere sempre lo stesso
-            object oggettoAttuale = assembly.CreateInstance("BELHXmlTool." + nomeClasse);
-            var tipoOggettoAttuale = oggettoAttuale.GetType();
-
-            // Inizializza il serializer con il tipo dell'oggetto caricato
-            XmlSerializer serializer = new XmlSerializer(tipoOggettoAttuale);
-
-            // Carico il documento in un memoryStream che può essere deserializzato e ne resetto la posizione per poterlo leggere
-            var ms = new MemoryStream();
-            documento.Save(ms);
-            ms.Position = 0;
-            oggettoAttuale = serializer.Deserialize(ms);
-
             //Finalmente deserializzo la classe e la restituisco
-            string stringaInizializzazioneOggetto = ObjectInitializationSerializer.SerializeToInitializerClass(oggettoAttuale);
-            return ConverterProgram.IndentaListaStringhe(stringaInizializzazioneOggetto.Split('\n')).Replace("\n", Environment.NewLine).ToString();
+            var gestoreInizializzazione = new ObjectInitializationSerializer();
+            string stringaInizializzazioneOggetto = gestoreInizializzazione.CreaTest(oggetto, nomeNuovoTest);
+            var stringBuilderInizializzazioneOggetto =
+                ConverterProgram.IndentaListaStringhe(stringaInizializzazioneOggetto.Split('\n'))
+                    .Replace("\n", Environment.NewLine);
+            return stringBuilderInizializzazioneOggetto.ToString();
         }
 
         /// <summary>
         /// Permette di serializzare l'elemento
         /// </summary>
-        private string SerializzaElementoValido(XDocument documento, ElementoValido elementoValido)
+        private string SerializzaElementoValido(XDocument loadedDocument, ElementoValido elementoValido)
         {
             var sbElemento = new StringBuilder();
             var primoElementoTipoAttuale = elementoValido.ListaElementiTipologiaAttuale[0];
@@ -296,7 +314,7 @@ namespace XMLConverter
                 var primoElementoProprietaAttuale = proprietaAttuale.ListaElementiTipologiaAttuale[0];
 
                 // Provo a capire di che tipo di property si tratta
-                string tipoProprieta = ConverterProgram.TrovaTipoProprietaElementoProprieta(documento, primoElementoProprietaAttuale.Name,
+                string tipoProprieta = ConverterProgram.TrovaTipoProprietaElementoProprieta(loadedDocument, primoElementoProprietaAttuale.Name,
                     proprietaAttuale.ElementoRipetutoAlmenoUnaVolta, out string nomeProprieta, out bool tipoDateTime, out string formatoDateTime);
 
                 // Continuo con le property aggiuntive necessarie e con il costruttore
@@ -645,7 +663,7 @@ namespace XMLConverter
         /// <summary>
         /// Trova il tipo di proprieta
         /// </summary>
-        private static string TrovaTipoProprietaElementoProprieta(XDocument documento, XName nomeProprietaAttuale,
+        private static string TrovaTipoProprietaElementoProprieta(XDocument loadedDocument, XName nomeProprietaAttuale,
             bool elementoRipetutoAlmenoUnaVolta, out string nomeProprieta, out bool tipoDateTime, out string formatoDateTime)
         {
             string tipoProprieta = null;
@@ -654,7 +672,7 @@ namespace XMLConverter
             formatoDateTime = null;
 
             // Se non ha attributi in nessun caso lo trasformo direttamente nella relativa proprieta
-            var listaMassimaElementoAttuale = documento.Descendants(nomeProprietaAttuale);
+            var listaMassimaElementoAttuale = loadedDocument.Descendants(nomeProprietaAttuale);
             if (listaMassimaElementoAttuale.All(e => e.Attributes().Count() == 0))
             {
                 // Se almeno uno ha un valore
@@ -783,6 +801,34 @@ namespace XMLConverter
                         elemento
                     };
             }
+        }
+
+        /// <summary>
+        /// Trasforma l'oggetto in xml
+        /// </summary>
+        public static XDocument ToXml(object objToXml)
+        {
+            StreamWriter stWriter = null;
+            XmlSerializer xmlSerializer;
+            string buffer;
+            try
+            {
+                xmlSerializer = new XmlSerializer(objToXml.GetType());
+                MemoryStream memStream = new MemoryStream();
+                stWriter = new StreamWriter(memStream);
+                xmlSerializer.Serialize(stWriter, objToXml);
+                buffer = Encoding.UTF8.GetString(memStream.GetBuffer()).Replace("\x00", "");
+            }
+            catch (Exception Ex)
+            {
+                throw Ex;
+            }
+            finally
+            {
+                if (stWriter != null) stWriter.Close();
+            }
+
+            return XDocument.Load(buffer);
         }
     }
 }

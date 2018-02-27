@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace XMLConverter
 {
-    public static class ObjectInitializationSerializer
+    public class ObjectInitializationSerializer
     {
-        private static string GetCSharpString(object o)
+        public ObjectInitializationSerializer() { }
+        private string RicavaInizializzazioneProprieta(object o)
         {
             if (o is bool)
             {
@@ -26,7 +27,9 @@ namespace XMLConverter
             }
             if (o is decimal)
             {
-                return $"{((decimal)o).ToString("00.00", CultureInfo.InvariantCulture)}m";
+                // Siamo sempre precisi nella inizializzazione della proprietà(4 cifre dopo lo 0), 
+                // ci pensano poi i campi dell'oggetto a serializzare e deserializzare sempre nel formato corretto
+                return $"{((decimal)o).ToString("00.0000", CultureInfo.InvariantCulture)}m";
             }
             if (o is DateTime)
             {
@@ -39,24 +42,24 @@ namespace XMLConverter
             if (o is IEnumerable)
             {
                 string stringaDaRitornare = null;
-                var inizializzazioneElementi = GetItems((IEnumerable)o);
-                if (inizializzazioneElementi.Replace(",", "").Replace("\n", "").Replace("\r", "").Length > 0)
+                var inizializzazioneElementi = this.RicavaElementi((IEnumerable)o);
+                if (inizializzazioneElementi.Replace(",", "").Replace("\n", "").Length > 0)
                 {
-                    stringaDaRitornare = $"new {GetClassName(o)} \r\n{{\r\n{inizializzazioneElementi}}}";
+                    stringaDaRitornare = $"new {this.RicavaNomeClasse(o)} \n{{\n{inizializzazioneElementi}}}";
                 }
                 return stringaDaRitornare;
             }
 
 
-            return CreateObject(o).ToString();
+            return this.InizializzaOggetto(o).ToString();
         }
 
-        private static string GetItems(IEnumerable items)
+        private string RicavaElementi(IEnumerable items)
         {
-            return items.Cast<object>().Aggregate(string.Empty, (current, item) => current + $"{GetCSharpString(item)},\r\n");
+            return items.Cast<object>().Aggregate(string.Empty, (current, item) => current + $"{this.RicavaInizializzazioneProprieta(item)},\n");
         }
 
-        private static StringBuilder CreateObject(object o)
+        private StringBuilder InizializzaOggetto(object o)
         {
             var objectBuilder = new StringBuilder();
             var propertiesBuilder = new StringBuilder();
@@ -80,25 +83,25 @@ namespace XMLConverter
                 var value = property.GetValue(o);
                 if (value != null)
                 {
-                    var inizializzazioneProprieta = GetCSharpString(value);
+                    var inizializzazioneProprieta = this.RicavaInizializzazioneProprieta(value);
                     if (inizializzazioneProprieta != null && inizializzazioneProprieta.Length > 0)
                     {
-                        propertiesBuilder.Append($"{property.Name} = {inizializzazioneProprieta},\r\n");
+                        propertiesBuilder.Append($"{property.Name} = {inizializzazioneProprieta},\n");
                     }
                 }
             }
 
             if (propertiesBuilder.Length > 0)
             {
-                objectBuilder.Append($"new {GetClassName(o)} \r\n{{\r\n")
-                    .Append(propertiesBuilder.ToString())
-                    .Append("}");
+                objectBuilder.Append($"return new {this.RicavaNomeClasse(o)} \n{{\n")
+                             .Append(propertiesBuilder.ToString())
+                             .AppendLine("}");
             }
 
             return objectBuilder;
         }
 
-        private static string GetClassName(object o)
+        private string RicavaNomeClasse(object o)
         {
             var type = o.GetType();
 
@@ -114,9 +117,14 @@ namespace XMLConverter
         /// <summary>
         ///  Inizializza la classe dell'oggetto passato con i suoi valori
         /// </summary>
-        public static string SerializeToInitializerClass(object o)
+        public string CreaTest(object o, string nomeTest)
         {
-            return $"var newObject = {CreateObject(o)};";
+            return new StringBuilder()
+                .AppendLine($"public {this.RicavaNomeClasse(o)} {nomeTest}()")
+                .AppendLine("{")
+                .Append(this.InizializzaOggetto(o))
+                .AppendLine("}")
+                .ToString();
         }
     }
 }
