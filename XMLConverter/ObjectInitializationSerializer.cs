@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace XMLConverter
 {
@@ -43,23 +44,22 @@ namespace XMLConverter
             {
                 string stringaDaRitornare = null;
                 var inizializzazioneElementi = this.RicavaElementi((IEnumerable)o);
-                if (inizializzazioneElementi.Replace(",", "").Replace("\n", "").Length > 0)
+                if (inizializzazioneElementi.Replace(",", "").Replace("\n", "").Replace("\r", "").Length > 0)
                 {
-                    stringaDaRitornare = $"new {this.RicavaNomeClasse(o)} \n{{\n{inizializzazioneElementi}}}";
+                    stringaDaRitornare = $"new {this.RicavaNomeClasse(o)} {Environment.NewLine}{{{inizializzazioneElementi}{Environment.NewLine}}}";
                 }
                 return stringaDaRitornare;
             }
 
-
-            return this.InizializzaOggetto(o).ToString();
+            return this.InizializzaOggetto(o);
         }
 
         private string RicavaElementi(IEnumerable items)
         {
-            return items.Cast<object>().Aggregate(string.Empty, (current, item) => current + $"{this.RicavaInizializzazioneProprieta(item)},\n");
+            return items.Cast<object>().Aggregate(string.Empty, (current, item) => current + $"{Environment.NewLine}{this.RicavaInizializzazioneProprieta(item)},");
         }
 
-        private StringBuilder InizializzaOggetto(object o)
+        private string InizializzaOggetto(object o)
         {
             var objectBuilder = new StringBuilder();
             var propertiesBuilder = new StringBuilder();
@@ -72,33 +72,26 @@ namespace XMLConverter
                     continue;
                 }
 
-                //// Si tratta di un fantoccio, va serializzato solo se il padre è presente ed ha un valore, altrimenti lancia eccezione
-                //if (property.Name.EndsWith("Serializzabile"))
-                //{
-                //    if (!dizionarioProprieta.TryGetValue(property.Name.Replace("Serializzabile", ""), out var propertyEffettiva) || propertyEffettiva.GetValue(o) == null)
-                //    {
-                //        continue;
-                //    }
-                //}
                 var value = property.GetValue(o);
                 if (value != null)
                 {
                     var inizializzazioneProprieta = this.RicavaInizializzazioneProprieta(value);
                     if (inizializzazioneProprieta != null && inizializzazioneProprieta.Length > 0)
                     {
-                        propertiesBuilder.Append($"{property.Name} = {inizializzazioneProprieta},\n");
+                        propertiesBuilder.AppendLine($"{property.Name} = {inizializzazioneProprieta},");
                     }
                 }
             }
 
             if (propertiesBuilder.Length > 0)
             {
-                objectBuilder.Append($"return new {this.RicavaNomeClasse(o)} \n{{\n")
+                objectBuilder.AppendLine($"new {this.RicavaNomeClasse(o)}")
+                             .AppendLine("{")
                              .Append(propertiesBuilder.ToString())
-                             .AppendLine("};");
+                             .Append("}");
             }
 
-            return objectBuilder;
+            return objectBuilder.ToString();
         }
 
         private string RicavaNomeClasse(object o)
@@ -117,12 +110,18 @@ namespace XMLConverter
         /// <summary>
         ///  Inizializza la classe dell'oggetto passato con i suoi valori
         /// </summary>
-        public string CreaTest(object o, string nomeTest)
+        public string CreaTest(object o, string nomeTest, XDocument documentoCaricato)
         {
+            // Stringa di inizializzazione dell'oggetto
+            var stringaInizializzazioneOggetto = this.InizializzaOggetto(o);
+
+            // TODO -oFBE: Prima o poi vorrei, prima di restituire il tutto, controllare di nuovo che siano uguali 
+            // il documento di partenza e l'inizializzazione dell'oggetto rispettivo
+            // ConverterProgram.TestaUguaglianzaDocumentoOggetto(documentoCaricato, oggettoSerializzato);
             return new StringBuilder()
                 .AppendLine($"public {this.RicavaNomeClasse(o)} {nomeTest}()")
                 .AppendLine("{")
-                .Append(this.InizializzaOggetto(o))
+                .AppendLine($"return {stringaInizializzazioneOggetto};")
                 .AppendLine("}")
                 .ToString();
         }

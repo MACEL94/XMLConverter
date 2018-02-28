@@ -18,7 +18,8 @@ namespace XMLConverter
         /// <summary>
         /// Tiene in memoria tutti i formati esistenti una volta caricati
         /// </summary>
-        private static List<string> _listaFormatiStandard { get; set; }
+        private static List<string> _listaFormatiDateTimeStandard { get; set; }
+        private static List<string> _listaFormatiDecimalStandard { get; set; }
 
         // Contatore Elementi figli
         private int _contatoreFiglio = 1;
@@ -123,37 +124,51 @@ namespace XMLConverter
 
             var classeSerializzataString = ConverterProgram.CreaStringaClasseSerializzata(documentoCaricato, listaElementiValidi);
 
-            string dllPath;
-
             CodeDomProvider cdp = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
-            CompilerParameters compilersParams = new CompilerParameters();
-            compilersParams.GenerateInMemory = true;
+            CompilerParameters compilerParams = new CompilerParameters();
+            // Voglio la libreria dll, non l'exe
+            compilerParams.GenerateExecutable = false;
 
-            compilersParams.ReferencedAssemblies.Add(@"System.dll");
-            compilersParams.ReferencedAssemblies.Add(@"mscorlib.dll");
-            compilersParams.ReferencedAssemblies.Add(@"sysglobl.dll");
-            compilersParams.ReferencedAssemblies.Add(@"System.Net.dll");
-            compilersParams.ReferencedAssemblies.Add(@"System.Core.dll");
-            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.dll");
-            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
-            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
-            compilersParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
-            compilersParams.IncludeDebugInformation = true;
+            // Riferimenti
+            compilerParams.ReferencedAssemblies.Add(@"System.dll");
+            compilerParams.ReferencedAssemblies.Add(@"mscorlib.dll");
+            compilerParams.ReferencedAssemblies.Add(@"sysglobl.dll");
+            compilerParams.ReferencedAssemblies.Add(@"System.Net.dll");
+            compilerParams.ReferencedAssemblies.Add(@"System.Core.dll");
+            compilerParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.dll");
+            compilerParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Xml.Linq.dll");
+            compilerParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.dll");
+            compilerParams.ReferencedAssemblies.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Data.DataSetExtensions.dll");
+            // N.B. Scommentare se servono le info per il debug
+            // compilerParams.IncludeDebugInformation = true;
 
             // Chiedo all'utilizzatore se vuole che venga creata la dll.
             // Se è così gli chiedo di specificare il path dove vuole che venga creata
-            dllPath = null;
+            string dllPath;
             Console.WriteLine("Specify the complete path of the new dll if you want to create it or just press Enter to skip: ");
             dllPath = Console.ReadLine();
 
-            // Se serve salvo la DLL
-            if (!String.IsNullOrWhiteSpace(dllPath) && Directory.Exists(dllPath))
+            // Se serve salvo la DLL, e poi chiedo di includerla
+            if (!String.IsNullOrWhiteSpace(dllPath))
             {
-                compilersParams.OutputAssembly = dllPath;
+                // Voglio Che salvi l'assembly, non che lo tenga in memoria
+                compilerParams.GenerateInMemory = false;
+
+                // Dico dove salvare e quale nome debba avere la dll
+                compilerParams.CompilerOptions = " -out:" + dllPath;
+
+                // Compila per salvare la dll, non ho trovato un modo migliore per salvarla
+                var risultatoCompilazioneSalvataggio = cdp.CompileAssemblyFromSource(compilerParams, classeSerializzataString);
+
+                // Setta di nuovo le opzioni a null
+                compilerParams.CompilerOptions = null;
             }
 
+            // Arrivato qui Voglio che non venga salvato l'assembly ma solo creato un temporaneo
+            compilerParams.GenerateInMemory = true;
+
             // Prova a compilare il file creato
-            CompilerResults compilerResults = cdp.CompileAssemblyFromSource(compilersParams, classeSerializzataString);
+            CompilerResults compilerResults = cdp.CompileAssemblyFromSource(compilerParams, classeSerializzataString);
 
             // Prende finalmente l'assembly
             Assembly assembly = compilerResults.CompiledAssembly;
@@ -171,21 +186,13 @@ namespace XMLConverter
             ms.Position = 0;
             oggettoSerializzato = serializer.Deserialize(ms);
 
-            // Deserializzo l'oggetto appena serializzato per verificare che sia tutto uguale
-            var documentoSerializzato = ConverterProgram.ToXml(oggettoSerializzato);
-
-            // Eseguo il test prima di procedere nel salvataggio per verificare che documento di partenza
-            // e quello risultante dalla serializzazione dell'oggetto inizializzato siano uguali
-            Tuple<XObject, XObject> result = documentoCaricato.DeepEquals(documentoSerializzato, XObjectComparisonOptions.Semantic);
-            if (result != null)
-            {
-                Console.WriteLine("Conversion error. Exception: " + result);
-            }
+            ConverterProgram.TestaUguaglianzaDocumentoOggetto(documentoCaricato, oggettoSerializzato);
 
             // Chiedo all'utente dove vuole inserire il test
             string pathFileTest = null;
             do
             {
+                Console.WriteLine("Please add the created dll to your test project before you proceed.");
                 Console.WriteLine("Specify the full path of the file where you need the new test: ");
                 pathFileTest = Console.ReadLine();
                 // Ottengo il file di test dentro al quale si vuole salvare il nuovo metodo
@@ -197,7 +204,7 @@ namespace XMLConverter
             {
                 Console.WriteLine("Specify the name of the new test Method: ");
                 nomeNuovoTest = Console.ReadLine();
-            } while (!String.IsNullOrWhiteSpace(nomeNuovoTest));
+            } while (String.IsNullOrWhiteSpace(nomeNuovoTest));
 
             // Rendo il nome corretto
             nomeNuovoTest = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeNuovoTest);
@@ -205,53 +212,39 @@ namespace XMLConverter
             // Stringa contenente il nuovo metodo
             string nuovoTest =
                 ConverterProgram.CreaMetodoTestInizializzazione(oggettoSerializzato, classeSerializzataString,
-                    nomeClasseAttuale, nomeNuovoTest);
-
-            //Chiedo all'utente dove devo salvare il nuovo test
-            string percorsoFileNuovoTest = null;
-            do
-            {
-                Console.WriteLine("Specify the full path of the file where you want to insert the new test: ");
-                percorsoFileNuovoTest = Console.ReadLine();
-                if (!File.Exists(percorsoFileNuovoTest))
-                {
-                    percorsoFileNuovoTest = null;
-                }
-            } while (!String.IsNullOrWhiteSpace(percorsoFileNuovoTest));
+                    nomeClasseAttuale, nomeNuovoTest, documentoCaricato);
 
             // Carico il file in cui salvare il nuovo metodo
-            var fileString = File.ReadAllText(percorsoFileNuovoTest);
+            var fileTestString = File.ReadAllText(pathFileTest);
 
             // Cerco se esiste il metodo, se c'è lo sostituisco altrimenti lo inserisco
-            if (fileString.Contains($"public void {nomeNuovoTest}()"))
+            if (fileTestString.Contains($"public {tipoOggettoAttuale.Name} {nomeNuovoTest}()"))
             {
                 // So che è presente, quindi per prima cosa mi salvo la posizione in cui va inserito
-                int indiceInizioMetodo = fileString.IndexOf($"public void {nomeNuovoTest}()");
+                int indiceInizioMetodo = fileTestString.IndexOf($"public {tipoOggettoAttuale.Name} {nomeNuovoTest}()");
 
                 // Trovo la fine del metodo
                 int indiceFineMetodo = 0;
                 int indiceContatoreParentesi = 0;
-                fileString.Substring(indiceInizioMetodo)
+                var carattereFineMetodo = fileTestString.Substring(indiceInizioMetodo)
                           .ToList()
-                          .SkipWhile((c, contatore) => ConverterProgram.VerificaContinuaRicerca(c, contatore, indiceContatoreParentesi, indiceFineMetodo));
+                          .SkipWhile((c, contatore) => ConverterProgram.VerificaContinuaRicerca(c, contatore, ref indiceContatoreParentesi, ref indiceFineMetodo))
+                          .FirstOrDefault();
 
-                // Sommo l'indice dell'inzio dato che la fine del metodo non tiene ancora conto dell'offset dal quale è partito
-                indiceFineMetodo += indiceInizioMetodo;
-
-                // Cancello poi test precedente e contenuto
-                fileString = fileString.Remove(indiceInizioMetodo, indiceFineMetodo);
+                // Cancello poi il test precedente e il contenuto
+                fileTestString = fileTestString.Remove(indiceInizioMetodo, indiceFineMetodo);
 
                 // Infine inserisco il nuovo test
-                fileString = fileString.Insert(indiceInizioMetodo, nuovoTest);
+                fileTestString = fileTestString.Insert(indiceInizioMetodo, nuovoTest);
             }
             else
             {
-                // Inserisco direttamente il nuovo test subito prima della fine del file
-                fileString = fileString.Insert(fileString.LastIndexOf('}'), nuovoTest);
+                // Inserisco direttamente il nuovo test subito prima della fine del file, ma dentro la classe
+                fileTestString = fileTestString.Insert(fileTestString.Substring(0, fileTestString.LastIndexOf('}') - 1).LastIndexOf('}'), nuovoTest);
             }
 
             // Scrivo infine il nuovo file
-            File.WriteAllText(percorsoFileNuovoTest, fileString);
+            File.WriteAllText(pathFileTest, fileTestString);
             Console.WriteLine($"{nomeNuovoTest} Method has been correctly created.");
 
             Console.WriteLine("Press any button to exit.");
@@ -259,9 +252,26 @@ namespace XMLConverter
         }
 
         /// <summary>
+        /// Permette di verificare se l'oggetto passato, è uguale a ciò che mi ha permesso di generarlo
+        /// </summary>
+        public static void TestaUguaglianzaDocumentoOggetto(XDocument documentoCaricato, object oggettoSerializzato)
+        {
+            // Deserializzo l'oggetto appena serializzato per verificare che sia tutto uguale
+            var documentoSerializzato = ConverterProgram.ToXml(oggettoSerializzato);
+
+            // Eseguo il test prima di procedere nel salvataggio per verificare che documento di partenza
+            // e quello risultante dalla serializzazione dell'oggetto inizializzato siano uguali
+            Tuple<XObject, XObject> result = documentoCaricato.DeepEquals(documentoSerializzato, XObjectComparisonOptions.Semantic);
+            if (result != null)
+            {
+                throw new Exception("Conversion error. Exception: " + result);
+            }
+        }
+
+        /// <summary>
         /// Permette di trovare la posizione della fine del metodo
         /// </summary>
-        private static bool VerificaContinuaRicerca(char c, int contatore, int indiceContatoreParentesi, int indiceFineMetodo)
+        private static bool VerificaContinuaRicerca(char c, int contatore, ref int indiceContatoreParentesi, ref int indiceFineMetodo)
         {
             switch (c)
             {
@@ -277,9 +287,11 @@ namespace XMLConverter
                     break;
             }
 
-            if(indiceContatoreParentesi == 0)
+            // Se arriva qui il char era una parentesi
+            if (indiceContatoreParentesi == 0)
             {
-                indiceFineMetodo = contatore;
+                // Aggiungo uno per la parentesi attuale
+                indiceFineMetodo = contatore + 1;
                 return false;
             }
             else
@@ -332,10 +344,9 @@ namespace XMLConverter
         /// <summary>
         /// Permette di indentare la lista di stringhe passata nel modo corretto
         /// </summary>
-        private static StringBuilder IndentaListaStringhe(IEnumerable<string> listaStringheDaIndentare)
+        private static StringBuilder IndentaListaStringhe(IEnumerable<string> listaStringheDaIndentare, int counter = 0)
         {
             var asd = new StringBuilder();
-            int counter = 0;
             foreach (var stringa in listaStringheDaIndentare)
             {
                 if (stringa.StartsWith("}"))
@@ -358,13 +369,15 @@ namespace XMLConverter
         /// <summary>
         /// Permette di creare la stringa in cui si inizializza il test
         /// </summary>
-        private static string CreaMetodoTestInizializzazione(object oggetto, string classeSerializzataString, string nomeClasse, string nomeNuovoTest)
+        private static string CreaMetodoTestInizializzazione(object oggetto, string classeSerializzataString,
+            string nomeClasse, string nomeNuovoTest, XDocument documentoCaricato)
         {
             //Finalmente deserializzo la classe e la restituisco
             var gestoreInizializzazione = new ObjectInitializationSerializer();
-            string stringaInizializzazioneOggetto = gestoreInizializzazione.CreaTest(oggetto, nomeNuovoTest);
+            string stringaMetodoInizializzazioneOggetto = gestoreInizializzazione.CreaTest(oggetto, nomeNuovoTest, documentoCaricato);
+
             var stringBuilderInizializzazioneOggetto =
-                ConverterProgram.IndentaListaStringhe(stringaInizializzazioneOggetto.Split('\n'))
+                ConverterProgram.IndentaListaStringhe(stringaMetodoInizializzazioneOggetto.Split('\n'), 2)
                     .Replace("\n", Environment.NewLine);
             return stringBuilderInizializzazioneOggetto.ToString();
         }
@@ -402,7 +415,8 @@ namespace XMLConverter
                     // Nome e namespace dell'elemento corretto
                     sbElemento.AppendLine($"[XmlElement(ElementName = \"{primoElementoProprietaAttuale.Name.LocalName}\"" +
                       $"{ConverterProgram.CalcolaNameSpace(primoElementoProprietaAttuale.Name.NamespaceName)}" +
-                      $",Order = {_contatoreFiglio})]");
+                      // $",Order = {_contatoreFiglio}" +
+                      $")]");
 
                     // Proprietà 
                     var tipoProprietaString = proprietaAttuale.ElementoRipetutoAlmenoUnaVolta ? "List<string>" : "string";
@@ -440,7 +454,8 @@ namespace XMLConverter
                     // Nome e namespace dell'elemento corretto
                     sbElemento.AppendLine($"[XmlElement(ElementName = \"{primoElementoProprietaAttuale.Name.LocalName}\"" +
                       $"{ConverterProgram.CalcolaNameSpace(primoElementoProprietaAttuale.Name.NamespaceName)}" +
-                      $",Order = {_contatoreFiglio})]");
+                      // $",Order = {_contatoreFiglio}" +
+                      $")]");
 
                     sbElemento.AppendLine($"public {tipoProprieta} {nomeProprieta} {{ get; set; }}");
                 }
@@ -498,7 +513,8 @@ namespace XMLConverter
                 // Scrivo la proprieta
                 sbElemento.AppendLine($"[XmlElement(ElementName=\"{nomeElemento.LocalName}\"" +
                     $"{ConverterProgram.CalcolaNameSpace(nomeElemento.NamespaceName)}" +
-                    $",Order = {_contatoreFiglio})]");
+                    // $",Order = {_contatoreFiglio}" +
+                    $")]");
 
                 sbElemento.AppendLine($"public {tipoProprieta} {nomeProprieta} {{ get; set; }} {inizializzazioneProprieta}");
 
@@ -527,14 +543,22 @@ namespace XMLConverter
                 var listaAttributoAttuale = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
                 // Gestione particolare causata dal fatto che serializzando si perde il formato del datetime originale che invece deve essere preservato
                 bool tipoDateTime = false;
-                string formato = ConverterProgram.TrovaFormatoDateTime(listaAttributoAttuale
+                string formatoDateTime = ConverterProgram.TrovaFormatoDateTime(listaAttributoAttuale
                     .Where(a => !String.IsNullOrEmpty(a.Value))
                         .Select(a => a.Value)
                         .ToList()
                 );
 
+                string formatoDecimal = ConverterProgram.TrovaFormatoDecimal(listaAttributoAttuale
+                    .Where(a => !String.IsNullOrEmpty(a.Value))
+                        .Select(a => a.Value)
+                        .ToList()
+                );
+
+
+
                 string tipoProprieta;
-                if (formato != null)
+                if (formatoDateTime != null)
                 {
                     tipoDateTime = true;
                     tipoProprieta = "DateTime?";
@@ -559,8 +583,8 @@ namespace XMLConverter
                     sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
                     sbElemento.AppendLine($"public string {nomeProprietaAttributo}Serializzabile");
                     sbElemento.AppendLine("{");
-                    sbElemento.AppendLine($"\tget {{ return this.{nomeProprietaAttributo}.Value.ToString(\"{formato}\"); }}");
-                    sbElemento.AppendLine($"\tset {{ this.{nomeProprietaAttributo} = DateTime.ParseExact(value,\"{formato}\",CultureInfo.InvariantCulture); }}");
+                    sbElemento.AppendLine($"\tget {{ return this.{nomeProprietaAttributo}.Value.ToString(\"{formatoDateTime}\"); }}");
+                    sbElemento.AppendLine($"\tset {{ this.{nomeProprietaAttributo} = DateTime.ParseExact(value,\"{formatoDateTime}\",CultureInfo.InvariantCulture); }}");
                     sbElemento.AppendLine("}");
 
                     // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
@@ -630,17 +654,40 @@ namespace XMLConverter
             return sbElemento.ToString();
         }
 
+        private static string TrovaFormatoDecimal(List<string> listaValori)
+        {
+            if (ConverterProgram._listaFormatiDecimalStandard == null)
+            {
+                ConverterProgram.CaricaListaFormatiDecimalStandard();
+            }
+
+            foreach (var formato in ConverterProgram._listaFormatiDecimalStandard)
+            {
+                if (listaValori.All(v => ConverterProgram.TryParseExact(v, formato)))
+                {
+                    return formato;
+                }
+            }
+
+            return null;
+        }
+
+        private static void CaricaListaFormatiDecimalStandard()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Permette di trovare il formato corretto
         /// </summary>
         private static string TrovaFormatoDateTime(List<string> listaValori)
         {
-            if (ConverterProgram._listaFormatiStandard == null)
+            if (ConverterProgram._listaFormatiDateTimeStandard == null)
             {
-                ConverterProgram.CaricaListaFormati();
+                ConverterProgram.CaricaListaFormatiDateTime();
             }
 
-            foreach (var formato in ConverterProgram._listaFormatiStandard)
+            foreach (var formato in ConverterProgram._listaFormatiDateTimeStandard)
             {
                 if (listaValori.All(v => ConverterProgram.TryParseExact(v, formato)))
                 {
@@ -670,9 +717,9 @@ namespace XMLConverter
         /// <summary>
         /// Carica i formati esistenti se necessario
         /// </summary>
-        private static void CaricaListaFormati()
+        private static void CaricaListaFormatiDateTime()
         {
-            ConverterProgram._listaFormatiStandard =
+            ConverterProgram._listaFormatiDateTimeStandard =
                 new List<string>
                 {
                 "d", "D", "f", "F", "g", "G",
