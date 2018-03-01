@@ -28,9 +28,8 @@ namespace XMLConverter
             }
             if (o is decimal)
             {
-                // Siamo sempre precisi nella inizializzazione della proprietà(4 cifre dopo lo 0), 
-                // ci pensano poi i campi dell'oggetto a serializzare e deserializzare sempre nel formato corretto
-                return $"{((decimal)o).ToString("00.0000", CultureInfo.InvariantCulture)}m";
+                // G gestisce da solo la lunghezza della stringa da inizializzare, copiando il numero di 0 automaticamente anche in casi come 7.000
+                return $"{((decimal)o).ToString("G", CultureInfo.InvariantCulture)}m";
             }
             if (o is DateTime)
             {

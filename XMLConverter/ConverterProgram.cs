@@ -19,7 +19,7 @@ namespace XMLConverter
         /// Tiene in memoria tutti i formati esistenti una volta caricati
         /// </summary>
         private static List<string> _listaFormatiDateTimeStandard { get; set; }
-        private static List<string> _listaFormatiDecimalStandard { get; set; }
+        private static List<Tuple<string, CultureInfo>> _listaTupleFormatiCultureDecimal { get; set; }
 
         // Contatore Elementi figli
         private int _contatoreFiglio = 1;
@@ -121,11 +121,12 @@ namespace XMLConverter
                 }
             }
 
-
+            // Classe serializzata
             var classeSerializzataString = ConverterProgram.CreaStringaClasseSerializzata(documentoCaricato, listaElementiValidi);
 
-            CodeDomProvider cdp = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
+            // Parametri Compilatore
             CompilerParameters compilerParams = new CompilerParameters();
+
             // Voglio la libreria dll, non l'exe
             compilerParams.GenerateExecutable = false;
 
@@ -147,6 +148,9 @@ namespace XMLConverter
             string dllPath;
             Console.WriteLine("Specify the complete path of the new dll if you want to create it or just press Enter to skip: ");
             dllPath = Console.ReadLine();
+
+            // Compilatore
+            CodeDomProvider cdp = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
 
             // Se serve salvo la DLL, e poi chiedo di includerla
             if (!String.IsNullOrWhiteSpace(dllPath))
@@ -541,31 +545,51 @@ namespace XMLConverter
             {
                 // Prendo tutti gli attributi di quel tipo
                 var listaAttributoAttuale = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
+                string tipoProprieta = null;
+
                 // Gestione particolare causata dal fatto che serializzando si perde il formato del datetime originale che invece deve essere preservato
                 bool tipoDateTime = false;
-                string formatoDateTime = ConverterProgram.TrovaFormatoDateTime(listaAttributoAttuale
-                    .Where(a => !String.IsNullOrEmpty(a.Value))
-                        .Select(a => a.Value)
-                        .ToList()
-                );
+                bool tipoDecimal = false;
+                string formatoDateTime = null;
+                Tuple<string, CultureInfo> tuplaFormatoDecimal = null;
 
-                string formatoDecimal = ConverterProgram.TrovaFormatoDecimal(listaAttributoAttuale
-                    .Where(a => !String.IsNullOrEmpty(a.Value))
-                        .Select(a => a.Value)
-                        .ToList()
-                );
-
-
-
-                string tipoProprieta;
-                if (formatoDateTime != null)
+                if (tipoProprieta == null)
                 {
-                    tipoDateTime = true;
-                    tipoProprieta = "DateTime?";
+                    formatoDateTime = ConverterProgram.TrovaFormatoDateTime(listaAttributoAttuale
+                        .Select(a => (string)a)
+                            .Where(v => !String.IsNullOrEmpty(v))
+                        .ToList()
+                    );
+
+                    if (formatoDateTime != null)
+                    {
+                        tipoDateTime = true;
+                    }
                 }
-                else
+
+                if (tipoProprieta == null && !tipoDateTime)
                 {
-                    tipoProprieta = TrovaTipoProprietaAttributo(listaAttributoAttuale);
+                    tuplaFormatoDecimal = ConverterProgram.TrovaFormatoDecimal(listaAttributoAttuale
+                           .Select(a => (string)a)
+                               .Where(v => !String.IsNullOrEmpty(v))
+                           .ToList()
+                   );
+
+                    if (tuplaFormatoDecimal != null)
+                    {
+                        tipoDecimal = true;
+                    }
+                }
+
+                if (tipoProprieta == null && !tipoDateTime && !tipoDecimal)
+                {
+                    tipoProprieta = ConverterProgram.TrovaTipoProprietaAttributo(listaAttributoAttuale);
+                }
+
+                // Se è arrivato qui a null 
+                if (tipoProprieta == null && !tipoDateTime && !tipoDecimal)
+                {
+                    tipoProprieta = "string";
                 }
 
                 string nomeProprietaAttributo = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName);
@@ -575,7 +599,7 @@ namespace XMLConverter
                 {
                     // La proprieta datetime che andrò a modificare nei test
                     sbElemento.AppendLine("[XmlIgnore]");
-                    sbElemento.AppendLine($"public {tipoProprieta} {nomeProprietaAttributo} {{ get; set; }}");
+                    sbElemento.AppendLine($"public DateTime? {nomeProprietaAttributo} {{ get; set; }}");
 
                     // La stringa relativa renderizzata nel formato corretto
                     // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
@@ -589,9 +613,6 @@ namespace XMLConverter
 
                     // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
                     sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
-                    // Specified che stabilisce quando serializzare e quando no
-                    // [XmlIgnore]
-                    // public bool AgeSpecified { get { return Age >= 0; } }
                     sbElemento.AppendLine("[XmlIgnore]");
                     sbElemento.AppendLine($"public bool {nomeProprietaAttributo}SerializzabileSpecified {{ get {{ return this.{nomeProprietaAttributo}.HasValue; }} }}");
 
@@ -605,6 +626,31 @@ namespace XMLConverter
                     //     get { return this.SomeDate.ToString("yyyy-MM-dd HH:mm:ss"); }
                     //     set { this.SomeDate = DateTime.Parse(value); }
                     // }
+
+                    // Specified che stabilisce quando serializzare e quando no
+                    // [XmlIgnore]
+                    // public bool SomeDateStringSpecified { get { return Age >= 0; } }
+                }
+                else if (tipoDecimal)
+                {
+                    // La proprieta datetime che andrò a modificare nei test
+                    sbElemento.AppendLine("[XmlIgnore]");
+                    sbElemento.AppendLine($"public decimal? {nomeProprietaAttributo} {{ get; set; }}");
+
+                    // La stringa relativa renderizzata nel formato corretto
+                    // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                    sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
+                    sbElemento.AppendLine($"[XmlAttribute(AttributeName=\"{nomeAttributo.LocalName}\")]");
+                    sbElemento.AppendLine($"public string {nomeProprietaAttributo}Serializzabile");
+                    sbElemento.AppendLine("{");
+                    sbElemento.AppendLine($"\tget {{ return this.{nomeProprietaAttributo}.Value.ToString(\"{tuplaFormatoDecimal.Item1}\", new CultureInfo(\"{tuplaFormatoDecimal.Item2.Name}\")); }}");
+                    sbElemento.AppendLine($"\tset {{ this.{nomeProprietaAttributo} = decimal.Parse(value, CultureInfo.InvariantCulture); }}");
+                    sbElemento.AppendLine("}");
+
+                    // Facciamo in modo che non venga visto nei test o quando costruiamo l'oggetto
+                    sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
+                    sbElemento.AppendLine("[XmlIgnore]");
+                    sbElemento.AppendLine($"public bool {nomeProprietaAttributo}SerializzabileSpecified {{ get {{ return this.{nomeProprietaAttributo}.HasValue; }} }}");
                 }
                 else
                 {
@@ -654,31 +700,92 @@ namespace XMLConverter
             return sbElemento.ToString();
         }
 
-        private static string TrovaFormatoDecimal(List<string> listaValori)
+        /// <summary>
+        /// Permette di trovare il formato decimal corretto
+        /// </summary>
+        private static Tuple<string, CultureInfo> TrovaFormatoDecimal(List<string> listaValori)
         {
-            if (ConverterProgram._listaFormatiDecimalStandard == null)
+            if (ConverterProgram._listaTupleFormatiCultureDecimal == null)
             {
-                ConverterProgram.CaricaListaFormatiDecimalStandard();
+                ConverterProgram.CaricaListaFormatiDecimal();
             }
 
-            foreach (var formato in ConverterProgram._listaFormatiDecimalStandard)
+            // Converto i valori una volta sola
+            List<Tuple<string, decimal>> listaTuplaValoriDecimali = listaValori.Select(v =>
+                    decimal.TryParse(v, NumberStyles.Number, CultureInfo.InvariantCulture, out var valoreConvertito) ? new Tuple<string, decimal>(v, valoreConvertito) : null)
+                    .ToList();
+
+            // Se anche solo uno dei valori non è un decimal, questo elemento non è sempre associabile ad un decimal
+            if (listaTuplaValoriDecimali.Any(t => t == null))
             {
-                if (listaValori.All(v => ConverterProgram.TryParseExact(v, formato)))
+                return null;
+            }
+
+            foreach (var tuplaFormato in ConverterProgram._listaTupleFormatiCultureDecimal)
+            {
+                if (listaTuplaValoriDecimali.Count > 0 && listaTuplaValoriDecimali.All(tuplaValore => ConverterProgram.TrovaFormatoDecimalCorretto(tuplaValore, tuplaFormato)))
                 {
-                    return formato;
+                    return tuplaFormato;
                 }
             }
 
             return null;
         }
 
-        private static void CaricaListaFormatiDecimalStandard()
+        /// <summary>
+        /// Permette di trovare il formato decimal corretto
+        /// </summary>
+        private static bool TrovaFormatoDecimalCorretto(Tuple<string, decimal> tuplaValore, Tuple<string, CultureInfo> tuplaFormato)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (tuplaValore.Item2.ToString(tuplaFormato.Item1, tuplaFormato.Item2) == tuplaValore.Item1)
+                {
+                    return true;
+                }
+            }
+            catch
+            { }
+
+            return false;
         }
 
         /// <summary>
-        /// Permette di trovare il formato corretto
+        /// Permette di trovare il formato Decimal corretto
+        /// </summary>
+        private static void CaricaListaFormatiDecimal()
+        {
+            var listaFormatiStandard =
+                new List<string>
+                {
+                    "F", "C",
+                    // Scommentare in caso di bisogno, ma attenzione!
+                    // Rallenta MOLTO il programma
+                    //"E", "D",
+                    //"G", "N", 
+                    //"P", "R","X"
+                };
+            var listaNumeriDopoVirgola = new List<int> { 0, 1, 2, 3, 4 };
+            var listaFormatiConNumeri = listaFormatiStandard.SelectMany(f => listaNumeriDopoVirgola.Select(n => $"{f}{n}").ToList()).ToList();
+            // Aggiungo poi la lista di formati normali
+            listaFormatiConNumeri.AddRange(listaFormatiStandard);
+
+            // Riordino
+            listaFormatiConNumeri = listaFormatiConNumeri.OrderBy(f => f).ToList();
+
+            var listaCulture = new List<CultureInfo>() {
+                new CultureInfo("it-IT"),
+                new CultureInfo("en-US"),
+                new CultureInfo("fr-FR"),
+                new CultureInfo("de-DE"),
+                new CultureInfo("en-UK"),
+            };
+
+            _listaTupleFormatiCultureDecimal = listaFormatiConNumeri.SelectMany(formato => listaCulture.Select(c => new Tuple<string, CultureInfo>(formato, c))).ToList();
+        }
+
+        /// <summary>
+        /// Permette di trovare il formato DateTime corretto
         /// </summary>
         private static string TrovaFormatoDateTime(List<string> listaValori)
         {
@@ -689,7 +796,7 @@ namespace XMLConverter
 
             foreach (var formato in ConverterProgram._listaFormatiDateTimeStandard)
             {
-                if (listaValori.All(v => ConverterProgram.TryParseExact(v, formato)))
+                if (listaValori.All(v => DateTime.TryParseExact(v, formato, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var data)))
                 {
                     return formato;
                 }
@@ -699,34 +806,18 @@ namespace XMLConverter
         }
 
         /// <summary>
-        /// Tryparse di tipo exact
-        /// </summary>
-        private static bool TryParseExact(string value, string formato)
-        {
-            try
-            {
-                DateTime.ParseExact(value, formato, CultureInfo.InvariantCulture);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
         /// Carica i formati esistenti se necessario
         /// </summary>
         private static void CaricaListaFormatiDateTime()
         {
-            ConverterProgram._listaFormatiDateTimeStandard =
+            _listaFormatiDateTimeStandard =
                 new List<string>
                 {
-                "d", "D", "f", "F", "g", "G",
-                "m", "M", "o", "O", "r", "R",
-                "s", "t", "T", "u", "U", "y",
-                "Y", "yyyy-MM-dd","yyyy-MM-dd HH:mm:ss",
-                "MMyy",
+                    "d", "D", "f", "F", "g", "G",
+                    "m", "M", "o", "O", "r", "R",
+                    "s", "t", "T", "u", "U", "y",
+                    "Y", "yyyy-MM-dd","yyyy-MM-dd HH:mm:ss",
+                    "MMyy",
                 };
         }
 
@@ -753,21 +844,15 @@ namespace XMLConverter
                 {
                     tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || int.TryParse(e.Value, out int valore)) ? "int?" : null;
                 }
-                if (tipoProprieta == null)
-                {
-                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || decimal.TryParse(e.Value, out decimal valore)) ? "decimal?" : null;
-                }
-            }
-
-            // Se è arrivato qui a null 
-            if (tipoProprieta == null)
-            {
-                tipoProprieta = "string";
+                // Non cerco per datetime e decimal perchè sono già gestiti fuori
             }
 
             return tipoProprieta;
         }
 
+        /// <summary>
+        /// Permette di calcolare il tipo di proprietà dell'elemento figlio
+        /// </summary>
         private static string CalcolaTipoProprietaElementoFiglio(bool elementoRipetutoAlmenoUnaVolta, string nomeElemento)
         {
             if (elementoRipetutoAlmenoUnaVolta)

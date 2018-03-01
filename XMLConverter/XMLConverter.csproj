@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="ConverterProgram.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="ObjectInitializationSerializer.cs" />
