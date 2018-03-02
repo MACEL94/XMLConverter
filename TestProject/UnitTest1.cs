@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using BELHXmlTool;
+using BELHXmlTool.BookingExpert;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities;
 
@@ -22,7 +22,7 @@ namespace TestProject
 
             // Eseguo il test prima di procedere nel salvataggio per verificare che documento di partenza
             // e quello risultante dalla serializzazione dell'oggetto inizializzato siano uguali
-            Tuple<XObject, XObject> result = XDocument.Load("C:\\Users\\user\\Source\\Repos\\XMLConverter\\XMLConverter\\ResourcesExample\\BookingExpertXML.xml").DeepEquals(documentoSerializzato, XObjectComparisonOptions.Semantic);
+            Tuple<XObject, XObject> result = XDocument.Load("C:/Users/franc/source/repos/XMLConverter/XMLConverter/ResourcesExample/BookingExpertXML.xml").DeepEquals(documentoSerializzato, XObjectComparisonOptions.Semantic);
             if (result != null)
             {
                 throw new Exception("Conversion error. Exception: " + result);
@@ -96,7 +96,7 @@ namespace TestProject
                                                         },
                                                     },
                                                     RatePlanCode = "CodiceTipologia1",
-                                                    EffectiveDate = DateTime.Parse("18/02/2014 00:00:00"),
+                                                    EffectiveDate = DateTime.UtcNow.Date.AddDays(-1473),
                                                     NumberOfUnits = 1m,
                                                 },
                                                 new RoomRate
@@ -137,7 +137,7 @@ namespace TestProject
                                                         },
                                                     },
                                                     RatePlanCode = "CodiceTipologia1",
-                                                    EffectiveDate = DateTime.Parse("19/02/2014 00:00:00"),
+                                                    EffectiveDate = DateTime.UtcNow.Date.AddDays(-1472),
                                                     NumberOfUnits = 1m,
                                                 },
                                                 new RoomRate
@@ -178,7 +178,7 @@ namespace TestProject
                                                         },
                                                     },
                                                     RatePlanCode = "CodiceTipologia1",
-                                                    EffectiveDate = DateTime.Parse("20/02/2014 00:00:00"),
+                                                    EffectiveDate = DateTime.UtcNow.Date.AddDays(-1471),
                                                     NumberOfUnits = 1m,
                                                 },
                                             },
@@ -260,7 +260,7 @@ namespace TestProject
                                                         },
                                                     },
                                                     RatePlanCode = "CodiceRetta1",
-                                                    EffectiveDate = DateTime.Parse("18/02/2014 00:00:00"),
+                                                    EffectiveDate = DateTime.UtcNow.Date.AddDays(-1473),
                                                     NumberOfUnits = 1m,
                                                 },
                                                 new RoomRate
@@ -301,7 +301,7 @@ namespace TestProject
                                                         },
                                                     },
                                                     RatePlanCode = "CodiceRetta1",
-                                                    EffectiveDate = DateTime.Parse("19/02/2014 00:00:00"),
+                                                    EffectiveDate = DateTime.UtcNow.Date.AddDays(-1472),
                                                     NumberOfUnits = 1m,
                                                 },
                                                 new RoomRate
@@ -342,7 +342,7 @@ namespace TestProject
                                                         },
                                                     },
                                                     RatePlanCode = "CodiceRetta1",
-                                                    EffectiveDate = DateTime.Parse("20/02/2014 00:00:00"),
+                                                    EffectiveDate = DateTime.UtcNow.Date.AddDays(-1471),
                                                     NumberOfUnits = 1m,
                                                 },
                                             },
@@ -411,7 +411,7 @@ namespace TestProject
                                                     DecimalPlaces = 0m,
                                                     CurrencyCode = "EUR",
                                                 },
-                                                EffectiveDate = DateTime.Parse("19/02/2014 00:00:00"),
+                                                EffectiveDate = DateTime.UtcNow.Date.AddDays(-1472),
                                             },
                                         },
                                         ElementoTPA_Extensions = new TPA_Extensions
@@ -473,7 +473,7 @@ namespace TestProject
                                                     DecimalPlaces = 0m,
                                                     CurrencyCode = "EUR",
                                                 },
-                                                EffectiveDate = DateTime.Parse("19/02/2014 00:00:00"),
+                                                EffectiveDate = DateTime.UtcNow.Date.AddDays(-1472),
                                             },
                                         },
                                         ElementoTPA_Extensions = new TPA_Extensions
@@ -529,10 +529,10 @@ namespace TestProject
                             },
                             ElementoResGlobalInfo = new ResGlobalInfo
                             {
-                                ElementoTimeSpan = new BELHXmlTool.TimeSpan
+                                ElementoTimeSpan = new BELHXmlTool.BookingExpert.TimeSpan
                                 {
-                                    Start = DateTime.Parse("06/12/2013 00:00:00"),
-                                    End = DateTime.Parse("09/12/2013 00:00:00"),
+                                    Start = DateTime.UtcNow.Date.AddDays(-1547),
+                                    End = DateTime.UtcNow.Date.AddDays(-1544),
                                 },
                                 ElementoGuarantee = new Guarantee
                                 {
@@ -551,7 +551,7 @@ namespace TestProject
                                 {
                                     ElementoHotelReservationID = new HotelReservationID
                                     {
-                                        ResID_Date = DateTime.Parse("04/12/2013 15:18:08"),
+                                        ResID_Date = DateTime.UtcNow.Date.AddDays(-1548.36240740741),
                                         ResID_Value = 954603802m,
                                     },
                                 },
@@ -660,7 +660,7 @@ namespace TestProject
                             ElementoTPA_Extensions = new TPA_Extensions
                             {
                                 ReservationNotes = "NOTA OPERATORE - 2017-10-06 15:17 : Prenotazione inserita nel gestionale",
-                                OptionExpiringDate = DateTime.Parse("10/03/2017 08:00:00"),
+                                OptionExpiringDate = DateTime.UtcNow.Date.AddDays(-356.666666666667),
                                 ElementoSearchParams = new SearchParams
                                 {
                                     Param1 = "value1",
@@ -758,7 +758,7 @@ namespace TestProject
                                                     DecimalPlaces = 0m,
                                                     CurrencyCode = "EUR",
                                                 },
-                                                EffectiveDate = DateTime.Parse("18/01/2018 00:00:00"),
+                                                EffectiveDate = DateTime.UtcNow.Date.AddDays(-43),
                                                 NumberOfUnits = 1m,
                                             },
                                         },
@@ -778,10 +778,10 @@ namespace TestProject
                             },
                             ElementoResGlobalInfo = new ResGlobalInfo
                             {
-                                ElementoTimeSpan = new BELHXmlTool.TimeSpan
+                                ElementoTimeSpan = new BELHXmlTool.BookingExpert.TimeSpan
                                 {
-                                    Start = DateTime.Parse("18/01/2018 00:00:00"),
-                                    End = DateTime.Parse("19/01/2018 00:00:00"),
+                                    Start = DateTime.UtcNow.Date.AddDays(-43),
+                                    End = DateTime.UtcNow.Date.AddDays(-42),
                                 },
                                 ElementoGuarantee = new Guarantee
                                 {
@@ -801,7 +801,7 @@ namespace TestProject
                                                     PlainText = 55555555555555555m,
                                                 },
                                                 CardCode = "VI",
-                                                ExpireDate = DateTime.Parse("01/01/2021 00:00:00"),
+                                                ExpireDate = DateTime.UtcNow.Date.AddDays(1036),
                                             },
                                         },
                                     },
@@ -816,7 +816,7 @@ namespace TestProject
                                 {
                                     ElementoHotelReservationID = new HotelReservationID
                                     {
-                                        ResID_Date = DateTime.Parse("18/01/2018 14:58:35"),
+                                        ResID_Date = DateTime.UtcNow.Date.AddDays(-42.3759837962963),
                                         ResID_Value = 896794353m,
                                     },
                                 },
@@ -895,10 +895,12 @@ namespace TestProject
                 },
                 PrimaryLangID = "it",
                 Target = "Production",
-                TimeStamp = DateTime.Parse("04/12/2013 15:18:36"),
+                TimeStamp = DateTime.UtcNow.Date.AddDays(-1548.36208333333),
                 Version = 7.000m,
             };
         }
+
+
 
 
         /// <summary>

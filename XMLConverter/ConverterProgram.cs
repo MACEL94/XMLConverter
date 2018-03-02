@@ -21,8 +21,22 @@ namespace XMLConverter
         private static List<string> _listaFormatiDateTimeStandard { get; set; }
         private static List<Tuple<string, CultureInfo>> _listaTupleFormatiCultureDecimal { get; set; }
 
-        // Contatore Elementi figli
+        /// <summary>
+        /// Contatore Elementi figli
+        /// </summary>
         private int _contatoreFiglio = 1;
+
+        /// <summary>
+        /// Il formato MMyy può causare problemi quando si hanno nel file dei numeri tipo "1234"
+        /// che NON sono date delle carte di credito
+        /// </summary>
+        private static bool _aggiungiFormatoDateTimeSpeciale { get; set; } = false;
+
+        /// <summary>
+        /// Faccio scegliere il namespace perchè altrimenti si creerebbero conflitti se si importassero due DLL generate con lo stesso
+        /// Con nomi degli elementi uguali ma implementazioni diverse
+        /// </summary>
+        private static string _namespaceScelto { get; set; }
 
         private static void Main()
         {
@@ -51,6 +65,10 @@ namespace XMLConverter
                     Console.WriteLine(pathXmlFile + " Is not a valid xml file path.");
                 }
             } while (documentoCaricato == null);
+
+
+            // Chiedo subito se il cliente vuole che io tratti anche il formato mmYY oppure no
+            ConverterProgram.ImpostaScelteGlobaliUtente();
 
             // N.B.
             // Per ciascun elemento controlla:
@@ -177,8 +195,8 @@ namespace XMLConverter
             // Prende finalmente l'assembly
             Assembly assembly = compilerResults.CompiledAssembly;
 
-            // Crea un istanza dell'oggetto, chiaramente aggiungo il NameSpace che so già essere sempre lo stesso
-            object oggettoSerializzato = assembly.CreateInstance("BELHXmlTool." + nomeClasseAttuale);
+            // Crea un istanza dell'oggetto, chiaramente aggiungo il NameSpace che so già 
+            object oggettoSerializzato = assembly.CreateInstance($"BELHXmlTool.{_namespaceScelto}.{nomeClasseAttuale}");
             var tipoOggettoAttuale = oggettoSerializzato.GetType();
 
             // Inizializza il serializer con il tipo dell'oggetto caricato
@@ -256,6 +274,44 @@ namespace XMLConverter
         }
 
         /// <summary>
+        /// Valorizza i valori necessari per poter continuare
+        /// </summary>
+        private static void ImpostaScelteGlobaliUtente()
+        {
+            ConverterProgram.ImpostaGestioneFormatoDateTimeAggiuntivo();
+            ConverterProgram.ImpostaNameSpaceGlobale();
+        }
+
+        /// <summary>
+        /// Permette di impostare il namespace all'utente
+        /// </summary>
+        private static void ImpostaNameSpaceGlobale()
+        {
+            do
+            {
+
+                Console.WriteLine("Please specify the NameSpace of the generated class:");
+                // Non faccio nessun controllo, se l'utente sbaglia dovrà riavviare il programma
+                _namespaceScelto = Console.ReadLine();
+            } while (String.IsNullOrWhiteSpace(_namespaceScelto));
+        }
+
+        /// <summary>
+        /// Permette di gestire il formato aggiuntivo se l'utente lo desidera
+        /// </summary>
+        private static void ImpostaGestioneFormatoDateTimeAggiuntivo()
+        {
+            Console.WriteLine("Please press y if your xml contains DateTimes in the format 'MMyy', anything else to ignore it.");
+            if (Console.ReadKey().KeyChar == 'y')
+            {
+                Console.WriteLine("Please don't use integers that follow the same pattern anywhere in the xml: '{01-12}{00-99}'");
+                ConverterProgram._aggiungiFormatoDateTimeSpeciale = true;
+                Console.WriteLine("Press any button to continue");
+                Console.ReadKey();
+            }
+        }
+
+        /// <summary>
         /// Permette di verificare se l'oggetto passato, è uguale a ciò che mi ha permesso di generarlo
         /// </summary>
         public static void TestaUguaglianzaDocumentoOggetto(XDocument documentoCaricato, object oggettoSerializzato)
@@ -322,7 +378,7 @@ namespace XMLConverter
             stringBuilderClasse.AppendLine("using System.Linq;");
             stringBuilderClasse.AppendLine("using System.Xml.Linq;");
             stringBuilderClasse.AppendLine("");
-            stringBuilderClasse.AppendLine("namespace BELHXmlTool");
+            stringBuilderClasse.AppendLine($"namespace BELHXmlTool.{_namespaceScelto}");
             stringBuilderClasse.AppendLine("{");
 
             // Arrivati qui ogni elementovalido è valido e ha le proprietà che dovrebbe avere.
@@ -377,7 +433,7 @@ namespace XMLConverter
             string nomeClasse, string nomeNuovoTest, XDocument documentoCaricato)
         {
             //Finalmente deserializzo la classe e la restituisco
-            var gestoreInizializzazione = new ObjectInitializationSerializer();
+            var gestoreInizializzazione = new TestCreatorManager();
             string stringaMetodoInizializzazioneOggetto = gestoreInizializzazione.CreaTest(oggetto, nomeNuovoTest, documentoCaricato);
 
             var stringBuilderInizializzazioneOggetto =
@@ -817,8 +873,13 @@ namespace XMLConverter
                     "m", "M", "o", "O", "r", "R",
                     "s", "t", "T", "u", "U", "y",
                     "Y", "yyyy-MM-dd","yyyy-MM-dd HH:mm:ss",
-                    "MMyy",
+                    "yyyy-MM-ddTHH:mm:ssZ",
                 };
+
+            if (_aggiungiFormatoDateTimeSpeciale)
+            {
+                _listaFormatiDateTimeStandard.Add("MMyy");
+            }
         }
 
         /// <summary>

@@ -9,9 +9,9 @@ using System.Xml.Linq;
 
 namespace XMLConverter
 {
-    public class ObjectInitializationSerializer
+    public class TestCreatorManager
     {
-        public ObjectInitializationSerializer() { }
+        public TestCreatorManager() { }
         private string RicavaInizializzazioneProprieta(object o)
         {
             if (o is bool)
@@ -33,7 +33,14 @@ namespace XMLConverter
             }
             if (o is DateTime)
             {
-                return $"DateTime.Parse(\"{o}\")";
+                var data = (DateTime)o;
+                var sbData = new StringBuilder();
+                double differenzaDataOdierna = (data - DateTime.UtcNow.Date).TotalDays;
+
+                // Tolgo le ',' convertendole in '.' convertendo in stringa con l'invariant
+                sbData.Append($"DateTime.UtcNow.Date.AddDays({differenzaDataOdierna.ToString(CultureInfo.InvariantCulture)})");
+
+                return sbData.ToString();
             }
             if (o is string)
             {
