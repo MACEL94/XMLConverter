@@ -10,6 +10,7 @@ using System.CodeDom.Compiler;
 using System.Reflection;
 using Microsoft.CodeDom.Providers.DotNetCompilerPlatform;
 using WebApplications.Utilities;
+using System.Xml;
 
 namespace XMLConverter
 {
@@ -289,7 +290,6 @@ namespace XMLConverter
         {
             do
             {
-
                 Console.WriteLine("Please specify the NameSpace of the generated class:");
                 // Non faccio nessun controllo, se l'utente sbaglia dovrà riavviare il programma
                 _namespaceScelto = Console.ReadLine();
@@ -344,7 +344,6 @@ namespace XMLConverter
                 default:
                     // Di default continua e basta
                     return true;
-                    break;
             }
 
             // Se arriva qui il char era una parentesi
@@ -597,11 +596,29 @@ namespace XMLConverter
             // Attributi elemento valido attuale
             // Prendo ora la lista degli attributi
             var listaMassimaNomiAttributi = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes().Select(a => a.Name)).Distinct().ToList();
+            var sbNamespaces = new StringBuilder();
             foreach (var nomeAttributo in listaMassimaNomiAttributi)
             {
                 // Prendo tutti gli attributi di quel tipo
                 var listaAttributoAttuale = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
-                string tipoProprieta = null;
+                string nomeProprietaAttributo = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName);
+
+                // Gesione particolare per i namespaces
+                if (listaAttributoAttuale.All(a => a.IsNamespaceDeclaration))
+                {
+                    string nome = null;
+                    if (nomeAttributo.LocalName.Equals("xmlns"))
+                    {
+                        nome = "String.Empty";
+                    }
+                    else
+                    {
+                        nome = "\"" + nomeAttributo.LocalName + "\"";
+                    }
+
+                    sbNamespaces.AppendLine($"new XmlQualifiedName({nome}, \"{listaAttributoAttuale.First().Value}\"),");
+                    continue;
+                }
 
                 // Gestione particolare causata dal fatto che serializzando si perde il formato del datetime originale che invece deve essere preservato
                 bool tipoDateTime = false;
@@ -609,6 +626,7 @@ namespace XMLConverter
                 string formatoDateTime = null;
                 Tuple<string, CultureInfo> tuplaFormatoDecimal = null;
 
+                string tipoProprieta = null;
                 if (tipoProprieta == null)
                 {
                     formatoDateTime = ConverterProgram.TrovaFormatoDateTime(listaAttributoAttuale
@@ -648,7 +666,6 @@ namespace XMLConverter
                     tipoProprieta = "string";
                 }
 
-                string nomeProprietaAttributo = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName);
                 bool serializzabileNecessario = false;
                 // Scrivo quindi il nome dell'attributo
                 if (tipoDateTime)
@@ -740,6 +757,41 @@ namespace XMLConverter
                     string serializzabile = serializzabileNecessario ? "Serializzabile" : null;
                     sbElemento.AppendLine($"public bool {nomeProprietaAttributo}{serializzabile}Specified {{ get {{ return this.{nomeProprietaAttributo}{condizionePerSerializzare}; }} }}");
                 }
+            }
+
+            // Solo se necessario gestisco i namespaces presenti
+            if (sbNamespaces.Length > 0)
+            {
+                //                [XmlNamespaceDeclarations]
+                //public XmlSerializerNamespaces Namespaces
+                //{
+                //    get { return this._namespaces; }
+                //}
+                //            this._namespaces = new XmlSerializerNamespaces(new XmlQualifiedName[] {
+                //    new XmlQualifiedName(string.Empty, "urn:Abracadabra")
+                //});
+                sbElemento.AppendLine("[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]");
+                sbElemento.AppendLine("[XmlNamespaceDeclarations]");
+                sbElemento.AppendLine("public XmlSerializerNamespaces Namespaces");
+                sbElemento.AppendLine("{");
+
+                sbElemento.AppendLine("get");
+                sbElemento.AppendLine("{");
+                sbElemento.AppendLine("return new XmlSerializerNamespaces(new XmlQualifiedName[]");
+                sbElemento.AppendLine("{");
+                sbElemento.Append(sbNamespaces.ToString());
+                sbElemento.AppendLine("});");
+                sbElemento.AppendLine("}");
+
+                //sbElemento.AppendLine("set");
+                //sbElemento.AppendLine("{");
+                //sbElemento.AppendLine("this.Namespaces = new XmlSerializerNamespaces(new XmlQualifiedName[]");
+                //sbElemento.AppendLine("{");
+                //sbElemento.Append(sbNamespaces.ToString());
+                //sbElemento.AppendLine("});");
+                //sbElemento.AppendLine("}");
+
+                sbElemento.AppendLine("}");
             }
 
             // Scrivo prima di chiudere l'elemento il suo valore per l'innertext, se necessario
@@ -1082,7 +1134,12 @@ namespace XMLConverter
                 xmlSerializer = new XmlSerializer(objToXml.GetType());
                 MemoryStream memStream = new MemoryStream();
                 stWriter = new StreamWriter(memStream);
-                xmlSerializer.Serialize(stWriter, objToXml);
+                XmlSerializerNamespaces ns = (XmlSerializerNamespaces)objToXml.GetType().GetProperty("Namespaces").GetValue(objToXml);
+                if (ns == null)
+                {
+                    ns = new XmlSerializerNamespaces(new XmlQualifiedName[] { new XmlQualifiedName(String.Empty, String.Empty) });
+                }
+                xmlSerializer.Serialize(stWriter, objToXml, ns);
                 buffer = Encoding.UTF8.GetString(memStream.GetBuffer()).Replace("\x00", "");
             }
             catch (Exception Ex)

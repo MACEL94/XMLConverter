@@ -1,4 +1,4 @@
-<OTA_ResRetrieveRS xmlns="http://www.opentravel.org/OTA/2003/05" PrimaryLangID="it" Target="Production" TimeStamp="2013-12-04T15:18:36" Version="7.000">
+<OTA_ResRetrieveRS xmlns="http://www.opentravel.org/OTA/2003/05" xmlns:xsi ="asdasdasd" PrimaryLangID="it" Target="Production" TimeStamp="2013-12-04T15:18:36" Version="7.000">
   <Success />
   <ReservationsList>
     <HotelReservation ResStatus="Waitlisted">
