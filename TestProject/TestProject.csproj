@@ -51,9 +51,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="tombi5">
-      <HintPath>..\XMLConverter\ResourcesExample\tombi5.dll</HintPath>
-    </Reference>
     <Reference Include="WebApplications.Utilities, Version=5.2.6488.28656, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <HintPath>..\packages\WebApplications.Utilities.5.2.6488.28656\lib\net452\WebApplications.Utilities.dll</HintPath>
     </Reference>

@@ -74,8 +74,8 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="ConverterProgram.cs" />
-    <Compile Include="ModuleInitializer.cs" />
     <Compile Include="ObjectInitializationSerializer.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ResourcesExample\BookingExpertXML.xml" />
+    <Content Include="ResourcesExample\DocumentoComplesso.xml" />
     <Content Include="ResourcesExample\Example.xml">
       <SubType>Designer</SubType>
     </Content>

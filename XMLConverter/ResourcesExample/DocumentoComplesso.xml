@@ -1,0 +1,21 @@
+﻿<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+  <env:Header>
+    <wsa:MessageID>urn:16092960528611E1BFADB7181697B03B</wsa:MessageID>
+    <wsa:ReplyTo>
+      <wsa:Address>http://www.w3.org/2005/08/addressing/anonymous</wsa:Address>
+      <wsa:ReferenceParameters>
+        <instra:tracking xmlns:instra="http://xmlns.oracle.com/sca/tracking/1.0">0000JLUJsMq0VsSqyCBh6G1FCdSn000GYf</instra:tracking>
+      </wsa:ReferenceParameters>
+    </wsa:ReplyTo>
+  </env:Header>
+  <env:Body>
+    <GetUserIDByNameResponse xmlns="http://tempuri.org/">
+      <Error>
+        <ErrorCode>0</ErrorCode>
+        <ErrorMessage>''</ErrorMessage>
+      </Error>
+      <ReturnValue>0</ReturnValue>
+      <GetUserIDByNameResult>9815</GetUserIDByNameResult>
+    </GetUserIDByNameResponse>
+  </env:Body>
+</env:Envelope>

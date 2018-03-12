@@ -326,6 +326,12 @@ namespace XMLConverter
             {
                 throw new Exception("Conversion error. Exception: " + result);
             }
+
+            result = documentoSerializzato.DeepEquals(documentoCaricato, XObjectComparisonOptions.Semantic);
+            if (result != null)
+            {
+                throw new Exception("Conversion error. Exception: " + result);
+            }
         }
 
         /// <summary>
@@ -603,7 +609,7 @@ namespace XMLConverter
                 var listaAttributoAttuale = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
                 string nomeProprietaAttributo = ConverterProgram.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName);
 
-                // Gesione particolare per i namespaces
+                // Gesione particolare per i namespaces del primo elemento
                 if (listaAttributoAttuale.All(a => a.IsNamespaceDeclaration))
                 {
                     string nome = null;
@@ -783,13 +789,9 @@ namespace XMLConverter
                 sbElemento.AppendLine("});");
                 sbElemento.AppendLine("}");
 
-                //sbElemento.AppendLine("set");
-                //sbElemento.AppendLine("{");
-                //sbElemento.AppendLine("this.Namespaces = new XmlSerializerNamespaces(new XmlQualifiedName[]");
-                //sbElemento.AppendLine("{");
-                //sbElemento.Append(sbNamespaces.ToString());
-                //sbElemento.AppendLine("});");
-                //sbElemento.AppendLine("}");
+                sbElemento.AppendLine("set");
+                sbElemento.AppendLine("{");
+                sbElemento.AppendLine("}");
 
                 sbElemento.AppendLine("}");
             }
@@ -1134,7 +1136,7 @@ namespace XMLConverter
                 xmlSerializer = new XmlSerializer(objToXml.GetType());
                 MemoryStream memStream = new MemoryStream();
                 stWriter = new StreamWriter(memStream);
-                XmlSerializerNamespaces ns = (XmlSerializerNamespaces)objToXml.GetType().GetProperty("Namespaces").GetValue(objToXml);
+                XmlSerializerNamespaces ns = objToXml.GetXmlNamespaceDeclarations();
                 if (ns == null)
                 {
                     ns = new XmlSerializerNamespaces(new XmlQualifiedName[] { new XmlQualifiedName(String.Empty, String.Empty) });
