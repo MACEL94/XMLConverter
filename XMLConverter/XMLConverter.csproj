@@ -72,9 +72,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="ConverterProgram.cs" />
-    <Compile Include="ObjectInitializationSerializer.cs" />
+    <Compile Include="Classes\ElementoValido.cs" />
+    <Compile Include="Classes\XmlConverterManager.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Classes\TestCreatorManager.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,8 +83,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ResourcesExample\BookingExpertXML.xml" />
-    <Content Include="ResourcesExample\DocumentoComplesso.xml" />
     <Content Include="ResourcesExample\Example.xml">
       <SubType>Designer</SubType>
     </Content>

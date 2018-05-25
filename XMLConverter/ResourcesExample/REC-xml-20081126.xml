@@ -34,7 +34,7 @@
 <spec w3c-doctype="rec" xml:lang="en">
 <!--
 Notes on preparation of the Fifth Edition:
-	
+
 - Worked from http://www.w3.org/XML/xml-V10-4e-errata.
 - Last erratum integrated: E11
 - Revised Status section to reflect new status.
@@ -167,9 +167,9 @@ Notes on preparation of the Second Edition:
 				<name>François Yergeau</name>
 			</author>
 		</authlist>
-		<errataloc href="&errataloc;"/>
-		<preverrataloc href="&preverrataloc;"/>
-		<translationloc href="&translationloc;"/>
+		<errataloc href="&errataloc;" />
+		<preverrataloc href="&preverrataloc;" />
+		<translationloc href="&translationloc;" />
 		<abstract>
 			<p>The Extensible Markup Language (XML) is a subset of SGML that is completely
 described in this document. Its goal is to enable generic SGML to be served,
@@ -204,7 +204,7 @@ using the newly-allowed name characters in, for example, ID
 attributes, are now valid.</p>
 <p>This edition supersedes the previous <loc href="http://www.w3.org/TR/2006/REC-xml-20060816/">W3C Recommendation
 				of 16 August 2006</loc>.</p>
-			
+
 			<p>Please report errors in this document to
 the public <loc href="mailto:xml-editor@w3.org">xml-editor@w3.org</loc> mail list; public
 				<loc href="http://lists.w3.org/Archives/Public/xml-editor/">archives</loc> are available. For the convenience of readers,
@@ -215,7 +215,7 @@ list</loc> for the previous edition, together with a link to the particular
 				erratum in that list. Most of the
 errata in the list provide a rationale for the change.  The errata
 list for this fifth edition is available at <loc href="&errataloc;">&errataloc;</loc>.</p>
-			
+
 			<p>An implementation report is available at <loc href="&impreploc;">&impreploc;</loc>.
 				A <loc href="http://www.w3.org/XML/Test/">Test Suite</loc> is maintained to help assessing conformance to this specification.</p>
 
@@ -226,7 +226,7 @@ list for this fifth edition is available at <loc href="&errataloc;">&errataloc;<
 				the group; that page also includes instructions for disclosing a patent.
 				An individual who has actual knowledge of a patent which the individual
 				believes contains <loc href="http://www.w3.org/Consortium/Patent-Policy-20040205/#def-essential">Essential
-				Claim(s)</loc> must disclose the information in accordance with 
+				Claim(s)</loc> must disclose the information in accordance with
 				<loc href="http://www.w3.org/Consortium/Patent-Policy-20040205/#sec-Disclosure">section 6 of the W3C Patent Policy</loc>.</p>
 		</status>
 		<pubstmt>
@@ -251,7 +251,7 @@ Working Group, 1996, 1997, 2000, 2006, 2008.</p>
 objects called <termref def="dt-xml-doc">XML documents</termref> and partially
 describes the behavior of computer programs which process them. XML is an
 application profile or restricted form of SGML, the Standard Generalized Markup
-Language <bibref ref="ISO8879"/>. By construction, XML documents are conforming
+Language <bibref ref="ISO8879" />. By construction, XML documents are conforming
 SGML documents.</p>
 			<p>XML documents are made up of storage units called <termref def="dt-entity">entities</termref>,
 which contain either parsed or unparsed data. Parsed data is made up of <termref def="dt-character">characters</termref>, some of which form <termref def="dt-chardata">character
@@ -311,11 +311,11 @@ minimum, ideally zero.</p>
 						<p>Terseness in XML markup is of minimal importance.</p>
 					</item>
 				</olist>
-				<p>This specification, together with associated standards (Unicode <bibref ref="Unicode"/>
-					and ISO/IEC 10646 <bibref ref="ISO10646"/> for characters, Internet <phrase diff="del">RFC 3066</phrase><phrase diff="add"><loc role="erratumref" href="E01"/>BCP 47</phrase>
-					<bibref ref="RFC1766"/> <phrase diff="add"><loc role="erratumref" href="E01"/>and the Language Subtag Registry <bibref ref="IANA-LANGCODES"/></phrase> for language
-					identification tags<phrase diff="del"><loc role="erratumref" href="E01"/>, ISO 639 <bibref ref="ISO639"/>
-					for language name codes, and ISO 3166 <bibref ref="ISO3166"/> for country name codes</phrase>), provides
+				<p>This specification, together with associated standards (Unicode <bibref ref="Unicode" />
+					and ISO/IEC 10646 <bibref ref="ISO10646" /> for characters, Internet <phrase diff="del">RFC 3066</phrase><phrase diff="add"><loc role="erratumref" href="E01" />BCP 47</phrase>
+					<bibref ref="RFC1766" /> <phrase diff="add"><loc role="erratumref" href="E01" />and the Language Subtag Registry <bibref ref="IANA-LANGCODES" /></phrase> for language
+					identification tags<phrase diff="del"><loc role="erratumref" href="E01" />, ISO 639 <bibref ref="ISO639" />
+					for language name codes, and ISO 3166 <bibref ref="ISO3166" /> for country name codes</phrase>), provides
 all the information necessary to understand XML Version &versionOfXML; and
 construct computer programs to process it.</p>
 				<p>This version of the XML specification may be distributed freely, as long as
@@ -328,7 +328,7 @@ this specification. The key words <rfc2119>MUST</rfc2119>, <rfc2119>MUST NOT</rf
 <rfc2119>REQUIRED</rfc2119>, <rfc2119>SHALL</rfc2119>, <rfc2119>SHALL NOT</rfc2119>,
 <rfc2119>SHOULD</rfc2119>, <rfc2119>SHOULD NOT</rfc2119>, <rfc2119>RECOMMENDED</rfc2119>,
 &MAY;, and <rfc2119>OPTIONAL</rfc2119>, when <rfc2119>EMPHASIZED</rfc2119>,
-are to be interpreted as described in <bibref ref="rfc2119"/>. In addition, the terms defined
+are to be interpreted as described in <bibref ref="rfc2119" />. In addition, the terms defined
 in the following list are used in building
 those definitions and in describing the actions of an XML processor:<glist>
 						<gitem>
@@ -401,7 +401,7 @@ strings. No
 case folding is performed. (Of strings and rules in the grammar:) A string
 matches a grammatical production if it belongs to the language generated by
 that production. (Of content and content models:) An element matches its declaration
-when it conforms in the fashion described in the constraint <specref ref="elementvalid"/>.</termdef>
+when it conforms in the fashion described in the constraint <specref ref="elementvalid" />.</termdef>
 								</p>
 							</def>
 						</gitem>
@@ -448,7 +448,7 @@ or <termref def="dt-docent">document entity</termref>. Logically, the document
 is composed of declarations, elements, comments, character references, and
 processing instructions, all of which are indicated in the document by explicit
 markup. The logical and physical structures <rfc2119>MUST</rfc2119> nest properly, as described
-in <specref ref="wf-entities"/>.</p>
+in <specref ref="wf-entities" />.</p>
 			<div2 id="sec-well-formed">
 				<head>Well-Formed XML Documents</head>
 				<p>
@@ -517,10 +517,10 @@ a <term>child</term> of <el>P</el>.</termdef>
 a sequence of <termref def="dt-character">characters</termref>, which may
 represent markup or character data.</termdef>
 					<termdef id="dt-character" term="Character">A <term>character</term>
-is an atomic unit of text as specified by ISO/IEC 10646:2000 <bibref ref="ISO10646"/>. Legal characters are tab, carriage
+is an atomic unit of text as specified by ISO/IEC 10646:2000 <bibref ref="ISO10646" />. Legal characters are tab, carriage
 return, line feed, and the legal characters
 of Unicode and ISO/IEC 10646. The
-versions of these standards cited in <specref ref="sec-existing-stds"/> were
+versions of these standards cited in <specref ref="sec-existing-stds" /> were
 current at the time this document was prepared. New characters may be added
 to these standards by amendments or new editions. Consequently, XML processors
 <rfc2119>MUST</rfc2119> accept any character in the range specified for <nt def="NT-Char">Char</nt>.
@@ -538,17 +538,17 @@ to these standards by amendments or new editions. Consequently, XML processors
 				</scrap>
 				<p>The mechanism for encoding character code points into bit patterns &may;
 vary from entity to entity. All XML processors <rfc2119>MUST</rfc2119> accept the UTF-8 and UTF-16
-encodings of Unicode<phrase diff="del"><loc role="erratumref" href="E11"/> 3.1</phrase> <phrase diff="chg"><loc role="erratumref" href="E11"/><bibref ref="Unicode"/></phrase>;
+encodings of Unicode<phrase diff="del"><loc role="erratumref" href="E11" /> 3.1</phrase> <phrase diff="chg"><loc role="erratumref" href="E11" /><bibref ref="Unicode" /></phrase>;
 the mechanisms for signaling which of the two is in use,
-or for bringing other encodings into play, are discussed later, in <specref ref="charencoding"/>.</p>
+or for bringing other encodings into play, are discussed later, in <specref ref="charencoding" />.</p>
 				<note>
 					<p>Document authors are encouraged to avoid
 <quote>compatibility characters</quote>, as defined
-in section <phrase diff="chg"><loc role="erratumref" href="E11"/>2.3</phrase> of <bibref ref="Unicode"/><phrase diff="del"><loc role="erratumref" href="E11"/> (see also D21 in section 3.6 of
-<bibref ref="Unicode3"/>)</phrase>. The characters defined in the following ranges are also
+in section <phrase diff="chg"><loc role="erratumref" href="E11" />2.3</phrase> of <bibref ref="Unicode" /><phrase diff="del"><loc role="erratumref" href="E11" /> (see also D21 in section 3.6 of
+<bibref ref="Unicode3" />)</phrase>. The characters defined in the following ranges are also
 discouraged. They are either control characters or permanently undefined Unicode
 characters:</p>
-<eg>[#x7F-#x84], [#x86-#x9F], [#xFDD0-#xFD<phrase diff="chg"><loc role="erratumref" href="E02"/>E</phrase>F],
+<eg>[#x7F-#x84], [#x86-#x9F], [#xFDD0-#xFD<phrase diff="chg"><loc role="erratumref" href="E02" />E</phrase>F],
 [#x1FFFE-#x1FFFF], [#x2FFFE-#x2FFFF], [#x3FFFE-#x3FFFF],
 [#x4FFFE-#x4FFFF], [#x5FFFE-#x5FFFF], [#x6FFFE-#x6FFFF],
 [#x7FFFE-#x7FFFF], [#x8FFFE-#x8FFFF], [#x9FFFE-#x9FFFF],
@@ -581,55 +581,55 @@ characters, carriage returns, line feeds, or tabs.</p>
 					<p>The presence of #xD in the above production is
 	maintained purely for backward compatibility with the
 	<loc href="http://www.w3.org/TR/1998/REC-xml-19980210">First Edition</loc>.
-	As explained in <specref ref="sec-line-ends"/>,
+	As explained in <specref ref="sec-line-ends" />,
 	all #xD characters literally present in an XML document
 	are either removed or replaced by #xA characters before
 	any other processing is done. The only way to get a #xD character to match this production is to
   use a character reference in an entity value literal.</p>
 				</note>
 
-				<p diff="del"><loc role="erratumref" href="E09"/>Characters are classified for convenience as letters, digits, or other
+				<p diff="del"><loc role="erratumref" href="E09" />Characters are classified for convenience as letters, digits, or other
 characters. A
 letter consists of an alphabetic or syllabic base character or an ideographic
 character. Full definitions of the specific characters in each class
-are given in <specref ref="CharClasses"/>.</p>
+are given in <specref ref="CharClasses" />.</p>
 
 				<p>An <nt def="NT-Nmtoken">Nmtoken</nt> (name token) is any mixture of name
 characters.</p>
-				<p diff="del"><loc role="erratumref" href="E09"/>
+				<p diff="del"><loc role="erratumref" href="E09" />
 					<termdef id="dt-name-x" term="Name">A <term>Name</term> is a token beginning
 with a letter or one of a few punctuation characters, and continuing with
 letters, digits, hyphens, underscores, colons, or full stops, together known
 as name characters.</termdef></p>
-    <p diff="add"><loc role="erratumref" href="E09"/><termdef id="dt-name" term="Name">A <nt def="NT-Name">Name</nt> is an <nt def="NT-Nmtoken">Nmtoken</nt> with a restricted set of initial characters.</termdef>  Disallowed initial characters for <nt def="NT-Name">Names</nt> include digits, diacritics, the full stop and the hyphen.</p>
+    <p diff="add"><loc role="erratumref" href="E09" /><termdef id="dt-name" term="Name">A <nt def="NT-Name">Name</nt> is an <nt def="NT-Nmtoken">Nmtoken</nt> with a restricted set of initial characters.</termdef>  Disallowed initial characters for <nt def="NT-Name">Names</nt> include digits, diacritics, the full stop and the hyphen.</p>
     <p>Names beginning with the string <quote><code>xml</code></quote>,
 or with any string which would match <code>(('X'|'x') ('M'|'m') ('L'|'l'))</code>,
 are reserved for standardization in this or future versions of this specification.</p>
 				<note>
 					<p>The
-Namespaces in XML Recommendation <bibref ref="xml-names"/> assigns a meaning
+Namespaces in XML Recommendation <bibref ref="xml-names" /> assigns a meaning
 to names containing colon characters. Therefore, authors should not use the
 colon in XML names except for namespace purposes, but XML processors must
 accept the colon as a name character.</p>
 				</note>
 
-				<p diff="add"><loc role="erratumref" href="E09"/>The first character of a <nt def="NT-Name">Name</nt> <rfc2119>MUST</rfc2119> be a <nt def="NT-NameStartChar">NameStartChar</nt>, and any
+				<p diff="add"><loc role="erratumref" href="E09" />The first character of a <nt def="NT-Name">Name</nt> <rfc2119>MUST</rfc2119> be a <nt def="NT-NameStartChar">NameStartChar</nt>, and any
 					other characters <rfc2119>MUST</rfc2119> be <nt def="NT-NameChar">NameChars</nt>; this mechanism is used to
 					prevent names from beginning with European (ASCII) digits or with
 					basic combining characters. Almost all characters are permitted in
 					names, except those which either are or reasonably could be used as
 					delimiters. The intention is to be inclusive rather than exclusive,
 					so that writing systems not yet encoded in Unicode can be used in
-					XML names. See <specref ref="sec-suggested-names"/> for suggestions on the creation of
+					XML names. See <specref ref="sec-suggested-names" /> for suggestions on the creation of
 					names.</p>
-				
-				<p diff="add"><loc role="erratumref" href="E09"/>Document authors are encouraged to use names which are
+
+				<p diff="add"><loc role="erratumref" href="E09" />Document authors are encouraged to use names which are
 					meaningful words or combinations of words in natural languages, and
 					to avoid symbolic or white space characters in names. Note that
 					COLON, HYPHEN-MINUS, FULL STOP (period), LOW LINE (underscore), and
 					MIDDLE DOT are explicitly permitted.</p>
-				
-				<p diff="add"><loc role="erratumref" href="E09"/>The ASCII symbols and punctuation marks, along with a fairly
+
+				<p diff="add"><loc role="erratumref" href="E09" />The ASCII symbols and punctuation marks, along with a fairly
 					large group of Unicode symbol characters, are excluded from names
 					because they are more useful as delimiters in contexts where XML
 					names are used outside XML documents; providing this group gives
@@ -637,23 +637,23 @@ accept the colon as a name character.</p>
 					an XML name. The character #x037E, GREEK QUESTION MARK, is excluded
 					because when normalized it becomes a semicolon, which could change
 					the meaning of entity references.</p>
-				
+
 				<scrap lang="ebnf">
 					<head>Names and Tokens</head>
 					<prod id="NT-NameStartChar" num="4">
 						<lhs diff="chg">NameStartChar</lhs>
 						<rhs diff="chg">":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]</rhs>
-						<com diff="chg"><loc role="erratumref" href="E09"/></com>
+						<com diff="chg"><loc role="erratumref" href="E09" /></com>
 					</prod>
 					<prod id="NT-NameChar" num="4a" diff="add">
 						<lhs>NameChar</lhs>
 						<rhs><nt def="NT-NameStartChar">NameStartChar</nt> | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]</rhs>
-						<com diff="add"><loc role="erratumref" href="E09"/></com>
+						<com diff="add"><loc role="erratumref" href="E09" /></com>
 					</prod>
 					<prod id="NT-Name" num="5">
 						<lhs>Name</lhs>
 						<rhs diff="chg"><nt def="NT-NameStartChar">NameStartChar</nt> (<nt def="NT-NameChar">NameChar</nt>)*</rhs>
-						<com diff="chg"><loc role="erratumref" href="E09"/></com>
+						<com diff="chg"><loc role="erratumref" href="E09" /></com>
 					</prod>
 					<prod id="NT-Names" num="6">
 						<lhs>Names</lhs>
@@ -672,7 +672,7 @@ accept the colon as a name character.</p>
 				<note>
 					<p>The <nt def="NT-Names">Names</nt>
 and <nt def="NT-Nmtokens">Nmtokens</nt> productions are used to define the validity
-of tokenized attribute values after normalization (see <specref ref="sec-attribute-types"/>).</p>
+of tokenized attribute values after normalization (see <specref ref="sec-attribute-types" />).</p>
 				</note>
 				<p>Literal data is any quoted string not containing the quotation mark used
 as a delimiter for that string. Literals are used for specifying the content
@@ -965,7 +965,7 @@ in the document.</p>
 						<prod id="NT-VersionNum" num="26">
 							<lhs>VersionNum</lhs>
 							<rhs diff="chg">'1.' [0-9]+</rhs>
-							<com diff="chg"><loc role="erratumref" href="E10"/></com>
+							<com diff="chg"><loc role="erratumref" href="E10" /></com>
 						</prod>
 						<prod id="NT-Misc" num="27">
 							<lhs>Misc</lhs>
@@ -976,16 +976,16 @@ in the document.</p>
 						</prod>
 					</prodgroup>
 				</scrap>
-				
-				<p diff="add"><loc role="erratumref" href="E10"/>Even though the <nt def="NT-VersionNum">VersionNum</nt> production matches
+
+				<p diff="add"><loc role="erratumref" href="E10" />Even though the <nt def="NT-VersionNum">VersionNum</nt> production matches
 					any version number of the form '1.x', XML 1.0 documents <rfc2119>SHOULD NOT</rfc2119> specify a version number other than '1.0'.</p>
 				<note diff="add">
-					<p><loc role="erratumref" href="E10"/>When an XML 1.0 processor encounters a document that specifies
+					<p><loc role="erratumref" href="E10" />When an XML 1.0 processor encounters a document that specifies
 						a 1.x version number other than '1.0', it will process it as
 						a 1.0 document.  This means that an XML 1.0 processor will accept
 						1.x documents provided they do not use any non-1.0 features.</p>
 				</note>
-				
+
 				<p>
 					<termdef id="dt-doctype" term="Document Type Declaration">The XML <term>document
 type declaration</term> contains or points to <termref def="dt-markupdecl">markup
@@ -1002,7 +1002,7 @@ declaration</termref>, or a <termref def="dt-notdecl">notation declaration</term
 These declarations &may; be contained in whole or in part within <termref def="dt-PE">parameter
 entities</termref>, as described in the well-formedness and validity constraints
 below. For further
-information, see <specref ref="sec-physical-struct"/>.</p>
+information, see <specref ref="sec-physical-struct" />.</p>
 				<scrap id="dtd" lang="ebnf">
 					<head>Document Type Definition</head>
 					<prodgroup pcw2="6" pcw4="17.5" pcw5="9">
@@ -1013,15 +1013,15 @@ information, see <specref ref="sec-physical-struct"/>.</p>
 (<nt def="NT-S">S</nt>
 								<nt def="NT-ExternalID">ExternalID</nt>)? <nt def="NT-S">S</nt>?
 ('[' <nt def="NT-intSubset">intSubset</nt> ']' <nt def="NT-S">S</nt>?)? '>'</rhs>
-							<vc def="vc-roottype"/>
-							<wfc def="ExtSubset"/>
+							<vc def="vc-roottype" />
+							<wfc def="ExtSubset" />
 						</prod>
 						<prod id="NT-DeclSep" num="28a">
 							<lhs>DeclSep</lhs>
 							<rhs>
 								<nt def="NT-PEReference">PEReference</nt> | <nt def="NT-S">S</nt>
 							</rhs>
-							<wfc def="PE-between-Decls"/>
+							<wfc def="PE-between-Decls" />
 						</prod>
 						<prod id="NT-intSubset" num="28b">
 							<lhs>intSubset</lhs>
@@ -1033,8 +1033,8 @@ information, see <specref ref="sec-physical-struct"/>.</p>
 								<nt def="NT-elementdecl">elementdecl</nt> | <nt def="NT-AttlistDecl">AttlistDecl</nt> | <nt def="NT-EntityDecl">EntityDecl</nt>
 | <nt def="NT-NotationDecl">NotationDecl</nt> | <nt def="NT-PI">PI</nt> | <nt def="NT-Comment">Comment</nt>
 							</rhs>
-							<vc def="vc-PEinMarkupDecl"/>
-							<wfc def="wfc-PEinInternalSubset"/>
+							<vc def="vc-PEinMarkupDecl" />
+							<wfc def="wfc-PEinInternalSubset" />
 						</prod>
 					</prodgroup>
 				</scrap>
@@ -1049,7 +1049,7 @@ entities have been <termref def="dt-include">included</termref>.</p>
 				<p>Parameter
 entity references are recognized anywhere in the DTD (internal and external
 subsets and external parameter entities), except in literals, processing instructions,
-comments, and the contents of ignored conditional sections (see <specref ref="sec-condition-sect"/>).
+comments, and the contents of ignored conditional sections (see <specref ref="sec-condition-sect" />).
 They are also recognized in entity value literals. The use of parameter entities
 in the internal subset is restricted as described below.</p>
 				<vcnote id="vc-roottype">
@@ -1153,7 +1153,7 @@ them).</termdef>
 							<rhs>
 								<nt def="NT-S">S</nt> 'standalone' <nt def="NT-Eq">Eq</nt>
 (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"')) </rhs>
-							<vc def="vc-check-rmd"/>
+							<vc def="vc-check-rmd" />
 						</prod>
 					</prodgroup>
 				</scrap>
@@ -1262,7 +1262,7 @@ named <att>xml:lang</att> &may; be inserted in documents to specify the language
 used in the contents and attribute values of any element in an XML document.
 In valid documents, this attribute, like any other, <rfc2119>MUST</rfc2119> be <termref def="dt-attdecl">declared</termref>
 if it is used. The
-values of the attribute are language identifiers as defined by <bibref ref="RFC1766"/>, <titleref>Tags
+values of the attribute are language identifiers as defined by <bibref ref="RFC1766" />, <titleref>Tags
 for the Identification of Languages</titleref><phrase diff="del">, or its successor</phrase>; in addition, the empty string &may; be specified.</p>
 				<p>(Productions 33 through 38 have been removed.)</p>
 				<p>For example:</p>
@@ -1341,8 +1341,8 @@ and a <termref def="dt-attrval">value</termref>.</p>
 						<nt def="NT-content">content</nt>
 						<nt def="NT-ETag">ETag</nt>
 					</rhs>
-					<wfc def="GIMatch"/>
-					<vc def="elementvalid"/>
+					<wfc def="GIMatch" />
+					<vc def="elementvalid" />
 				</prod>
 			</scrap>
 			<p>This specification does not constrain the
@@ -1416,7 +1416,7 @@ XML element is marked by a <term>start-tag</term>.</termdef>
 							<lhs>STag</lhs>
 							<rhs>'&lt;' <nt def="NT-Name">Name</nt> (<nt def="NT-S">S</nt>
 								<nt def="NT-Attribute">Attribute</nt>)* <nt def="NT-S">S</nt>? '>'</rhs>
-							<wfc def="uniqattspec"/>
+							<wfc def="uniqattspec" />
 						</prod>
 						<prod id="NT-Attribute" num="41">
 							<lhs>Attribute</lhs>
@@ -1425,9 +1425,9 @@ XML element is marked by a <term>start-tag</term>.</termdef>
 								<nt def="NT-Eq">Eq</nt>
 								<nt def="NT-AttValue">AttValue</nt>
 							</rhs>
-							<vc def="ValueType"/>
-							<wfc def="NoExternalRefs"/>
-							<wfc def="CleanAttrVals"/>
+							<vc def="ValueType" />
+							<wfc def="NoExternalRefs" />
+							<wfc def="CleanAttrVals" />
 						</prod>
 					</prodgroup>
 				</scrap>
@@ -1448,7 +1448,7 @@ tag is not significant.</p>
 					<head>Attribute Value Type</head>
 					<p>The attribute <rfc2119>MUST</rfc2119>
 have been declared; the value <rfc2119>MUST</rfc2119> be of the type declared for it. (For attribute
-types, see <specref ref="attdecls"/>.)</p>
+types, see <specref ref="attdecls" />.)</p>
 				</vcnote>
 				<wfcnote id="NoExternalRefs">
 					<head>No External Entity References</head>
@@ -1509,8 +1509,8 @@ tag</term> takes a special form:</termdef>
 						<prod id="NT-EmptyElemTag" num="44">
 							<lhs>EmptyElemTag</lhs>
 							<rhs>'&lt;' <nt def="NT-Name">Name</nt> (<nt def="NT-S">S</nt>
-								<nt def="NT-Attribute">Attribute</nt>)* <nt def="NT-S">S</nt>? '/>'</rhs>
-							<wfc def="uniqattspec"/>
+								<nt def="NT-Attribute">Attribute</nt>)* <nt def="NT-S">S</nt>? ' />'</rhs>
+							<wfc def="uniqattspec" />
 						</prod>
 					</prodgroup>
 				</scrap>
@@ -1523,7 +1523,7 @@ EMPTY.</p>
 				<eg>&lt;IMG align="left"
  src="http://www.w3.org/Icons/WWW/w3c_home" />
 &lt;br>&lt;/br>
-&lt;br/></eg>
+&lt;br /></eg>
 			</div2>
 			<div2 id="elemdecls">
 				<head>Element Type Declarations</head>
@@ -1549,7 +1549,7 @@ type declaration</term> takes the form:</termdef>
 								<nt def="NT-contentspec">contentspec</nt>
 								<nt def="NT-S">S</nt>?
 '>'</rhs>
-							<vc def="EDUnique"/>
+							<vc def="EDUnique" />
 						</prod>
 						<prod id="NT-contentspec" num="46">
 							<lhs>contentspec</lhs>
@@ -1566,8 +1566,8 @@ type declaration</term> takes the form:</termdef>
 				</vcnote>
 				<p>Examples of element type declarations:</p>
 				<eg>&lt;!ELEMENT br EMPTY>
-&lt;!ELEMENT p (#PCDATA|emph)* >
-&lt;!ELEMENT %name.para; %content.para; >
+&lt;!ELEMENT p (#PCDATA|emph)*>
+&lt;!ELEMENT %name.para; %content.para;>
 &lt;!ELEMENT container ANY></eg>
 				<div3 id="sec-element-content">
 					<head>Element Content</head>
@@ -1598,12 +1598,12 @@ content particles:</p>
 							<prod id="NT-choice" num="49">
 								<lhs>choice</lhs>
 								<rhs>'(' <nt def="NT-S">S</nt>? <nt def="NT-cp">cp</nt> ( <nt def="NT-S">S</nt>? '|' <nt def="NT-S">S</nt>? <nt def="NT-cp">cp</nt> )+ <nt def="NT-S">S</nt>? ')'</rhs>
-								<vc def="vc-PEinGroup"/>
+								<vc def="vc-PEinGroup" />
 							</prod>
 							<prod id="NT-seq" num="50">
 								<lhs>seq</lhs>
 								<rhs>'(' <nt def="NT-S">S</nt>? <nt def="NT-cp">cp</nt> ( <nt def="NT-S">S</nt>? ',' <nt def="NT-S">S</nt>? <nt def="NT-cp">cp</nt> )* <nt def="NT-S">S</nt>? ')'</rhs>
-								<vc def="vc-PEinGroup"/>
+								<vc def="vc-PEinGroup" />
 							</prod>
 						</prodgroup>
 					</scrap>
@@ -1624,8 +1624,8 @@ choice, and repetition operators and matching each element in the content
 against an element type in the content model. <termref def="dt-compat">For
 compatibility</termref>, it is an error if the content model
 allows an element to match more than one occurrence of an element type in the
-content model. For more information, see <specref ref="determinism"/>.</p>
-					<!--appendix <specref ref="determinism"/>.-->
+content model. For more information, see <specref ref="determinism" />.</p>
+					<!--appendix <specref ref="determinism" />.-->
 					<!-- appendix on deterministic content models. -->
 					<vcnote id="vc-PEinGroup">
 						<head>Proper Group/PE Nesting</head>
@@ -1663,8 +1663,8 @@ but not their order or their number of occurrences:</p>
 '|' <nt def="NT-S">S</nt>? <nt def="NT-Name">Name</nt>)* <nt def="NT-S">S</nt>?
 ')*' </rhs>
 								<rhs>| '(' <nt def="NT-S">S</nt>? '#PCDATA' <nt def="NT-S">S</nt>? ')' </rhs>
-								<vc def="vc-PEinGroup"/>
-								<vc def="vc-MixedChildrenUnique"/>
+								<vc def="vc-PEinGroup" />
+								<vc def="vc-MixedChildrenUnique" />
 							</prod>
 						</prodgroup>
 					</scrap>
@@ -1680,7 +1680,7 @@ same name <rfc2119>MUST NOT</rfc2119> appear more than once in a single mixed-co
 					</vcnote>
 					<p>Examples of mixed content declarations:</p>
 					<eg>&lt;!ELEMENT p (#PCDATA|a|ul|b|i|em)*>
-&lt;!ELEMENT p (#PCDATA | %font; | %phrase; | %special; | %form;)* >
+&lt;!ELEMENT p (#PCDATA | %font; | %phrase; | %special; | %form;)*>
 &lt;!ELEMENT b (#PCDATA)></eg>
 				</div3>
 			</div2>
@@ -1690,7 +1690,7 @@ same name <rfc2119>MUST NOT</rfc2119> appear more than once in a single mixed-co
 					<termref def="dt-attr">Attributes</termref> are used to associate name-value
 pairs with <termref def="dt-element">elements</termref>. Attribute specifications
 <rfc2119>MUST NOT</rfc2119> appear outside of <termref def="dt-stag">start-tags</termref> and <termref def="dt-eetag">empty-element tags</termref>; thus, the productions used to
-recognize them appear in <specref ref="sec-starttags"/>. Attribute-list declarations
+recognize them appear in <specref ref="sec-starttags" />. Attribute-list declarations
 &may; be used:</p>
 				<ulist>
 					<item>
@@ -1752,7 +1752,7 @@ for a given attribute, but this is not an error.</p>
 types, and enumerated types. The string type may take any literal string as
 a value; the tokenized types are more constrained.
 The validity constraints noted in the grammar are applied after the attribute
-value has been normalized as described in <specref ref="AVNormalize"/>.</p>
+value has been normalized as described in <specref ref="AVNormalize" />.</p>
 					<scrap lang="ebnf">
 						<head>Attribute Types</head>
 						<prodgroup pcw4="14" pcw5="11.5">
@@ -1770,21 +1770,21 @@ value has been normalized as described in <specref ref="AVNormalize"/>.</p>
 							<prod id="NT-TokenizedType" num="56">
 								<lhs>TokenizedType</lhs>
 								<rhs>'ID'</rhs>
-								<vc def="id"/>
-								<vc def="one-id-per-el"/>
-								<vc def="id-default"/>
+								<vc def="id" />
+								<vc def="one-id-per-el" />
+								<vc def="id-default" />
 								<rhs>| 'IDREF'</rhs>
-								<vc def="idref"/>
+								<vc def="idref" />
 								<rhs>| 'IDREFS'</rhs>
-								<vc def="idref"/>
+								<vc def="idref" />
 								<rhs>| 'ENTITY'</rhs>
-								<vc def="entname"/>
+								<vc def="entname" />
 								<rhs>| 'ENTITIES'</rhs>
-								<vc def="entname"/>
+								<vc def="entname" />
 								<rhs>| 'NMTOKEN'</rhs>
-								<vc def="nmtok"/>
+								<vc def="nmtok" />
 								<rhs>| 'NMTOKENS'</rhs>
-								<vc def="nmtok"/>
+								<vc def="nmtok" />
 							</prod>
 						</prodgroup>
 					</scrap>
@@ -1830,7 +1830,7 @@ declared in the <termref def="dt-doctype">DTD</termref>.</p>
 					<!-- why?
 <p>The XML processor must normalize attribute values before
 passing them to the application, as described in
-<specref ref="AVNormalize"/>.</p>-->
+<specref ref="AVNormalize" />.</p>-->
 					<p>
 						<termdef id="dt-enumerated" term="Enumerated Attribute
 Values">
@@ -1849,17 +1849,17 @@ Values">
 						<prod id="NT-NotationType" num="58">
 							<lhs>NotationType</lhs>
 							<rhs>'NOTATION' <nt def="NT-S">S</nt> '(' <nt def="NT-S">S</nt>? <nt def="NT-Name">Name</nt> (<nt def="NT-S">S</nt>? '|' <nt def="NT-S">S</nt>? <nt def="NT-Name">Name</nt>)* <nt def="NT-S">S</nt>? ')' </rhs>
-							<vc def="notatn"/>
-							<vc def="OneNotationPer"/>
-							<vc def="NoNotationEmpty"/>
-							<vc def="NoDuplicateTokens"/>
+							<vc def="notatn" />
+							<vc def="OneNotationPer" />
+							<vc def="NoNotationEmpty" />
+							<vc def="NoDuplicateTokens" />
 						</prod>
 						<prod id="NT-Enumeration" num="59">
 							<lhs>Enumeration</lhs>
 							<rhs>'(' <nt def="NT-S">S</nt>? <nt def="NT-Nmtoken">Nmtoken</nt>
 (<nt def="NT-S">S</nt>? '|' <nt def="NT-S">S</nt>? <nt def="NT-Nmtoken">Nmtoken</nt>)* <nt def="NT-S">S</nt>? ')'</rhs>
-							<vc def="enum"/>
-							<vc def="NoDuplicateTokens"/>
+							<vc def="enum" />
+							<vc def="NoDuplicateTokens" />
 						</prod>
 					</scrap>
 					<p>A <kw>NOTATION</kw> attribute identifies a <termref def="dt-notation">notation</termref>,
@@ -1913,11 +1913,11 @@ is to react if a declared attribute is absent in a document.</p>
 								<lhs>DefaultDecl</lhs>
 								<rhs>'#REQUIRED' |&nbsp;'#IMPLIED' </rhs>
 								<rhs>| (('#FIXED' <nt def="NT-S">S</nt>)? <nt def="NT-AttValue">AttValue</nt>)</rhs>
-								<vc def="RequiredAttr"/>
-								<vc def="defattrvalid"/>
-								<wfc def="CleanAttrVals"/>
-								<vc def="FixedAttr"/>
-								<wfc def="NoExternalRefs"/>
+								<vc def="RequiredAttr" />
+								<vc def="defattrvalid" />
+								<wfc def="CleanAttrVals" />
+								<vc def="FixedAttr" />
+								<wfc def="NoExternalRefs" />
 							</prod>
 						</prodgroup>
 					</scrap>
@@ -2004,7 +2004,7 @@ to the application is the same as that produced by the algorithm.</p>
 					<olist>
 						<item>
 							<p>All line breaks <rfc2119>MUST</rfc2119> have been normalized on input to #xA as described
-in <specref ref="sec-line-ends"/>, so the rest of this algorithm operates
+in <specref ref="sec-line-ends" />, so the rest of this algorithm operates
 on text normalized in this way.</p>
 						</item>
 						<item>
@@ -2134,13 +2134,13 @@ the logical structure of the DTD based on the keyword which governs them.</termd
 							<lhs>includeSect</lhs>
 							<rhs>'&lt;![' <nt def="NT-S">S</nt>? 'INCLUDE' <nt def="NT-S">S</nt>? '[' <nt def="NT-extSubsetDecl">extSubsetDecl</nt>
 ']]&gt;' </rhs>
-							<vc def="condsec-nesting"/>
+							<vc def="condsec-nesting" />
 						</prod>
 						<prod id="NT-ignoreSect" num="63">
 							<lhs>ignoreSect</lhs>
 							<rhs>'&lt;![' <nt def="NT-S">S</nt>? 'IGNORE' <nt def="NT-S">S</nt>? '[' <nt def="NT-ignoreSectContents">ignoreSectContents</nt>*
 ']]&gt;'</rhs>
-							<vc def="condsec-nesting"/>
+							<vc def="condsec-nesting" />
 						</prod>
 						<prod id="NT-ignoreSectContents" num="64">
 							<lhs>ignoreSectContents</lhs>
@@ -2181,8 +2181,8 @@ process.</p>
 the parameter entity <rfc2119>MUST</rfc2119> be replaced by its content before the processor
 decides whether to include or ignore the conditional section.</p>
 				<p>An example:</p>
-				<eg>&lt;!ENTITY % draft 'INCLUDE' >
-&lt;!ENTITY % final 'IGNORE' >
+				<eg>&lt;!ENTITY % draft 'INCLUDE'>
+&lt;!ENTITY % final 'IGNORE'>
 
 &lt;![%draft;[
 &lt;!ELEMENT book (comments*, title, body, supplements?)>
@@ -2267,7 +2267,7 @@ set, for example one not directly accessible from available input devices.</term
 						<lhs>CharRef</lhs>
 						<rhs>'&amp;#' [0-9]+ ';' </rhs>
 						<rhs>| '&amp;#x' [0-9a-fA-F]+ ';'</rhs>
-						<wfc def="wf-Legalchar"/>
+						<wfc def="wf-Legalchar" />
 					</prod>
 				</scrap>
 				<wfcnote id="wf-Legalchar">
@@ -2304,17 +2304,17 @@ use percent-sign (<code>%</code>) and semicolon (<code>;</code>) as delimiters.<
 					<prod id="NT-EntityRef" num="68">
 						<lhs>EntityRef</lhs>
 						<rhs>'&amp;' <nt def="NT-Name">Name</nt> ';'</rhs>
-						<wfc def="wf-entdeclared"/>
-						<vc def="vc-entdeclared"/>
-						<wfc def="textent"/>
-						<wfc def="norecursion"/>
+						<wfc def="wf-entdeclared" />
+						<vc def="vc-entdeclared" />
+						<wfc def="textent" />
+						<wfc def="norecursion" />
 					</prod>
 					<prod id="NT-PEReference" num="69">
 						<lhs>PEReference</lhs>
 						<rhs>'%' <nt def="NT-Name">Name</nt> ';'</rhs>
-						<vc def="vc-entdeclared"/>
-						<wfc def="norecursion"/>
-						<wfc def="indtd"/>
+						<vc def="vc-entdeclared" />
+						<wfc def="norecursion" />
+						<wfc def="indtd" />
 					</prod>
 				</scrap>
 				<wfcnote id="wf-entdeclared">
@@ -2333,20 +2333,20 @@ any of the following entities: &magicents;. The
 declaration of a general entity <rfc2119>MUST</rfc2119> precede any reference to it which appears
 in a default value in an attribute-list declaration.</p>
 					<p>Note that non-validating processors are <titleref href="#include-if-valid">not
-obligated to</titleref> <phrase diff="del"><loc role="erratumref" href="E03"/>to </phrase>read and process entity declarations occurring in parameter entities or in
+obligated to</titleref> <phrase diff="del"><loc role="erratumref" href="E03" />to </phrase>read and process entity declarations occurring in parameter entities or in
 the external subset; for such documents,
 the rule that an entity must be declared is a well-formedness constraint only
 if <titleref href="#sec-rmd">standalone='yes'</titleref>.</p>
 				</wfcnote>
 				<vcnote id="vc-entdeclared">
 					<head>Entity Declared</head>
-					<p>In a document with an external subset or parameter  entity references<phrase diff="chg"><loc role="erratumref" href="E08"/>,
+					<p>In a document with an external subset or parameter  entity references<phrase diff="chg"><loc role="erratumref" href="E08" />,
 						if the document is not standalone (either <quote><code>standalone='no'</code></quote>
 						is specified or there is no standalone declaration), then</phrase>
 the <nt def="NT-Name">Name</nt> given in the entity reference <rfc2119>MUST</rfc2119>
 						<termref def="dt-match">match</termref> that in an <titleref href="#sec-entity-decl">entity
 declaration</titleref>. For interoperability, valid documents <rfc2119>SHOULD</rfc2119> declare
-the entities &magicents;, in the form specified in <specref ref="sec-predefined-ent"/>.
+the entities &magicents;, in the form specified in <specref ref="sec-predefined-ent" />.
 The declaration of a parameter entity <rfc2119>MUST</rfc2119> precede any reference to it. Similarly,
 the declaration of a general entity <rfc2119>MUST</rfc2119> precede any attribute-list
 declaration containing a default value with a direct or indirect reference
@@ -2376,7 +2376,7 @@ is classified &amp;security-level;.</eg>
 				<p>Example of a parameter-entity reference:</p>
 				<eg><![CDATA[<!-- declare the parameter entity "ISOLat2"... -->
 <!ENTITY % ISOLat2
-         SYSTEM "http://www.xml.com/iso/isolat2-xml.entities" >
+         SYSTEM "http://www.xml.com/iso/isolat2-xml.entities">
 <!-- ... now reference it. -->
 %ISOLat2;]]></eg>
 			</div2>
@@ -2447,7 +2447,7 @@ entity definition is an <nt def="NT-EntityValue">EntityValue</nt>, the defined
 entity is called an <term>internal entity</term>. There is no separate physical
 storage object, and the content of the entity is given in the declaration.</termdef>
 Note that some processing of entity and character references in the <termref def="dt-litentval">literal entity value</termref> may be required to produce
-the correct <termref def="dt-repltext">replacement text</termref>: see <specref ref="intern-replacement"/>.</p>
+the correct <termref def="dt-repltext">replacement text</termref>: see <specref ref="intern-replacement" />.</p>
 					<p>An internal entity is a <termref def="dt-parsedent">parsed entity</termref>.</p>
 					<p>Example of an internal entity declaration:</p>
 					<eg>&lt;!ENTITY Pub-Status "This is a pre-release of the
@@ -2481,7 +2481,7 @@ it is an <term>external entity</term>, declared as follows:</termdef>
 								<nt def="NT-S">S</nt> 'NDATA' <nt def="NT-S">S</nt>
 								<nt def="NT-Name">Name</nt>
 							</rhs>
-							<vc def="not-declared"/>
+							<vc def="not-declared" />
 						</prod>
 					</scrap>
 					<p>If the <nt def="NT-NDataDecl">NDataDecl</nt> is present, this is a general <termref def="dt-unparsed">unparsed entity</termref>; otherwise it is a parsed entity.</p>
@@ -2493,7 +2493,7 @@ it is an <term>external entity</term>, declared as follows:</termdef>
 					<p>
 						<termdef id="dt-sysid" term="System Identifier">The <nt def="NT-SystemLiteral">SystemLiteral</nt> is called the entity's <term>system
 identifier</term>. It is meant to be converted to a URI reference
-(as defined in <bibref ref="rfc3986"/>),
+(as defined in <bibref ref="rfc3986" />),
 as part of the
 process of dereferencing it to obtain input for the XML processor to construct the
 entity's replacement text.</termdef> It is an error for a fragment identifier
@@ -2518,7 +2518,7 @@ In other words, it is the URI of the resource retrieved after all redirection
 has occurred.</p>
 					<p>System
 identifiers (and other XML strings meant to be used as URI references) &may; contain
-characters that, according to <bibref ref="rfc3986"/>,
+characters that, according to <bibref ref="rfc3986" />,
 must be escaped before a URI can be used to retrieve the referenced resource. The
 characters to be escaped are the control characters #x0 to #x1F and #x7F (most of
 which cannot appear in XML), space #x20, the delimiters '&lt;' #x3C, '&gt;' #x3E and
@@ -2531,7 +2531,7 @@ process or software component responsible for dereferencing it <rfc2119>SHOULD</
 When escaping does occur, it <rfc2119>MUST</rfc2119> be performed as follows:</p>
 					<olist>
 						<item>
-							<p>Each character to be escaped is represented in UTF-8 <phrase diff="chg"><loc role="erratumref" href="E11"/><bibref ref="Unicode"/></phrase>
+							<p>Each character to be escaped is represented in UTF-8 <phrase diff="chg"><loc role="erratumref" href="E11" /><bibref ref="Unicode" /></phrase>
 as one or more bytes.</p>
 						</item>
 						<item>
@@ -2551,7 +2551,7 @@ where HH is the hexadecimal notation of the byte value).</p>
 							"Legacy Extended IRIs (LEIRIs)".  When this revision is available, it is the intent of the XML Core WG to use it to replace
 							language similar to the above in any future revisions of XML-related specifications under its purview.</p>
 					</note>
-					
+
 					<p>
 						<termdef id="dt-pubid" term="Public identifier"> In addition to a system
 identifier, an external identifier &may; include a <term>public identifier</term>.</termdef>
@@ -2627,20 +2627,20 @@ can begin in one entity and end in another.</p>
 					<p>Each external parsed entity in an XML document &may; use a different encoding
 for its characters. All XML processors <rfc2119>MUST</rfc2119> be able to read entities in both
 the UTF-8 and UTF-16 encodings. The terms <quote>UTF-8</quote>
-and <quote>UTF-16</quote> in this specification do not apply to 
-<phrase diff="del"><loc role="erratumref" href="E05"/>character encodings with any other labels, even if the encodings or labels are very similar to UTF-8 or UTF-16.</phrase>
-<phrase diff="add"><loc role="erratumref" href="E05"/>related character encodings, including but not limited to UTF-16BE, UTF-16LE, or CESU-8.</phrase></p>
+and <quote>UTF-16</quote> in this specification do not apply to
+<phrase diff="del"><loc role="erratumref" href="E05" />character encodings with any other labels, even if the encodings or labels are very similar to UTF-8 or UTF-16.</phrase>
+<phrase diff="add"><loc role="erratumref" href="E05" />related character encodings, including but not limited to UTF-16BE, UTF-16LE, or CESU-8.</phrase></p>
 
 					<p>Entities encoded in UTF-16 <rfc2119>MUST</rfc2119> and entities
 encoded in UTF-8 &MAY; begin with the Byte Order Mark described by
-Annex H of <bibref ref="ISO10646-2000"/>, section
-<phrase diff="chg"><loc role="erratumref" href="E11"/>16.8</phrase> of <bibref ref="Unicode"/><phrase diff="del"><loc role="erratumref" href="E11"/>, and section 2.7 of <bibref ref="Unicode3"/></phrase>
+Annex H of <bibref ref="ISO10646-2000" />, section
+<phrase diff="chg"><loc role="erratumref" href="E11" />16.8</phrase> of <bibref ref="Unicode" /><phrase diff="del"><loc role="erratumref" href="E11" />, and section 2.7 of <bibref ref="Unicode3" /></phrase>
 (the ZERO WIDTH NO-BREAK SPACE character, #xFEFF). This is an encoding signature,
 not part of either the markup or the character data of the XML document. XML
 processors <rfc2119>MUST</rfc2119> be able to use this character to differentiate between UTF-8
 and UTF-16 encoded documents.</p>
-					
-					<p diff="add"><loc role="erratumref" href="E06"/>If the replacement text of an external entity is to
+
+					<p diff="add"><loc role="erratumref" href="E06" />If the replacement text of an external entity is to
 						begin with the character U+FEFF, and no text declaration
 						is present, then a Byte Order Mark MUST be present,
 						whether the entity is encoded in UTF-8 or UTF-16.</p>
@@ -2651,7 +2651,7 @@ the world, and it may be desired for XML processors to read entities that
 use them. In
 the absence of external character encoding information (such as MIME headers),
 parsed entities which are stored in an encoding other than UTF-8 or UTF-16
-<rfc2119>MUST</rfc2119> begin with a text declaration (see <specref ref="sec-TextDecl"/>) containing
+<rfc2119>MUST</rfc2119> begin with a text declaration (see <specref ref="sec-TextDecl" />) containing
 an encoding declaration:</p>
 					<scrap lang="ebnf">
 						<head>Encoding Declaration</head>
@@ -2706,7 +2706,7 @@ and <quote>
 						<rfc2119>SHOULD</rfc2119> be used for the various encoded
 forms of JIS X-0208-1997. It
 is <rfc2119>RECOMMENDED</rfc2119> that character encodings registered (as <emph>charset</emph>s)
-with the Internet Assigned Numbers Authority <bibref ref="IANA"/>,
+with the Internet Assigned Numbers Authority <bibref ref="IANA" />,
 other than those just listed, be referred to using their registered names;
 other encodings <rfc2119>SHOULD</rfc2119> use names starting with an <quote>x-</quote> prefix.
 XML processors <rfc2119>SHOULD</rfc2119> match character encoding names in a case-insensitive
@@ -2728,8 +2728,8 @@ encounters an entity with an encoding that it is unable to process. It
 is a <termref def="dt-fatal">fatal error</termref> if an XML entity is determined (via default, encoding declaration,
 or higher-level protocol) to be in a certain encoding but contains byte
 sequences that are not legal in that encoding. Specifically, it is a
-fatal error if an entity encoded in UTF-8 contains any <phrase diff="del"><loc role="erratumref" href="E11"/>irregular</phrase><phrase diff="add"><loc role="erratumref" href="E11"/>ill-formed</phrase> code unit sequences,
-as defined in <phrase diff="add"><loc role="erratumref" href="E11"/>section 3.9 of </phrase> Unicode <phrase diff="del"><loc role="erratumref" href="E11"/>3.1 </phrase><phrase diff="chg"><loc role="erratumref" href="E11"/><bibref ref="Unicode"/></phrase>. Unless an encoding
+fatal error if an entity encoded in UTF-8 contains any <phrase diff="del"><loc role="erratumref" href="E11" />irregular</phrase><phrase diff="add"><loc role="erratumref" href="E11" />ill-formed</phrase> code unit sequences,
+as defined in <phrase diff="add"><loc role="erratumref" href="E11" />section 3.9 of </phrase> Unicode <phrase diff="del"><loc role="erratumref" href="E11" />3.1 </phrase><phrase diff="chg"><loc role="erratumref" href="E11" /><bibref ref="Unicode" /></phrase>. Unless an encoding
 is determined by a higher-level protocol, it is also a <termref def="dt-fatal">fatal error</termref> if an XML entity
 contains no encoding declaration and its content is not legal UTF-8 or UTF-16.</p>
 					<p>Examples of text declarations containing encoding declarations:</p>
@@ -2779,7 +2779,7 @@ entity value</termref> in the entity's declaration; corresponds to the nontermin
 							<label>Reference in DTD</label>
 							<def>
 								<p>as a reference within either the internal or external subsets of the <termref def="dt-doctype">DTD</termref>, but outside of an <nt def="NT-EntityValue">EntityValue</nt>, <nt def="NT-AttValue">AttValue</nt>, <nt def="NT-PI">PI</nt>, <nt def="NT-Comment">Comment</nt>, <nt def="NT-SystemLiteral">SystemLiteral</nt>, <nt def="NT-PubidLiteral">PubidLiteral</nt>,
-or the contents of an ignored conditional section (see <specref ref="sec-condition-sect"/>).</p>
+or the contents of an ignored conditional section (see <specref ref="sec-condition-sect" />).</p>
 								<p>.</p>
 							</def>
 						</gitem>
@@ -2788,7 +2788,7 @@ or the contents of an ignored conditional section (see <specref ref="sec-conditi
 				<table border="1" frame="border" cellpadding="7">
 					<tbody align="center">
 						<tr>
-							<td rowspan="2" colspan="1"/>
+							<td rowspan="2" colspan="1" />
 							<td colspan="4" align="center" valign="bottom">Entity
 Type</td>
 							<td rowspan="2" align="center">Character</td>
@@ -2970,10 +2970,10 @@ in place of the reference itself as though it were part of the document at
 the location the reference was recognized, except that a single or double
 quote character in the replacement text <rfc2119>MUST</rfc2119> always be treated as a normal data
 character and <rfc2119>MUST NOT</rfc2119> terminate the literal. For example, this is well-formed:</p>
-					<eg><![CDATA[<!ENTITY % YN '"Yes"' >
+					<eg><![CDATA[<!ENTITY % YN '"Yes"'>
 <!ENTITY WhatHeSaid "He said %YN;" >]]></eg>
 					<p>while this is not:</p>
-					<eg>&lt;!ENTITY EndAttr "27'" >
+					<eg>&lt;!ENTITY EndAttr "27'">
 &lt;element attribute='a-&amp;EndAttr;></eg>
 				</div3>
 				<div3 id="notify">
@@ -2999,7 +2999,7 @@ space (#x20) character; the intent is to constrain the replacement text of
 parameter entities to contain an integral number of grammatical tokens in
 the DTD. This
 behavior <rfc2119>MUST NOT</rfc2119> apply to parameter entity references within entity values;
-these are described in <specref ref="inliteral"/>.</p>
+these are described in <specref ref="inliteral" />.</p>
 				</div3>
 				<div3 id="error">
 					<head>Error</head>
@@ -3036,8 +3036,8 @@ text</emph> of any parameter entities referred to, and <rfc2119>MUST</rfc2119> c
 referred to, in place of any character references in the literal entity value;
 however, general-entity references <rfc2119>MUST</rfc2119> be left as-is, unexpanded. For example,
 given the following declarations:</p>
-				<eg xml:lang="fr"><![CDATA[<!ENTITY % pub    "&#xc9;ditions Gallimard" >
-<!ENTITY   rights "All rights reserved" >
+				<eg xml:lang="fr"><![CDATA[<!ENTITY % pub    "&#xc9;ditions Gallimard">
+<!ENTITY   rights "All rights reserved">
 <!ENTITY   book   "La Peste: Albert Camus,
 &#xA9; 1947 %pub;. &rights;" >]]></eg>
 				<p>then the replacement text for the entity <quote>
@@ -3054,7 +3054,7 @@ be expanded should the reference <quote>
 					</quote> appear
 in the document's content or an attribute value.</p>
 				<p>These simple rules may have complex interactions; for a detailed discussion
-of a difficult example, see <specref ref="sec-entexpand"/>.</p>
+of a difficult example, see <specref ref="sec-entexpand" />.</p>
 			</div2>
 			<div2 id="sec-predefined-ent">
 				<head>Predefined Entities</head>
@@ -3114,7 +3114,7 @@ application capable of processing data in the given notation.</termdef>
 						<rhs>'&lt;!NOTATION' <nt def="NT-S">S</nt>
 							<nt def="NT-Name">Name</nt>
 							<nt def="NT-S">S</nt> (<nt def="NT-ExternalID">ExternalID</nt> | <nt def="NT-PublicID">PublicID</nt>) <nt def="NT-S">S</nt>? '>'</rhs>
-						<vc def="UniqueNotationName"/>
+						<vc def="UniqueNotationName" />
 					</prod>
 					<prod id="NT-PublicID" num="83">
 						<lhs>PublicID</lhs>
@@ -3206,7 +3206,7 @@ that may be important to users of XML processors:</p>
 						<p>Certain well-formedness errors, specifically those that require reading
 external entities, may fail to be detected by a non-validating processor. Examples
 include the constraints entitled <titleref href="#wf-entdeclared">Entity Declared</titleref>, <titleref href="#textent">Parsed Entity</titleref>, and <titleref href="#norecursion">No
-Recursion</titleref>, as well as some of the cases described as <titleref href="#forbidden">forbidden</titleref> in <specref ref="entproc"/>.</p>
+Recursion</titleref>, as well as some of the cases described as <titleref href="#forbidden">forbidden</titleref> in <specref ref="entproc" />.</p>
 					</item>
 					<item>
 						<p>The information passed from the processor to the application may
@@ -3215,7 +3215,7 @@ For example, a non-validating processor may fail to <titleref href="#AVNormalize
 attribute values, <titleref href="#included">include</titleref> the replacement
 text of internal entities, or supply <titleref href="#sec-attr-defaults">default
 attribute values</titleref>, where doing so depends on having read declarations
-in external or parameter entities<phrase diff="add"><loc role="erratumref" href="E04"/>, or in the internal subset after an unread 
+in external or parameter entities<phrase diff="add"><loc role="erratumref" href="E04" />, or in the internal subset after an unread
 parameter entity reference</phrase>.</p>
 					</item>
 				</ulist>
@@ -3409,7 +3409,7 @@ ed. Keld Simonsen et al.</bibl>
 					<bibl id="rfc2119" href="http://www.ietf.org/rfc/rfc2119.txt" key="IETF RFC 2119">IETF
 (Internet Engineering Task Force). <titleref>RFC 2119: Key words for use in RFCs to Indicate Requirement Levels</titleref>.
 Scott Bradner, 1997.</bibl>
-					<bibl id="RFC1766" key="IETF BCP 47" diff="chg"><loc role="erratumref" href="E01"/>IETF
+					<bibl id="RFC1766" key="IETF BCP 47" diff="chg"><loc role="erratumref" href="E01" />IETF
                                           (Internet Engineering Task Force). <titleref>BCP 47, consisting of <loc href="http://tools.ietf.org/html/rfc4646">RFC 4646: Tags for Identifying Languages</loc>, and <loc href="http://tools.ietf.org/html/rfc4647">RFC 4647: Matching of Language Tags</loc></titleref>,
 						A. Phillips, M. Davis. 2006.</bibl>
 					<bibl id="rfc3986" href="http://www.ietf.org/rfc/rfc3986.txt" key="IETF RFC 3986">IETF (Internet Engineering Task Force). <titleref>RFC 3986: Uniform Resource Identifier (URI): Generic Syntax</titleref>. T. Berners-Lee, R. Fielding, L. Masinter. 2005.</bibl>
@@ -3427,13 +3427,13 @@ technology &mdash; Universal Multiple-Octet Coded Character Set (UCS) &mdash;
 Part 1: Architecture and Basic Multilingual Plane.</titleref> [Geneva]: International
 Organization for Standardization, 2000.</bibl>
 					<bibl id="Unicode" key="Unicode">The Unicode Consortium. <emph>The Unicode
-Standard, Version <phrase diff="chg"><loc role="erratumref" href="E11"/>5.0.0,</phrase></emph> <phrase diff="del"><loc role="erratumref" href="E11"/>Reading, Mass.: Addison-Wesley Developers Press,
-1996</phrase><phrase diff="add"><loc role="erratumref" href="E11"/>defined by: The Unicode Standard, Version 5.0 (Boston, MA,
+Standard, Version <phrase diff="chg"><loc role="erratumref" href="E11" />5.0.0,</phrase></emph> <phrase diff="del"><loc role="erratumref" href="E11" />Reading, Mass.: Addison-Wesley Developers Press,
+1996</phrase><phrase diff="add"><loc role="erratumref" href="E11" />defined by: The Unicode Standard, Version 5.0 (Boston, MA,
 Addison-Wesley, 2007. ISBN 0-321-48091-0)</phrase>.</bibl>
 	  <bibl id="unipart15" key="UnicodeNormal" href="http://unicode.org/reports/tr15/">The Unicode
 Consortium. <titleref>Unicode normalization forms</titleref>.  Mark Davis and
 Martin Durst.  2008.</bibl>
-					<bibl id="Unicode3" key="Unicode3" diff="del"><loc role="erratumref" href="E11"/>The Unicode
+					<bibl id="Unicode3" key="Unicode3" diff="del"><loc role="erratumref" href="E11" />The Unicode
 Consortium. <emph>The Unicode Standard, Version 3.2</emph>, defined by:
 <emph>The Unicode Standard, Version 3.0</emph> (Reading, MA,
 Addison-Wesley, 2000. ISBN 0-201-61633-5), as amended by the <emph>Unicode
@@ -3467,7 +3467,7 @@ Regular Languages</titleref> in Information and Computation 140 (2): 229-253,
 February 1998.</bibl>
 					<bibl id="Clark" href="http://www.w3.org/TR/NOTE-sgml-xml-971215" key="Clark">James Clark.
 <titleref>Comparison of SGML and XML</titleref>.</bibl>
-					<bibl id="IANA-LANGCODES" href="http://www.iana.org/assignments/language-subtag-registry" key="IANA-LANGCODES" diff="chg"><loc role="erratumref" href="E01"/>(Internet
+					<bibl id="IANA-LANGCODES" href="http://www.iana.org/assignments/language-subtag-registry" key="IANA-LANGCODES" diff="chg"><loc role="erratumref" href="E01" />(Internet
 Assigned Numbers Authority) <titleref>Registry of Language Tags</titleref></bibl>
 					<bibl id="RFC2141" href="http://www.ietf.org/rfc/rfc2141.txt" key="IETF RFC 2141">IETF
 (Internet Engineering Task Force). <titleref>RFC 2141: URN Syntax</titleref>, ed.
@@ -3509,14 +3509,14 @@ Textuality, Hewlett-Packard, and Microsoft. World Wide Web Consortium, 1999.</bi
 		<div1 id="CharClasses">
 			<head>Character Classes</head>
 
-			<p diff="add"><loc role="erratumref" href="E09"/>Because of changes to productions 
+			<p diff="add"><loc role="erratumref" href="E09" />Because of changes to productions
 				<nt def="NT-NameStartChar">[4]</nt> and <nt def="NT-Name">[5]</nt>, the productions in
 				this Appendix are now orphaned and not used anymore in determining
-				name characters.  This Appendix may be removed in a future edition of 
+				name characters.  This Appendix may be removed in a future edition of
 				this specification; other specifications that wish to refer to the productions herein should
 				do so by means of a reference to the relevant production(s) in the
 				<loc href="http://www.w3.org/TR/2006/REC-xml-20060816/">Fourth Edition</loc> of this specification. </p>
-			
+
 			<p>Following the characteristics defined in the Unicode standard, characters
 are classed as base characters (among others, these contain the alphabetic
 characters of the Latin alphabet), ideographic characters, and combining characters (among
@@ -3681,12 +3681,12 @@ its canonical equivalent.</p>
 			<p>XML
 is designed to be a subset of SGML, in that every XML document should also
 be a conforming SGML document. For a detailed comparison of the additional
-restrictions that XML places on documents beyond those of SGML, see <bibref ref="Clark"/>.</p>
+restrictions that XML places on documents beyond those of SGML, see <bibref ref="Clark" />.</p>
 		</inform-div1>
 		<inform-div1 id="sec-entexpand">
 			<head>Expansion of Entity and Character References</head>
 			<p>This appendix contains some examples illustrating the sequence of entity-
-and character-reference recognition and expansion, as specified in <specref ref="entproc"/>.</p>
+and character-reference recognition and expansion, as specified in <specref ref="entproc" />.</p>
 			<p>If the DTD contains the declaration</p>
 			<eg><![CDATA[<!ENTITY example "<p>An ampersand (&#38;#38;) may be escaped
 numerically (&#38;#38;#38;) or with a general entity
@@ -3713,9 +3713,9 @@ numerically (&#38;) or with a general entity
 In the following example, the line numbers are solely for reference.</p>
 			<eg><![CDATA[1 <?xml version='1.0'?>
 2 <!DOCTYPE test [
-3 <!ELEMENT test (#PCDATA) >
+3 <!ELEMENT test (#PCDATA)>
 4 <!ENTITY % xx '&#37;zz;'>
-5 <!ENTITY % zz '&#60;!ENTITY tricky "error-prone" >' >
+5 <!ENTITY % zz '&#60;!ENTITY tricky "error-prone" >'>
 6 %xx;
 7 ]>
 8 <test>This sample shows a &tricky; method.</test>]]></eg>
@@ -3782,32 +3782,32 @@ shows a error-prone method.</emph>
 				</item>
 			</ulist>
 
-			<p diff="add"><loc role="erratumref" href="E07"/>In the following example</p> 
-			
-			<eg diff="add"><loc role="erratumref" href="E07"/>&lt;!DOCTYPE foo [ 
-&lt;!ENTITY x "&amp;lt;"> 
-]> 
-&lt;foo attr="&amp;x;"/></eg> 
+			<p diff="add"><loc role="erratumref" href="E07" />In the following example</p>
 
-			<p diff="add"><loc role="erratumref" href="E07"/>the replacement text of x is the four characters "&amp;lt;" because
+			<eg diff="add"><loc role="erratumref" href="E07" />&lt;!DOCTYPE foo [
+&lt;!ENTITY x "&amp;lt;">
+]>
+&lt;foo attr="&amp;x;" /></eg>
+
+			<p diff="add"><loc role="erratumref" href="E07" />the replacement text of x is the four characters "&amp;lt;" because
 				references to general entities in entity values are <titleref href="#bypass">bypassed</titleref>.
 				The replacement text of lt is a character reference to
 				the less-than character, for example the five characters "&amp;#60;"
-				(see <specref ref="sec-predefined-ent"/>).  Since neither of these contains a less-than character
-				the result is well-formed.</p> 
-			
-			<p diff="add"><loc role="erratumref" href="E07"/>If the definition of x had been</p>
-			
-			<eg diff="add"><loc role="erratumref" href="E07"/>&lt;!ENTITY x "&amp;#60;"></eg> 
-			
-			<p diff="add"><loc role="erratumref" href="E07"/>then the document would not have been well-formed, because the
+				(see <specref ref="sec-predefined-ent" />).  Since neither of these contains a less-than character
+				the result is well-formed.</p>
+
+			<p diff="add"><loc role="erratumref" href="E07" />If the definition of x had been</p>
+
+			<eg diff="add"><loc role="erratumref" href="E07" />&lt;!ENTITY x "&amp;#60;"></eg>
+
+			<p diff="add"><loc role="erratumref" href="E07" />then the document would not have been well-formed, because the
 				replacement text of x would be the single character "&lt;" which
 				is not permitted in attribute values (see <titleref href="#CleanAttrVals">WFC: No &lt; in Attribute Values</titleref>).</p>
 		</inform-div1>
 		<inform-div1 id="determinism">
 			<head>Deterministic Content Models</head>
 			<p>As
-noted in <specref ref="sec-element-content"/>, it is required that content
+noted in <specref ref="sec-element-content" />, it is required that content
 models in element type declarations be deterministic. This requirement is <termref def="dt-compat">for compatibility</termref> with SGML (which calls deterministic
 content models <quote>unambiguous</quote>); XML processors built
 using SGML systems may flag non-deterministic content models as errors.</p>
@@ -3821,7 +3821,7 @@ in the content model. The processor doesn't need to look ahead to see what follo
 would be accepted.</p>
 			<p>More formally: a finite state automaton may be constructed from the content
 model using the standard algorithms, e.g. algorithm 3.5 in section 3.9 of
-Aho, Sethi, and Ullman <bibref ref="Aho"/>. In many such algorithms, a follow
+Aho, Sethi, and Ullman <bibref ref="Aho" />. In many such algorithms, a follow
 set is constructed for each position in the regular expression (i.e., each
 leaf node in the syntax tree for the regular expression); if any position
 has a follow set in which more than one following position is labeled with
@@ -3829,7 +3829,7 @@ the same element type name, then the content model is in error and may be
 reported as an error.</p>
 			<p>Algorithms exist which allow many but not all non-deterministic content
 models to be reduced automatically to equivalent deterministic models; see
-Brüggemann-Klein 1991 <bibref ref="ABK"/>.</p>
+Brüggemann-Klein 1991 <bibref ref="ABK" />.</p>
 		</inform-div1>
 		<inform-div1 id="sec-guessing">
 			<head>Autodetection of Character Encodings</head>
@@ -3845,9 +3845,9 @@ it feasible to autodetect the character encoding in use in each entity in
 normal cases. Also, in many cases other sources of information are available
 in addition to the XML data stream itself. Two cases may be distinguished,
 depending on whether the XML entity is presented to the processor without,
-or with, any accompanying (external) information. We <phrase diff="add"><loc role="erratumref" href="E05"/>will</phrase> consider
-<phrase diff="del"><loc role="erratumref" href="E05"/>the first case first.</phrase>
-<phrase diff="add"><loc role="erratumref" href="E05"/>these cases in turn.</phrase></p>
+or with, any accompanying (external) information. We <phrase diff="add"><loc role="erratumref" href="E05" />will</phrase> consider
+<phrase diff="del"><loc role="erratumref" href="E05" />the first case first.</phrase>
+<phrase diff="add"><loc role="erratumref" href="E05" />these cases in turn.</phrase></p>
 			<div2 id="sec-guessing-no-ext-info">
 				<head>Detection Without External Encoding Information</head>
 				<p>Because each XML entity not accompanied by external
@@ -4029,7 +4029,7 @@ information, as in some file systems and some network protocols. When multiple
 sources of information are available, their relative priority and the preferred
 method of handling conflict should be specified as part of the higher-level
 protocol used to deliver XML. In particular, please refer
-to <bibref ref="rfc2376"/> or its successor, which defines the <code>text/xml</code>
+to <bibref ref="rfc2376" /> or its successor, which defines the <code>text/xml</code>
 and <code>application/xml</code> MIME types and provides some useful guidance.
 In the interests of interoperability, however, the following rule is recommended.</p>
 				<ulist>
@@ -4188,8 +4188,8 @@ XSLT stylesheets.</p>
 		</inform-div1>
 
 		<inform-div1 id="sec-suggested-names" diff="add">
-			<head><loc role="erratumref" href="E09"/>Suggestions for XML Names</head>
-			<p><loc role="erratumref" href="E09"/>The following suggestions define what is believed to be best
+			<head><loc role="erratumref" href="E09" />Suggestions for XML Names</head>
+			<p><loc role="erratumref" href="E09" />The following suggestions define what is believed to be best
 				practice in the construction of XML names used as element names,
 				attribute names, processing instruction targets, entity names,
 				notation names, and the values of attributes of type ID, and are
@@ -4199,7 +4199,7 @@ XSLT stylesheets.</p>
 				to 5.0; which version should be used is left to the discretion of
 				the document author or schema designer.</p>
 			<p>The first two suggestions are directly derived from the rules
-				given for identifiers in Standard Annex #31 (UAX #31) of the Unicode Standard, version 5.0 <bibref ref="Unicode"/>, and
+				given for identifiers in Standard Annex #31 (UAX #31) of the Unicode Standard, version 5.0 <bibref ref="Unicode" />, and
 				exclude all control characters, enclosing nonspacing marks,
 				non-decimal numbers, private-use characters, punctuation characters
 				(with the noted exceptions), symbol characters, unassigned
@@ -4217,7 +4217,7 @@ XSLT stylesheets.</p>
 						#31, with the exception of "'" #x27 and "’" #x2019.</p>
 				</item>
 	<item><p>Characters in names should be expressed using
-Normalization Form C as defined in <bibref ref="unipart15"/>.</p></item>
+Normalization Form C as defined in <bibref ref="unipart15" />.</p></item>
 				<item>
 					<p>Ideographic characters which have a canonical decomposition
 						(including those in the ranges [#xF900-#xFAFF] and
