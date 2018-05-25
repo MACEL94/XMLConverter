@@ -1,17 +1,18 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Le informazioni generali relative a un assembly sono controllate dal seguente 
 // set di attributi. Modificare i valori di questi attributi per modificare le informazioni
 // associate a un assembly.
-[assembly: AssemblyTitle("XMLConverter")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Assembly")]
+[assembly: AssemblyDescription("Assembly")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP Inc.")]
-[assembly: AssemblyProduct("XMLConverter")]
-[assembly: AssemblyCopyright("Copyright © HP Inc. 2017")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCompany("Belh20Corp")]
+[assembly: AssemblyProduct("XmlConverter")]
+[assembly: AssemblyCopyright("CopyRightedTM")]
+[assembly: AssemblyTrademark("ASD")]
 [assembly: AssemblyCulture("")]
 
 // Se si imposta ComVisible su false, i tipi in questo assembly non saranno visibili
@@ -20,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Se il progetto viene esposto a COM, il GUID seguente verrà utilizzato come ID della libreria dei tipi
-[assembly: Guid("4774c2fc-a076-4e67-8b04-b6144e64fc3a")]
+[assembly: Guid("a911849b-5633-447d-bd82-6a7b6550d831")]
 
 // Le informazioni sulla versione di un assembly sono costituite dai seguenti quattro valori:
 //
@@ -32,5 +33,7 @@ using System.Runtime.InteropServices;
 // È possibile specificare tutti i valori oppure impostare valori predefiniti per i numeri relativi alla revisione e alla build
 // usando l'asterisco '*' come illustrato di seguito:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.0.0.1")]
+[assembly: AssemblyFileVersion("0.0.0.1")]
+[assembly: NeutralResourcesLanguage("en")]
+

@@ -34,7 +34,7 @@ namespace XMLConverter.Classes
 
         public XmlConverterManager()
         {
-            _aggiungiFormatoDateTimeSpeciale = false;
+            this.AggiungiFormatoDateTimeSpeciale = false;
         }
 
         #endregion Public Constructors
@@ -45,14 +45,14 @@ namespace XMLConverter.Classes
         /// Il formato MMyy può causare problemi quando si hanno nel file dei numeri tipo "1234" che
         /// NON sono date delle carte di credito
         /// </summary>
-        private bool _aggiungiFormatoDateTimeSpeciale { get; set; }
+        private bool AggiungiFormatoDateTimeSpeciale { get; set; }
 
         /// <summary>
         /// Tiene in memoria tutti i formati esistenti una volta caricati 
         /// </summary>
-        private List<string> _listaFormatiDateTimeStandard { get; set; }
+        private List<string> ListaFormatiDateTimeStandard { get; set; }
 
-        private List<Tuple<string, CultureInfo>> _listaTupleFormatiCultureDecimal { get; set; }
+        private List<Tuple<string, CultureInfo>> ListaTupleFormatiCultureDecimal { get; set; }
 
         #endregion Private Properties
 
@@ -69,7 +69,7 @@ namespace XMLConverter.Classes
                 pathXmlFile = Console.ReadLine();
                 Console.WriteLine();
                 // Mi accerto che esista il path specificato e che sia un xml valido
-                if (!String.IsNullOrWhiteSpace(pathXmlFile) || pathXmlFile.EndsWith(".xml") || File.Exists(pathXmlFile))
+                if (!string.IsNullOrWhiteSpace(pathXmlFile) || pathXmlFile.EndsWith(".xml") || File.Exists(pathXmlFile))
                 {
                     try
                     {
@@ -95,12 +95,12 @@ namespace XMLConverter.Classes
             // ha solo un valore diventa una proprietà della classe formata dal primo oggetto padre
             // che lo contiene Se compare più di una volta nel primo elemento padre che si trova già
             // presente nel dizionario, si deve fare una lista di questo in quel padre
-            Dictionary<string, ElementoValido> dizionarioElementiValidi = new Dictionary<string, ElementoValido>();
-            Dictionary<string, ElementoValido> dizionarioElementiProprieta = new Dictionary<string, ElementoValido>();
+            var dizionarioElementiValidi = new Dictionary<string, ElementoValido>();
+            var dizionarioElementiProprieta = new Dictionary<string, ElementoValido>();
             var listaElementi = documentoCaricato.Descendants();
 
-            string nomeClasseAttuale = Util.RendiPrimaLetteraMaiuscola(listaElementi.First().Name.LocalName);
-            string nomeFileAttuale = nomeClasseAttuale + ".cs";
+            var nomeClasseAttuale = Util.RendiPrimaLetteraMaiuscola(listaElementi.First().Name.LocalName);
+            var nomeFileAttuale = nomeClasseAttuale + ".cs";
 
             foreach (var elemento in listaElementi)
             {
@@ -178,7 +178,7 @@ namespace XMLConverter.Classes
             // Classe serializzata
             var classeSerializzataString = this.CreaStringaClasseSerializzata(documentoCaricato, listaElementiValidi);
 
-            var oggettoSerializzato = Util.CreaOggettoSerializzato(documentoCaricato, nomeClasseAttuale, classeSerializzataString, _namespaceScelto);
+            var oggettoSerializzato = Util.CreaOggettoSerializzato(documentoCaricato, nomeClasseAttuale, classeSerializzataString, this._namespaceScelto);
 
             Util.TestaUguaglianzaDocumentoOggetto(documentoCaricato, oggettoSerializzato);
 
@@ -188,7 +188,7 @@ namespace XMLConverter.Classes
             classPath = Console.ReadLine();
 
             // Se serve salvo la classe, e poi chiedo di includerla
-            if (!String.IsNullOrWhiteSpace(classPath) && classPath.EndsWith(".cs"))
+            if (!string.IsNullOrWhiteSpace(classPath) && classPath.EndsWith(".cs"))
             {
                 File.WriteAllText(classPath, classeSerializzataString);
             }
@@ -202,7 +202,7 @@ namespace XMLConverter.Classes
                 pathFileTest = Console.ReadLine();
                 Console.WriteLine();
                 // Ottengo il file di test dentro al quale si vuole salvare il nuovo metodo
-            } while (String.IsNullOrWhiteSpace(pathFileTest) || !pathFileTest.EndsWith(".cs") || !File.Exists(pathFileTest));
+            } while (string.IsNullOrWhiteSpace(pathFileTest) || !pathFileTest.EndsWith(".cs") || !File.Exists(pathFileTest));
 
             // Chiedo all'utente come vuole chiamare il test
             string nomeNuovoTest = null;
@@ -211,13 +211,13 @@ namespace XMLConverter.Classes
                 Console.WriteLine("Specify the name of the method that will initialize this object: ");
                 nomeNuovoTest = Console.ReadLine();
                 Console.WriteLine();
-            } while (String.IsNullOrWhiteSpace(nomeNuovoTest));
+            } while (string.IsNullOrWhiteSpace(nomeNuovoTest));
 
             // Rendo il nome corretto
             nomeNuovoTest = Util.RendiPrimaLetteraMaiuscola(nomeNuovoTest);
 
             // Stringa contenente il nuovo metodo
-            string nuovoTest =
+            var nuovoTest =
                 this.CreaMetodoTestInizializzazione(oggettoSerializzato, classeSerializzataString,
                     nomeClasseAttuale, nomeNuovoTest, documentoCaricato);
 
@@ -229,11 +229,11 @@ namespace XMLConverter.Classes
             if (fileTestString.Contains($"public {tipoOggettoAttuale.Name} {nomeNuovoTest}()"))
             {
                 // So che è presente, quindi per prima cosa mi salvo la posizione in cui va inserito
-                int indiceInizioMetodo = fileTestString.IndexOf($"public {tipoOggettoAttuale.Name} {nomeNuovoTest}()");
+                var indiceInizioMetodo = fileTestString.IndexOf($"public {tipoOggettoAttuale.Name} {nomeNuovoTest}()");
 
                 // Trovo la fine del metodo
-                int indiceFineMetodo = 0;
-                int indiceContatoreParentesi = 0;
+                var indiceFineMetodo = 0;
+                var indiceContatoreParentesi = 0;
                 var carattereFineMetodo = fileTestString.Substring(indiceInizioMetodo)
                           .ToList()
                           .SkipWhile((c, contatore) => this.VerificaContinuaRicerca(c, contatore, ref indiceContatoreParentesi, ref indiceFineMetodo))
@@ -269,7 +269,7 @@ namespace XMLConverter.Classes
         /// </summary>
         private string CalcolaNameSpace(string nameSpaceString)
         {
-            if (!String.IsNullOrWhiteSpace(nameSpaceString))
+            if (!string.IsNullOrWhiteSpace(nameSpaceString))
             {
                 return $", Namespace =\"{nameSpaceString}\"";
             }
@@ -297,7 +297,7 @@ namespace XMLConverter.Classes
         /// </summary>
         private void CaricaListaFormatiDateTime()
         {
-            _listaFormatiDateTimeStandard =
+            this.ListaFormatiDateTimeStandard =
                 new List<string>
                 {
                     "d", "D", "f", "F", "g", "G",
@@ -307,9 +307,9 @@ namespace XMLConverter.Classes
                     "yyyy-MM-ddTHH:mm:ssZ",
                 };
 
-            if (_aggiungiFormatoDateTimeSpeciale)
+            if (this.AggiungiFormatoDateTimeSpeciale)
             {
-                _listaFormatiDateTimeStandard.Add("MMyy");
+                this.ListaFormatiDateTimeStandard.Add("MMyy");
             }
         }
 
@@ -344,7 +344,7 @@ namespace XMLConverter.Classes
                 new CultureInfo("en-UK"),
             };
 
-            _listaTupleFormatiCultureDecimal = listaFormatiConNumeri.SelectMany(formato => listaCulture.Select(c => new Tuple<string, CultureInfo>(formato, c))).ToList();
+            this.ListaTupleFormatiCultureDecimal = listaFormatiConNumeri.SelectMany(formato => listaCulture.Select(c => new Tuple<string, CultureInfo>(formato, c))).ToList();
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace XMLConverter.Classes
         {
             //Finalmente deserializzo la classe e la restituisco
             var gestoreInizializzazione = new TestCreatorManager();
-            string stringaMetodoInizializzazioneOggetto = gestoreInizializzazione.CreaTest(oggettoSerializzato, nomeNuovoTest, documentoCaricato);
+            var stringaMetodoInizializzazioneOggetto = gestoreInizializzazione.CreaTest(oggettoSerializzato, nomeNuovoTest, documentoCaricato);
 
             var stringBuilderInizializzazioneOggetto =
                 this.IndentaListaStringhe(stringaMetodoInizializzazioneOggetto.Split('\n'), 2)
@@ -378,13 +378,13 @@ namespace XMLConverter.Classes
             stringBuilderClasse.AppendLine("using System.Xml;");
             stringBuilderClasse.AppendLine("using System.Xml.Serialization;");
             stringBuilderClasse.AppendLine("");
-            stringBuilderClasse.AppendLine($"namespace BELHXmlTool.{_namespaceScelto}");
+            stringBuilderClasse.AppendLine($"namespace BELHXmlTool.{this._namespaceScelto}");
             stringBuilderClasse.AppendLine("{");
 
             // Arrivati qui ogni elementovalido è valido e ha le proprietà che dovrebbe avere.
             foreach (var elementoValido in listaElementiValidi)
             {
-                string elementoSerializzato = this.SerializzaElementoValido(documentoCaricato, elementoValido);
+                var elementoSerializzato = this.SerializzaElementoValido(documentoCaricato, elementoValido);
                 stringBuilderClasse.Append(elementoSerializzato);
             }
 
@@ -410,7 +410,7 @@ namespace XMLConverter.Classes
             {
                 Console.WriteLine();
                 Console.WriteLine("Please don't use integers that follow the same pattern anywhere in the xml: '{01-12}{00-99}'");
-                this._aggiungiFormatoDateTimeSpeciale = true;
+                this.AggiungiFormatoDateTimeSpeciale = true;
                 Console.WriteLine("Press any button to continue");
                 Console.ReadKey();
             }
@@ -426,9 +426,9 @@ namespace XMLConverter.Classes
             {
                 Console.WriteLine("Please specify the NameSpace of the generated class:");
                 // Non faccio nessun controllo, se l'utente sbaglia dovrà riavviare il programma
-                _namespaceScelto = Console.ReadLine();
+                this._namespaceScelto = Console.ReadLine();
                 Console.WriteLine();
-            } while (String.IsNullOrWhiteSpace(_namespaceScelto));
+            } while (string.IsNullOrWhiteSpace(this._namespaceScelto));
         }
 
         /// <summary>
@@ -483,8 +483,8 @@ namespace XMLConverter.Classes
                 var primoElementoProprietaAttuale = proprietaAttuale.ListaElementiTipologiaAttuale[0];
 
                 // Provo a capire di che tipo di property si tratta
-                string tipoProprieta = this.TrovaTipoProprietaElementoProprieta(loadedDocument, primoElementoProprietaAttuale.Name,
-                    proprietaAttuale.ElementoRipetutoAlmenoUnaVolta, out string nomeProprieta, out bool tipoDateTime, out string formatoDateTime);
+                var tipoProprieta = this.TrovaTipoProprietaElementoProprieta(loadedDocument, primoElementoProprietaAttuale.Name,
+                    proprietaAttuale.ElementoRipetutoAlmenoUnaVolta, out var nomeProprieta, out var tipoDateTime, out var formatoDateTime);
 
                 // Continuo con le property aggiuntive necessarie e con il costruttore
                 if (tipoDateTime)
@@ -513,7 +513,7 @@ namespace XMLConverter.Classes
                     // DateTime.Parse(value); } }
 
                     // Gestione particolare formato specifico
-                    string toUniversal = String.Empty;
+                    var toUniversal = string.Empty;
                     if (formatoDateTime.EndsWith("z", true, CultureInfo.InvariantCulture))
                     {
                         toUniversal = ".ToUniversalTime()";
@@ -564,7 +564,7 @@ namespace XMLConverter.Classes
                 }
 
                 // Incremento il contatore del numero di figli che mi permette di mantenere la struttura
-                _contatoreFiglio++;
+                this._contatoreFiglio++;
             }
 
             // Elementi elemento valido attuale Prendo prima i nomi degli elementi diversi presenti
@@ -581,7 +581,7 @@ namespace XMLConverter.Classes
                 // Controllo prima di tutto se ci sono più elementi di questo tipo all'interno
                 // dell'elemento attuale o negli altri
                 var elementoRipetutoAlmenoUnaVolta = elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Elements(nomeElemento).Count() > 1);
-                string tipoProprieta = CalcolaTipoProprietaElementoFiglio(elementoRipetutoAlmenoUnaVolta, nomeElemento.LocalName);
+                var tipoProprieta = CalcolaTipoProprietaElementoFiglio(elementoRipetutoAlmenoUnaVolta, nomeElemento.LocalName);
 
                 // Aggiungo Elemento per distinguerli dalle proprieta Scrivo quindi il nome dell'elemento
                 string nomeProprieta = null;
@@ -616,7 +616,7 @@ namespace XMLConverter.Classes
                 sbElemento.AppendLine($"public bool ShouldSerialize{nomeProprieta}() {{ return { nomeProprieta } != null{condizioneAggiuntivaSerializzazione}; }}");
 
                 // Incremento il contatore
-                _contatoreFiglio++;
+                this._contatoreFiglio++;
             }
 
             // Attributi elemento valido attuale Prendo ora la lista degli attributi
@@ -626,7 +626,7 @@ namespace XMLConverter.Classes
             {
                 // Prendo tutti gli attributi di quel tipo
                 var listaAttributoAttuale = elementoValido.ListaElementiTipologiaAttuale.SelectMany(e => e.Attributes(nomeAttributo)).ToList();
-                string nomeProprietaAttributo = Util.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName);
+                var nomeProprietaAttributo = Util.RendiPrimaLetteraMaiuscola(nomeAttributo.LocalName);
 
                 // Gesione particolare per i namespaces del primo elemento
                 if (listaAttributoAttuale.All(a => a.IsNamespaceDeclaration))
@@ -647,8 +647,8 @@ namespace XMLConverter.Classes
 
                 // Gestione particolare causata dal fatto che serializzando si perde il formato del
                 // datetime originale che invece deve essere preservato
-                bool tipoDateTime = false;
-                bool tipoDecimal = false;
+                var tipoDateTime = false;
+                var tipoDecimal = false;
                 string formatoDateTime = null;
                 Tuple<string, CultureInfo> tuplaFormatoDecimal = null;
 
@@ -657,7 +657,7 @@ namespace XMLConverter.Classes
                 {
                     formatoDateTime = this.TrovaFormatoDateTime(listaAttributoAttuale
                         .Select(a => (string)a)
-                            .Where(v => !String.IsNullOrEmpty(v))
+                            .Where(v => !string.IsNullOrEmpty(v))
                         .ToList()
                     );
 
@@ -671,7 +671,7 @@ namespace XMLConverter.Classes
                 {
                     tuplaFormatoDecimal = this.TrovaFormatoDecimal(listaAttributoAttuale
                            .Select(a => (string)a)
-                               .Where(v => !String.IsNullOrEmpty(v))
+                               .Where(v => !string.IsNullOrEmpty(v))
                            .ToList()
                    );
 
@@ -692,12 +692,12 @@ namespace XMLConverter.Classes
                     tipoProprieta = "string";
                 }
 
-                bool serializzabileNecessario = false;
+                var serializzabileNecessario = false;
                 // Scrivo quindi il nome dell'attributo
                 if (tipoDateTime)
                 {
                     // Gesitone particolare datetime
-                    string toUniversal = String.Empty;
+                    var toUniversal = string.Empty;
                     if (formatoDateTime.EndsWith("z", true, CultureInfo.InvariantCulture))
                     {
                         toUniversal = ".ToUniversalTime()";
@@ -782,7 +782,7 @@ namespace XMLConverter.Classes
                     // Specified che stabilisce quando serializzare e quando no [XmlIgnore] public
                     // bool AgeSpecified { get { return Age >= 0; } }
                     sbElemento.AppendLine("[XmlIgnore]");
-                    string serializzabile = serializzabileNecessario ? "Serializzabile" : null;
+                    var serializzabile = serializzabileNecessario ? "Serializzabile" : null;
                     sbElemento.AppendLine($"public bool {nomeProprietaAttributo}{serializzabile}Specified {{ get {{ return this.{nomeProprietaAttributo}{condizionePerSerializzare}; }} }}");
                 }
             }
@@ -819,7 +819,7 @@ namespace XMLConverter.Classes
             }
 
             // Scrivo prima di chiudere l'elemento il suo valore per l'innertext, se necessario
-            if (elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Nodes().Any(n => n.NodeType == System.Xml.XmlNodeType.Text && !String.IsNullOrEmpty(e.Value))))
+            if (elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Nodes().Any(n => n.NodeType == System.Xml.XmlNodeType.Text && !string.IsNullOrEmpty(e.Value))))
             {
                 //[XmlText]
                 //public string ValoreElemento { get; set; }
@@ -837,12 +837,12 @@ namespace XMLConverter.Classes
         /// </summary>
         private string TrovaFormatoDateTime(List<string> listaValori)
         {
-            if (this._listaFormatiDateTimeStandard == null)
+            if (this.ListaFormatiDateTimeStandard == null)
             {
                 this.CaricaListaFormatiDateTime();
             }
 
-            foreach (var formato in this._listaFormatiDateTimeStandard)
+            foreach (var formato in this.ListaFormatiDateTimeStandard)
             {
                 if (listaValori.All(v => DateTime.TryParseExact(v, formato, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var data)))
                 {
@@ -858,13 +858,13 @@ namespace XMLConverter.Classes
         /// </summary>
         private Tuple<string, CultureInfo> TrovaFormatoDecimal(List<string> listaValori)
         {
-            if (this._listaTupleFormatiCultureDecimal == null)
+            if (this.ListaTupleFormatiCultureDecimal == null)
             {
                 this.CaricaListaFormatiDecimal();
             }
 
             // Converto i valori una volta sola
-            List<Tuple<string, decimal>> listaTuplaValoriDecimali = listaValori.Select(v =>
+            var listaTuplaValoriDecimali = listaValori.Select(v =>
                     decimal.TryParse(v, NumberStyles.Number, CultureInfo.InvariantCulture, out var valoreConvertito) ? new Tuple<string, decimal>(v, valoreConvertito) : null)
                     .ToList();
 
@@ -875,7 +875,7 @@ namespace XMLConverter.Classes
                 return null;
             }
 
-            foreach (var tuplaFormato in this._listaTupleFormatiCultureDecimal)
+            foreach (var tuplaFormato in this.ListaTupleFormatiCultureDecimal)
             {
                 if (listaTuplaValoriDecimali.Count > 0 && listaTuplaValoriDecimali.All(tuplaValore => this.TrovaFormatoDecimalCorretto(tuplaValore, tuplaFormato)))
                 {
@@ -912,20 +912,20 @@ namespace XMLConverter.Classes
             string tipoProprieta = null;
 
             // Se almeno uno ha un valore
-            if (listaAttributo.Any(e => !String.IsNullOrEmpty(e.Value)))
+            if (listaAttributo.Any(e => !string.IsNullOrEmpty(e.Value)))
             {
                 // Se è arrivato qui allora riprova gli elementi precedenti, in fila, ma con dei nullable
                 if (tipoProprieta == null)
                 {
-                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || bool.TryParse(e.Value, out bool valoreBool)) ? "bool?" : null;
+                    tipoProprieta = listaAttributo.All(e => string.IsNullOrEmpty(e.Value) || bool.TryParse(e.Value, out var valoreBool)) ? "bool?" : null;
                 }
                 if (tipoProprieta == null)
                 {
-                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || short.TryParse(e.Value, out short valore)) ? "short?" : null;
+                    tipoProprieta = listaAttributo.All(e => string.IsNullOrEmpty(e.Value) || short.TryParse(e.Value, out var valore)) ? "short?" : null;
                 }
                 if (tipoProprieta == null)
                 {
-                    tipoProprieta = listaAttributo.All(e => String.IsNullOrEmpty(e.Value) || int.TryParse(e.Value, out int valore)) ? "int?" : null;
+                    tipoProprieta = listaAttributo.All(e => string.IsNullOrEmpty(e.Value) || int.TryParse(e.Value, out var valore)) ? "int?" : null;
                 }
                 // Non cerco per datetime e decimal perchè sono già gestiti fuori
             }
@@ -940,7 +940,7 @@ namespace XMLConverter.Classes
             bool elementoRipetutoAlmenoUnaVolta, out string nomeProprieta, out bool tipoDateTime, out string formatoDateTime)
         {
             string tipoProprieta = null;
-            string nomeProprietaNormalizzato = Util.RendiPrimaLetteraMaiuscola(nomeProprietaAttuale.LocalName);
+            var nomeProprietaNormalizzato = Util.RendiPrimaLetteraMaiuscola(nomeProprietaAttuale.LocalName);
             tipoDateTime = false;
             formatoDateTime = null;
 
@@ -949,32 +949,32 @@ namespace XMLConverter.Classes
             if (listaMassimaElementoAttuale.All(e => e.Attributes().Count() == 0))
             {
                 // Se almeno uno ha un valore
-                if (listaMassimaElementoAttuale.Any(e => !String.IsNullOrEmpty(e.Value)))
+                if (listaMassimaElementoAttuale.Any(e => !string.IsNullOrEmpty(e.Value)))
                 {
                     // Se è arrivato qui allora riprova gli elementi precedenti, in fila, ma con dei nullable
                     if (tipoProprieta == null)
                     {
-                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || bool.TryParse(e.Value, out bool valoreBool)) ? "bool?" : null;
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => string.IsNullOrEmpty(e.Value) || bool.TryParse(e.Value, out var valoreBool)) ? "bool?" : null;
                     }
                     if (tipoProprieta == null)
                     {
-                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || short.TryParse(e.Value, out short valore)) ? "short?" : null;
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => string.IsNullOrEmpty(e.Value) || short.TryParse(e.Value, out var valore)) ? "short?" : null;
                     }
                     if (tipoProprieta == null)
                     {
-                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || int.TryParse(e.Value, out int valore)) ? "int?" : null;
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => string.IsNullOrEmpty(e.Value) || int.TryParse(e.Value, out var valore)) ? "int?" : null;
                     }
                     if (tipoProprieta == null)
                     {
-                        tipoProprieta = listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || decimal.TryParse(e.Value, out decimal valore)) ? "decimal?" : null;
+                        tipoProprieta = listaMassimaElementoAttuale.All(e => string.IsNullOrEmpty(e.Value) || decimal.TryParse(e.Value, out var valore)) ? "decimal?" : null;
                     }
-                    if (tipoProprieta == null && (listaMassimaElementoAttuale.All(e => String.IsNullOrEmpty(e.Value) || DateTime.TryParse(e.Value, out DateTime valore))))
+                    if (tipoProprieta == null && (listaMassimaElementoAttuale.All(e => string.IsNullOrEmpty(e.Value) || DateTime.TryParse(e.Value, out DateTime valore))))
                     {
                         tipoProprieta = "DateTime?";
                         tipoDateTime = true;
                         formatoDateTime = this.TrovaFormatoDateTime(
                             listaMassimaElementoAttuale
-                                .Where(v => !String.IsNullOrEmpty(v.Value))
+                                .Where(v => !string.IsNullOrEmpty(v.Value))
                                     .Select(v => v.Value)
                                     .ToList()
                         );

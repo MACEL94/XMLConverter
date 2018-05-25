@@ -30,7 +30,7 @@ namespace XMLConverter.Classes
             var stringaInizializzazioneOggetto = this.InizializzaOggetto(oggettoSerializzato);
 
             // TODO -oFBE: Prima o poi vorrei, prima di restituire il tutto, controllare di nuovo che
-            // siano uguali il documento di partenza e l'inizializzazione dell'oggetto rispettivo
+            // siano uguali il documento di partenza e l'oggetto risultante dalla compilazione e l'utilizzo dell'inizializzazione dell'oggetto
             Util.TestaUguaglianzaDocumentoOggetto(documentoCaricato, oggettoSerializzato);
             return new StringBuilder()
                 .AppendLine($"public {this.RicavaNomeClasse(oggettoSerializzato)} {nomeTest}()")
@@ -79,58 +79,56 @@ namespace XMLConverter.Classes
             return objectBuilder.ToString();
         }
 
-        private string RicavaElementi(IEnumerable items)
-        {
-            return items.Cast<object>().Aggregate(string.Empty, (current, item) => current + $"{Environment.NewLine}{this.RicavaInizializzazioneProprieta(item)},");
-        }
+        private string RicavaElementi(IEnumerable items) 
+            => items.Cast<object>()
+                    .Aggregate(string.Empty, (current, item) => current + $"{Environment.NewLine}{this.RicavaInizializzazioneProprieta(item)},");
 
-        private string RicavaInizializzazioneProprieta(object o)
+        private string RicavaInizializzazioneProprieta(object obj)
         {
-            if (o is bool)
+            if (obj is bool)
             {
-                return $"{o.ToString().ToLower()}";
+                return $"{obj.ToString().ToLower()}";
             }
-            if (o is short)
+            if (obj is short)
             {
-                return $"{o.ToString()}";
+                return $"{obj.ToString()}";
             }
-            if (o is int)
+            if (obj is int)
             {
-                return $"{o}";
+                return $"{obj}";
             }
-            if (o is decimal)
+            if (obj is decimal)
             {
                 // G gestisce da solo la lunghezza della stringa da inizializzare, copiando il numero
                 // di 0 automaticamente anche in casi come 7.000
-                return $"{((decimal)o).ToString("G", CultureInfo.InvariantCulture)}m";
+                return $"{((decimal)obj).ToString("G", CultureInfo.InvariantCulture)}m";
             }
-            if (o is DateTime)
+            if (obj is DateTime data)
             {
-                var data = (DateTime)o;
                 var sbData = new StringBuilder();
-                double differenzaDataOdierna = (data - DateTime.UtcNow.Date).TotalDays;
+                var differenzaDataOdierna = (data - DateTime.UtcNow.Date).TotalDays;
 
                 // Tolgo le ',' convertendole in '.' convertendo in stringa con l'invariant
                 sbData.Append($"DateTime.UtcNow.Date.AddDays({differenzaDataOdierna.ToString(CultureInfo.InvariantCulture)})");
 
                 return sbData.ToString();
             }
-            if (o is string)
+            if (obj is string)
             {
-                return $"\"{o}\"";
+                return $"\"{obj}\"";
             }
-            if (o is IEnumerable)
+            if (obj is IEnumerable en)
             {
                 string stringaDaRitornare = null;
-                var inizializzazioneElementi = this.RicavaElementi((IEnumerable)o);
+                var inizializzazioneElementi = this.RicavaElementi(en);
                 if (inizializzazioneElementi.Replace(",", "").Replace("\n", "").Replace("\r", "").Length > 0)
                 {
-                    stringaDaRitornare = $"new {this.RicavaNomeClasse(o)} {Environment.NewLine}{{{inizializzazioneElementi}{Environment.NewLine}}}";
+                    stringaDaRitornare = $"new {this.RicavaNomeClasse(obj)} {Environment.NewLine}{{{inizializzazioneElementi}{Environment.NewLine}}}";
                 }
                 return stringaDaRitornare;
             }
 
-            return this.InizializzaOggetto(o);
+            return this.InizializzaOggetto(obj);
         }
 
         private string RicavaNomeClasse(object o)

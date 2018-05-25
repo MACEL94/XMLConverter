@@ -8,7 +8,7 @@ namespace XMLConverter
 
         private static void Main()
         {
-            XmlConverterManager manager = new XmlConverterManager();
+            var manager = new XmlConverterManager();
             manager.Start();
         }
 

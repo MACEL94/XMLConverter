@@ -20,10 +20,11 @@ namespace XMLConverter
         public static object CreaOggettoSerializzato(XDocument documentoCaricato, string nomeClasseAttuale, string classeSerializzataString, string nameSpaceScelto)
         {
             // Parametri Compilatore
-            CompilerParameters compilerParams = new CompilerParameters();
-
-            // Voglio la libreria dll, non l'exe
-            compilerParams.GenerateExecutable = false;
+            var compilerParams = new CompilerParameters
+            {
+                // Voglio la libreria dll, non l'exe
+                GenerateExecutable = false
+            };
 
             // Riferimenti
             compilerParams.ReferencedAssemblies.Add(@"System.dll");
@@ -78,7 +79,7 @@ namespace XMLConverter
             var oggettoSerializzato = assembly.CreateInstance($"BELHXmlTool.{nameSpaceScelto}.{nomeClasseAttuale}");
 
             // Inizializza il serializer con il tipo dell'oggetto caricato
-            XmlSerializer serializer = new XmlSerializer(oggettoSerializzato.GetType());
+            var serializer = new XmlSerializer(oggettoSerializzato.GetType());
 
             // Carico il loadedDocument in un memoryStream che può essere deserializzato e ne resetto
             // la posizione per poterlo leggere
@@ -96,28 +97,31 @@ namespace XMLConverter
         public static XDocument CreateXmlFromObj(object objToXml)
         {
             StreamWriter stWriter = null;
-            XmlSerializer xmlSerializer;
-            string buffer;
+            string buffer = null;
             try
             {
-                xmlSerializer = new XmlSerializer(objToXml.GetType());
-                MemoryStream memStream = new MemoryStream();
+                var xmlSerializer = new XmlSerializer(objToXml.GetType());
+                var memStream = new MemoryStream();
                 stWriter = new StreamWriter(memStream);
                 XmlSerializerNamespaces ns = objToXml.GetXmlNamespaceDeclarations();
                 if (ns == null)
                 {
-                    ns = new XmlSerializerNamespaces(new XmlQualifiedName[] { new XmlQualifiedName(String.Empty, String.Empty) });
+                    ns = new XmlSerializerNamespaces(new XmlQualifiedName[] { new XmlQualifiedName(string.Empty, string.Empty) });
                 }
                 xmlSerializer.Serialize(stWriter, objToXml, ns);
                 buffer = Encoding.UTF8.GetString(memStream.GetBuffer()).Replace("\x00", "");
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                throw Ex;
+                // Loggo solamente
+                Console.WriteLine(ex);
             }
             finally
             {
-                if (stWriter != null) stWriter.Close();
+                if (stWriter != null)
+                {
+                    stWriter.Close();
+                }
             }
 
             return XDocument.Parse(buffer);
@@ -126,7 +130,10 @@ namespace XMLConverter
         public static XmlSerializerNamespaces GetXmlNamespaceDeclarations<T>(this T obj)
         {
             if (obj == null)
+            {
                 return null;
+            }
+
             var type = obj.GetType();
             return type.GetFields()
                 .Where(f => Attribute.IsDefined(f, typeof(XmlNamespaceDeclarationsAttribute)))
@@ -144,7 +151,7 @@ namespace XMLConverter
         public static string Indenta(int counter)
         {
             var sbOut = new StringBuilder(counter);
-            for (int i = 0; i < counter; i++)
+            for (var i = 0; i < counter; i++)
             {
                 sbOut.Append("\t");
             }
