@@ -581,7 +581,7 @@ namespace XMLConverter.Classes
                 // Controllo prima di tutto se ci sono più elementi di questo tipo all'interno
                 // dell'elemento attuale o negli altri
                 var elementoRipetutoAlmenoUnaVolta = elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Elements(nomeElemento).Count() > 1);
-                var tipoProprieta = CalcolaTipoProprietaElementoFiglio(elementoRipetutoAlmenoUnaVolta, nomeElemento.LocalName);
+                var tipoProprieta = this.CalcolaTipoProprietaElementoFiglio(elementoRipetutoAlmenoUnaVolta, nomeElemento.LocalName);
 
                 // Aggiungo Elemento per distinguerli dalle proprieta Scrivo quindi il nome dell'elemento
                 string nomeProprieta = null;

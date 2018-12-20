@@ -13,7 +13,7 @@ using WebApplications.Utilities;
 
 namespace XMLConverter
 {
-    internal static class Util
+    public static class Util
     {
         #region Public Methods
 

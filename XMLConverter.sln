@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28407.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLConverter", "XMLConverter\XMLConverter.csproj", "{4774C2FC-A076-4E67-8B04-B6144E64FC3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLConverterWA", "XMLConverterWA\XMLConverterWA.csproj", "{47A3E1F9-FDAA-4D38-96D4-79B9011CAD5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLConverterWA.Tests", "XMLConverterWA.Tests\XMLConverterWA.Tests.csproj", "{B7DDC551-334D-4D0B-996D-2B69405A4FB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{4774C2FC-A076-4E67-8B04-B6144E64FC3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4774C2FC-A076-4E67-8B04-B6144E64FC3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4774C2FC-A076-4E67-8B04-B6144E64FC3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47A3E1F9-FDAA-4D38-96D4-79B9011CAD5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47A3E1F9-FDAA-4D38-96D4-79B9011CAD5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47A3E1F9-FDAA-4D38-96D4-79B9011CAD5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47A3E1F9-FDAA-4D38-96D4-79B9011CAD5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7DDC551-334D-4D0B-996D-2B69405A4FB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7DDC551-334D-4D0B-996D-2B69405A4FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7DDC551-334D-4D0B-996D-2B69405A4FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7DDC551-334D-4D0B-996D-2B69405A4FB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
