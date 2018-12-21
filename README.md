@@ -1,4 +1,7 @@
 # XMLConverter
+
+https://francesco-belacca.visualstudio.com/XMLConverter/_apis/build/status/XMLConverter%20-%201%20-%20CI?branchName=master
+
 Volevo un tool che convertisse un xml in classi di c# serializzabili, ma in modo corretto e prendendo solo gli elementi utili.
 Non trovandolo me lo sono creato!
 
@@ -11,3 +14,5 @@ cosa che torna molto utile in caso di unit testing, è gestito autonomamente la 
 se già presente, all'interno del file path che si sceglie di specificare.
 
 Francesco Belacca
+
+https://xmlconverter.azurewebsites.net/
