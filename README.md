@@ -1,6 +1,6 @@
 # XMLConverter
 
-https://francesco-belacca.visualstudio.com/XMLConverter/_apis/build/status/XMLConverter%20-%201%20-%20CI?branchName=master
+[![Build Status](https://francesco-belacca.visualstudio.com/XMLConverter/_apis/build/status/XMLConverter%20-%201%20-%20CI?branchName=master)](https://francesco-belacca.visualstudio.com/XMLConverter/_build/latest?definitionId=2?branchName=master)
 
 Volevo un tool che convertisse un xml in classi di c# serializzabili, ma in modo corretto e prendendo solo gli elementi utili.
 Non trovandolo me lo sono creato!
