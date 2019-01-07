@@ -10,10 +10,11 @@
 <div class="row">
     <div class="col-md-4">
         <h2>Getting started</h2>
-        <input type="text">
-            
-        </input>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Convert!</a></p>
+        @using (Html.BeginForm("Convert", "Home"))
+        {
+            <input type="text" name="stringDocument" placeholder="insert xml here" />
+            <button name="Convert" class="btn btn-default">Convert!</button>
+        }
     </div>
     <div class="col-md-4">
         <h2>C# Class</h2>

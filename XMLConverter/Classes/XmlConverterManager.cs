@@ -26,7 +26,7 @@ namespace XMLConverter.Classes
         /// importassero due DLL generate con lo stesso Con nomi degli elementi uguali ma
         /// implementazioni diverse
         /// </summary>
-        private string _namespaceScelto;
+        private string _namespaceScelto = "DefaultNameSpace";
 
         #endregion Private Fields
 
@@ -95,88 +95,8 @@ namespace XMLConverter.Classes
             // ha solo un valore diventa una proprietà della classe formata dal primo oggetto padre
             // che lo contiene Se compare più di una volta nel primo elemento padre che si trova già
             // presente nel dizionario, si deve fare una lista di questo in quel padre
-            var dizionarioElementiValidi = new Dictionary<string, ElementoValido>();
-            var dizionarioElementiProprieta = new Dictionary<string, ElementoValido>();
-            var listaElementi = documentoCaricato.Descendants();
-
-            var nomeClasseAttuale = Util.RendiPrimaLetteraMaiuscola(listaElementi.First().Name.LocalName);
-            var nomeFileAttuale = nomeClasseAttuale + ".cs";
-
-            foreach (var elemento in listaElementi)
-            {
-                // Controlla che non sia nel dizionario
-                if (!dizionarioElementiValidi.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoValidoPresente))
-                {
-                    // Se non è presente lo aggiunge, se va aggiunto, ossia se ha più di un figlio
-                    // oppure se ha degli attributi
-                    if (elemento.Elements().Count() > 0 || elemento.Attributes().Count() > 0)
-                    {
-                        dizionarioElementiValidi.Add(elemento.Name.LocalName, new ElementoValido(elemento));
-                    }
-                    else
-                    {
-                        // Se siamo qui non è presente e non va aggiunto, che significa che deve
-                        // essere una proprietà del primo elemento padre che si incontra nel
-                        // dizionario. Questo tipo di verifica va però fatto alla fine del parsing di
-                        // tutti gli elementi validi per il dizionario, quindi lo mettiamo in un
-                        // altro dizionario per ora. Se è già presente lo aggiungiamo a se stesso,
-                        // altrimenti al dizionario, ci servirà a capire se è una lista o meno
-                        if (dizionarioElementiProprieta.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoProprietaPresente))
-                        {
-                            elementoProprietaPresente.ListaElementiTipologiaAttuale.Add(elemento);
-                        }
-                        else
-                        {
-                            dizionarioElementiProprieta.Add(elemento.Name.LocalName, new ElementoValido(elemento));
-                        }
-                    }
-                }
-                else
-                {
-                    //Se invece è presente, lo aggiunge alla lista di elementi di questo tipo,
-                    // poi verrà utilizzato per confrontare quali proprietà sono di quale tipo
-                    elementoValidoPresente.ListaElementiTipologiaAttuale.Add(elemento);
-                }
-            }
-
-            // Se ci sono elementi sia in un dizionario che nell'altro, sono sempre elementi validi
-            // ma che in casi particolari sembrano attributi
-            foreach (var voceDizionarioProprieta in dizionarioElementiProprieta.ToList())
-            {
-                if (dizionarioElementiValidi.TryGetValue(voceDizionarioProprieta.Key, out var elementoValido))
-                {
-                    // Li sposto nell'altro dizionario
-                    elementoValido.ListaElementiTipologiaAttuale.AddRange(voceDizionarioProprieta.Value.ListaElementiTipologiaAttuale);
-
-                    // Li elimino da questo
-                    dizionarioElementiProprieta.Remove(voceDizionarioProprieta.Key);
-                }
-            }
-
-            // Per comodità e chiarezza
-            var listaElementiProprieta = dizionarioElementiProprieta.Values;
-            var listaElementiValidi = dizionarioElementiValidi.Values;
-
-            foreach (var elementoProprieta in listaElementiProprieta)
-            {
-                foreach (var elementoValido in listaElementiValidi)
-                {
-                    // Se almeno uno di loro è contenuto in almeno uno degli altri lo aggiunge alle
-                    // proprietà del rispettivo
-                    foreach (var elementoTipoAttuale in elementoProprieta.ListaElementiTipologiaAttuale)
-                    {
-                        if (elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Element(elementoTipoAttuale.Name) != null))
-                        {
-                            elementoProprieta.ElementoRipetutoAlmenoUnaVolta = elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Elements(elementoTipoAttuale.Name).Count() > 1);
-                            elementoValido.ListaElementiProprieta.Add(elementoProprieta);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Classe serializzata
-            var classeSerializzataString = this.CreaStringaClasseSerializzata(documentoCaricato, listaElementiValidi);
+            string nomeClasseAttuale;
+            string classeSerializzataString = CreaClasseSerializzataString(documentoCaricato, out nomeClasseAttuale);
 
             var oggettoSerializzato = Util.CreaOggettoSerializzato(documentoCaricato, nomeClasseAttuale, classeSerializzataString, this._namespaceScelto);
 
@@ -258,6 +178,101 @@ namespace XMLConverter.Classes
 
             Console.WriteLine("Press any button to exit.");
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Ritorna una stringa da un documento caricato
+        /// </summary>
+        /// <param name="documentoCaricato"></param>
+        /// <param name="dizionarioElementiValidi"></param>
+        /// <param name="dizionarioElementiProprieta"></param>
+        /// <param name="listaElementi"></param>
+        /// <param name="nomeClasseAttuale"></param>
+        /// <returns></returns>
+        public string CreaClasseSerializzataString(XDocument documentoCaricato, out string nomeClasseAttuale)
+        {
+            var dizionarioElementiValidi = new Dictionary<string, ElementoValido>();
+            var dizionarioElementiProprieta = new Dictionary<string, ElementoValido>();
+            var listaElementi = documentoCaricato.Descendants();
+
+            nomeClasseAttuale = Util.RendiPrimaLetteraMaiuscola(listaElementi.First().Name.LocalName);
+            var nomeFileAttuale = nomeClasseAttuale + ".cs";
+
+            foreach (var elemento in listaElementi)
+            {
+                // Controlla che non sia nel dizionario
+                if (!dizionarioElementiValidi.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoValidoPresente))
+                {
+                    // Se non è presente lo aggiunge, se va aggiunto, ossia se ha più di un figlio
+                    // oppure se ha degli attributi
+                    if (elemento.Elements().Count() > 0 || elemento.Attributes().Count() > 0)
+                    {
+                        dizionarioElementiValidi.Add(elemento.Name.LocalName, new ElementoValido(elemento));
+                    }
+                    else
+                    {
+                        // Se siamo qui non è presente e non va aggiunto, che significa che deve
+                        // essere una proprietà del primo elemento padre che si incontra nel
+                        // dizionario. Questo tipo di verifica va però fatto alla fine del parsing di
+                        // tutti gli elementi validi per il dizionario, quindi lo mettiamo in un
+                        // altro dizionario per ora. Se è già presente lo aggiungiamo a se stesso,
+                        // altrimenti al dizionario, ci servirà a capire se è una lista o meno
+                        if (dizionarioElementiProprieta.TryGetValue(elemento.Name.LocalName, out ElementoValido elementoProprietaPresente))
+                        {
+                            elementoProprietaPresente.ListaElementiTipologiaAttuale.Add(elemento);
+                        }
+                        else
+                        {
+                            dizionarioElementiProprieta.Add(elemento.Name.LocalName, new ElementoValido(elemento));
+                        }
+                    }
+                }
+                else
+                {
+                    //Se invece è presente, lo aggiunge alla lista di elementi di questo tipo,
+                    // poi verrà utilizzato per confrontare quali proprietà sono di quale tipo
+                    elementoValidoPresente.ListaElementiTipologiaAttuale.Add(elemento);
+                }
+            }
+
+            // Se ci sono elementi sia in un dizionario che nell'altro, sono sempre elementi validi
+            // ma che in casi particolari sembrano attributi
+            foreach (var voceDizionarioProprieta in dizionarioElementiProprieta.ToList())
+            {
+                if (dizionarioElementiValidi.TryGetValue(voceDizionarioProprieta.Key, out var elementoValido))
+                {
+                    // Li sposto nell'altro dizionario
+                    elementoValido.ListaElementiTipologiaAttuale.AddRange(voceDizionarioProprieta.Value.ListaElementiTipologiaAttuale);
+
+                    // Li elimino da questo
+                    dizionarioElementiProprieta.Remove(voceDizionarioProprieta.Key);
+                }
+            }
+
+            // Per comodità e chiarezza
+            var listaElementiProprieta = dizionarioElementiProprieta.Values;
+            var listaElementiValidi = dizionarioElementiValidi.Values;
+
+            foreach (var elementoProprieta in listaElementiProprieta)
+            {
+                foreach (var elementoValido in listaElementiValidi)
+                {
+                    // Se almeno uno di loro è contenuto in almeno uno degli altri lo aggiunge alle
+                    // proprietà del rispettivo
+                    foreach (var elementoTipoAttuale in elementoProprieta.ListaElementiTipologiaAttuale)
+                    {
+                        if (elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Element(elementoTipoAttuale.Name) != null))
+                        {
+                            elementoProprieta.ElementoRipetutoAlmenoUnaVolta = elementoValido.ListaElementiTipologiaAttuale.Any(e => e.Elements(elementoTipoAttuale.Name).Count() > 1);
+                            elementoValido.ListaElementiProprieta.Add(elementoProprieta);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Classe serializzata
+            return this.CreaStringaClasseSerializzata(documentoCaricato, listaElementiValidi);
         }
 
         #endregion Public Methods
